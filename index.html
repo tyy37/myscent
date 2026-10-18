@@ -308,39 +308,42 @@
     <!-- ========================================== -->
     <!-- SECTION 2: MY COLLECTION (TAB 2) -->
     <!-- ========================================== -->
-    <section id="tab-collection" class="tab-content space-y-4">
+    <section id="tab-collection" class="tab-content space-y-3">
       <div class="flex justify-between items-end">
         <div>
           <h2 class="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">My Collection</h2>
           <p class="text-xs text-stone-500 dark:text-stone-400" id="collectionCountText">0 Fragrances stored</p>
         </div>
       </div>
-<!-- Sorting Dropdown -->
-<div style="margin-bottom: 15px; display: flex; justify-content: flex-end;">
-  <select id="sortSelect" onchange="sortCollection()" style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-    <option value="date-desc">Newest Purchase Date</option>
-    <option value="date-asc">Oldest Purchase Date</option>
-    <option value="price-asc">Price per mL: Low to High</option>
-    <option value="price-desc">Price per mL: High to Low</option>
-  </select>
-</div>
-      <!-- Search & Filter Controls -->
-      <div class="flex gap-2">
-        <div class="relative flex-1">
+
+      <!-- Controls: Search, Filter & Sorting (Compact & Aligned) -->
+      <div class="space-y-2">
+        <div class="relative w-full">
           <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-stone-400"></i>
           <input type="text" id="searchInput" oninput="renderCollection()" placeholder="Search brand or name..." class="w-full pl-9 pr-3 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
         </div>
-        <select id="filterType" onchange="renderCollection()" class="px-2 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
-          <option value="All">All Types</option>
-          <option value="Bottle">Bottle</option>
-          <option value="Decant">Decant</option>
-          <option value="Sample">Sample</option>
-        </select>
-        <select id="filterStatus" onchange="renderCollection()" class="px-2 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium">
-          <option value="All">All Status</option>
-          <option value="Active">Active</option>
-          <option value="Inactive">Inactive</option>
-        </select>
+
+        <div class="grid grid-cols-3 gap-2">
+          <select id="filterType" onchange="renderCollection()" class="px-2 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
+            <option value="All">All Types</option>
+            <option value="Bottle">Bottle</option>
+            <option value="Decant">Decant</option>
+            <option value="Sample">Sample</option>
+          </select>
+
+          <select id="filterStatus" onchange="renderCollection()" class="px-2 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
+            <option value="All">All Status</option>
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+
+          <select id="sortSelect" onchange="renderCollection()" class="px-2 py-2 rounded-xl text-xs font-medium border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
+            <option value="date-desc">Newest Date</option>
+            <option value="date-asc">Oldest Date</option>
+            <option value="price-asc">$/mL: Low to High</option>
+            <option value="price-desc">$/mL: High to Low</option>
+          </select>
+        </div>
       </div>
 
       <!-- Collection Cards Container -->
@@ -551,19 +554,10 @@
 
     // --- INITIALIZATION ---
     window.onload = function() {
-      // 1. Initialize Lucide Icons
       lucide.createIcons();
-
-      // 2. Set default date to today
       document.getElementById('purchaseDate').valueAsDate = new Date();
-
-      // 3. Load items from LocalStorage
       loadVaultFromStorage();
-
-      // 4. Initialize volume dropdown for default "Bottle"
       updateVolumeOptions();
-
-      // 5. Render active view
       renderCollection();
     };
 
@@ -584,7 +578,6 @@
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.getElementById(`tab-${tabKey}`).classList.add('active');
 
-      // Update Nav active styling
       const tabs = ['purchase', 'collection', 'compare'];
       tabs.forEach(t => {
         const btn = document.getElementById(`nav-${t}`);
@@ -651,7 +644,7 @@
         reader.onload = function(e) {
           currentImageData = e.target.result;
           showPhotoPreview(currentImageData);
-          document.getElementById('imageUrl').value = ''; // clear text URL
+          document.getElementById('imageUrl').value = '';
         };
         reader.readAsDataURL(file);
       }
@@ -684,7 +677,6 @@
       let base = "";
 
       const lines = text.split(/\r?\n/);
-
       lines.forEach(line => {
         const trimmed = line.trim();
         if (!trimmed) return;
@@ -716,10 +708,7 @@
     }
 
     function cleanNoteLine(line, pattern) {
-      return line
-        .replace(pattern, '')
-        .replace(/^[\s:：\-–•]+/, '')
-        .trim();
+      return line.replace(pattern, '').replace(/^[\s:：\-–•]+/, '').trim();
     }
 
     // --- SAVE ENTRY TO STORAGE ---
@@ -751,7 +740,7 @@
       const newEntry = {
         id: Date.now().toString(),
         type,
-        status: 'Active', // Default status for new purchases
+        status: 'Active',
         brand,
         name,
         volume,
@@ -776,7 +765,6 @@
       document.getElementById('purchaseDate').valueAsDate = new Date();
 
       showToast("Saved to your Scent Vault!");
-
       switchTab('collection');
     }
 
@@ -794,7 +782,6 @@
       if (data) {
         try {
           perfumeVault = JSON.parse(data);
-          // Ensure all legacy items have a default status
           perfumeVault.forEach(p => {
             if (!p.status) p.status = 'Active';
           });
@@ -804,7 +791,55 @@
       }
     }
 
-    // --- QUICK STATUS TOGGLE ---
+    // --- BACKUP EXPORT & IMPORT ---
+    function exportBackupData() {
+      if (perfumeVault.length === 0) {
+        showToast("No perfume data to backup!");
+        return;
+      }
+
+      try {
+        const jsonString = JSON.stringify(perfumeVault, null, 2);
+        const dateStr = new Date().toISOString().slice(0, 10);
+        const fileName = `scent-vault-backup-${dateStr}.json`;
+
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(jsonString);
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", fileName);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+
+        showToast("Backup exported successfully!");
+      } catch (err) {
+        showToast("Failed to export backup.");
+      }
+    }
+
+    function importBackupData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (Array.isArray(imported)) {
+            perfumeVault = imported;
+            saveVaultToStorage();
+            renderCollection();
+            showToast("Backup restored successfully!");
+          } else {
+            alert("Invalid JSON format.");
+          }
+        } catch (err) {
+          alert("Error parsing backup file.");
+        }
+      };
+      reader.readAsText(file);
+    }
+
     function toggleStatus(id, event) {
       if (event) event.stopPropagation();
       const item = perfumeVault.find(p => p.id === id);
@@ -816,18 +851,33 @@
       }
     }
 
-    // --- RENDER COLLECTION (TAB 2) ---
+    // --- RENDER COLLECTION WITH SORTING ---
     function renderCollection() {
       const grid = document.getElementById('collectionGrid');
       const search = document.getElementById('searchInput').value.toLowerCase();
       const filter = document.getElementById('filterType').value;
       const statusFilter = document.getElementById('filterStatus').value;
+      const sortBy = document.getElementById('sortSelect').value;
 
       let filtered = perfumeVault.filter(item => {
         const matchesSearch = item.brand.toLowerCase().includes(search) || item.name.toLowerCase().includes(search);
         const matchesType = filter === 'All' || item.type === filter;
         const matchesStatus = statusFilter === 'All' || (item.status || 'Active') === statusFilter;
         return matchesSearch && matchesType && matchesStatus;
+      });
+
+      // Apply sorting rules
+      filtered.sort((a, b) => {
+        if (sortBy === 'date-desc') {
+          return new Date(b.purchaseDate || 0) - new Date(a.purchaseDate || 0);
+        } else if (sortBy === 'date-asc') {
+          return new Date(a.purchaseDate || 0) - new Date(b.purchaseDate || 0);
+        } else if (sortBy === 'price-asc') {
+          return (a.pricePerMl || 0) - (b.pricePerMl || 0);
+        } else if (sortBy === 'price-desc') {
+          return (b.pricePerMl || 0) - (a.pricePerMl || 0);
+        }
+        return 0;
       });
 
       document.getElementById('collectionCountText').innerText = `${filtered.length} Fragrance${filtered.length === 1 ? '' : 's'} stored`;
@@ -849,25 +899,20 @@
         return `
           <div onclick="openDetailModal('${item.id}')" class="bg-white dark:bg-stone-900 rounded-2xl p-3.5 shadow-sm border border-stone-100 dark:border-stone-800 flex items-center gap-3.5 cursor-pointer hover:border-brand-300 dark:hover:border-stone-700 transition-all active:scale-[0.99] ${!isActive ? 'opacity-60' : ''}">
             
-            <!-- Photo -->
             <div class="w-16 h-16 rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-800 flex-shrink-0 relative">
               <img src="${item.photoUrl}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.src='${DEFAULT_PLACEHOLDER}'">
             </div>
 
-            <!-- Brand, Name, Volume -->
             <div class="flex-1 min-w-0">
-              <div class="flex items-center justify-between gap-1">
-                <p class="text-[10px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider truncate">${item.brand}</p>
-              </div>
+              <p class="text-[10px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider truncate">${item.brand}</p>
               <h3 class="font-serif font-bold text-base text-stone-900 dark:text-stone-100 truncate">${item.name}</h3>
               <p class="text-xs font-medium text-stone-500 dark:text-stone-400 mt-0.5">${item.volume} mL • ${item.type}</p>
             </div>
 
-            <!-- Manual Status Toggle Badge -->
-            <button onclick="toggleStatus('${item.id}', event)" title="Click to toggle Active/Inactive" class="flex-shrink-0 px-2.5 py-1 rounded-full text-[10px] font-semibold transition-all flex items-center gap-1 ${
+            <button onclick="toggleStatus('${item.id}', event)" class="flex-shrink-0 px-2.5 py-1 rounded-full text-[10px] font-semibold transition-all flex items-center gap-1 ${
               isActive 
-                ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 hover:bg-emerald-200' 
-                : 'bg-stone-200 dark:bg-stone-800 text-stone-600 dark:text-stone-400 border border-stone-300 dark:border-stone-700 hover:bg-stone-300'
+                ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800' 
+                : 'bg-stone-200 dark:bg-stone-800 text-stone-600 dark:text-stone-400 border border-stone-300 dark:border-stone-700'
             }">
               <span class="w-1.5 h-1.5 rounded-full ${isActive ? 'bg-emerald-500' : 'bg-stone-400'}"></span>
               <span>${isActive ? 'Active' : 'Inactive'}</span>
@@ -982,7 +1027,6 @@
       closeDetailModal();
     }
 
-    // --- EDIT MODAL HELPERS ---
     function updateEditVolumeOptions(selectedVolume) {
       const type = document.getElementById('editType').value;
       const select = document.getElementById('editVolumeSelect');
@@ -1001,7 +1045,6 @@
           document.getElementById('editCustomVolume').value = selectedVolume;
         }
       }
-
       toggleEditCustomVolume();
     }
 
@@ -1023,7 +1066,6 @@
       document.getElementById('editModal').classList.add('hidden');
     }
 
-    // --- EDIT MODAL LOGIC ---
     function openEditModal(id) {
       const item = perfumeVault.find(p => p.id === id);
       if (!item) return;
@@ -1047,7 +1089,6 @@
 
     function handleUpdateEntry(e) {
       e.preventDefault();
-
       const id = document.getElementById('editId').value;
       const index = perfumeVault.findIndex(p => p.id === id);
       if (index === -1) return;
@@ -1061,28 +1102,13 @@
       const purchaseDate = document.getElementById('editPurchaseDate').value;
 
       const volSelect = document.getElementById('editVolumeSelect').value;
-      let volume = 0;
-      if (volSelect === 'Others') {
-        volume = parseFloat(document.getElementById('editCustomVolume').value);
-      } else {
-        volume = parseFloat(volSelect);
-      }
-
+      let volume = (volSelect === 'Others') ? parseFloat(document.getElementById('editCustomVolume').value) : parseFloat(volSelect);
       const photoUrl = document.getElementById('editPhotoUrl').value.trim() || perfumeVault[index].photoUrl || DEFAULT_PLACEHOLDER;
       const pricePerMl = parseFloat((price / volume).toFixed(2));
 
       perfumeVault[index] = {
         ...perfumeVault[index],
-        type,
-        status,
-        brand,
-        name,
-        volume,
-        price,
-        pricePerMl,
-        merchant,
-        purchaseDate,
-        photoUrl,
+        type, status, brand, name, volume, price, pricePerMl, merchant, purchaseDate, photoUrl,
         notes: {
           top: document.getElementById('editTopNotes').value.trim() || 'N/A',
           heart: document.getElementById('editHeartNotes').value.trim() || 'N/A',
@@ -1106,14 +1132,13 @@
       }
     }
 
-    // --- RENDER COMPARISON VIEW (TAB 3) ---
+    // --- COMPARISON VIEW ---
     function renderCompareChecklist() {
       const container = document.getElementById('compareChecklist');
       if (perfumeVault.length === 0) {
         container.innerHTML = `<p class="text-xs text-stone-400 py-2">No items available to compare.</p>`;
         return;
       }
-
       container.innerHTML = perfumeVault.map(item => `
         <label class="flex items-center justify-between py-1.5 cursor-pointer text-xs">
           <div class="flex items-center gap-2 truncate">
@@ -1126,20 +1151,14 @@
     }
 
     function toggleCompareSelection(id) {
-      if (selectedCompareIds.has(id)) {
-        selectedCompareIds.delete(id);
-      } else {
-        selectedCompareIds.add(id);
-      }
+      if (selectedCompareIds.has(id)) selectedCompareIds.delete(id);
+      else selectedCompareIds.add(id);
       renderComparisonOutput();
     }
 
     function selectAllForCompare() {
-      if (selectedCompareIds.size === perfumeVault.length) {
-        selectedCompareIds.clear();
-      } else {
-        perfumeVault.forEach(item => selectedCompareIds.add(item.id));
-      }
+      if (selectedCompareIds.size === perfumeVault.length) selectedCompareIds.clear();
+      else perfumeVault.forEach(item => selectedCompareIds.add(item.id));
       renderCompareChecklist();
       renderComparisonOutput();
     }
@@ -1159,7 +1178,6 @@
         return;
       }
 
-      // Find best value ($/mL minimum)
       const minPricePerMl = Math.min(...selectedItems.map(i => i.pricePerMl));
 
       output.innerHTML = `
@@ -1169,14 +1187,8 @@
               const isBestValue = item.pricePerMl === minPricePerMl && selectedItems.length > 1;
               return `
                 <div class="w-64 bg-white dark:bg-stone-900 rounded-2xl p-4 border ${isBestValue ? 'border-brand-500 ring-2 ring-brand-500/20' : 'border-stone-200 dark:border-stone-800'} space-y-4 relative flex-shrink-0 shadow-sm">
-                  
-                  ${isBestValue ? `
-                    <span class="absolute -top-2.5 right-3 bg-brand-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shadow">
-                      Best Value $/mL
-                    </span>
-                  ` : ''}
+                  ${isBestValue ? `<span class="absolute -top-2.5 right-3 bg-brand-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shadow">Best Value $/mL</span>` : ''}
 
-                  <!-- Image & Header -->
                   <div class="flex gap-3 items-center">
                     <div class="w-16 h-20 rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-800 flex-shrink-0">
                       <img src="${item.photoUrl}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.src='${DEFAULT_PLACEHOLDER}'">
@@ -1184,76 +1196,47 @@
                     <div class="min-w-0 flex-1">
                       <p class="text-[10px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider">${item.brand}</p>
                       <h4 class="font-serif font-bold text-sm text-stone-900 dark:text-stone-100 truncate">${item.name}</h4>
-                      <p class="text-xs text-stone-500 mt-0.5">${item.type} • ${item.volume} mL</p>
+                      <p class="text-xs text-stone-500 mt-0.5">${item.type} •${item.volume} mL</p>
                     </div>
                   </div>
 
-                  <!-- Price per mL Highlight Box -->
                   <div class="bg-brand-50 dark:bg-brand-950/40 border border-brand-200 dark:border-brand-900/50 p-2.5 rounded-xl flex justify-between items-center text-xs">
-                    <span class="text-brand-800 dark:text-brand-300 font-semibold">Unit Price ($/mL)</span>
-                    <span class="text-sm font-bold text-brand-700 dark:text-brand-300">$${item.pricePerMl.toFixed(2)}</span>
+                    <span class="text-brand-800 dark:text-brand-300 font-semibold">Unit Price ($/mL)</span> <span class="text-sm font-bold text-brand-700 dark:text-brand-300">$${item.pricePerMl.toFixed(2)}</span>
                   </div>
 
-                  <!-- Prominent Notes Hierarchy Cards -->
                   <div class="space-y-2">
                     <p class="text-xs font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider flex items-center gap-1">
                       <i data-lucide="layers" class="w-3.5 h-3.5 text-brand-500"></i>
                       <span>Notes Hierarchy</span>
                     </p>
-
-                    <!-- Top Notes Tier -->
-                    <div class="bg-amber-50 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-900/40 p-2.5 rounded-xl space-y-0.5">
-                      <div class="flex items-center justify-between">
-                        <span class="text-[10px] font-bold text-amber-800 dark:text-amber-300 uppercase tracking-wider">Top Notes (前調)</span>
-                        <span class="text-[9px] bg-amber-200/60 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 px-1.5 py-0.2 rounded font-medium">Opening</span>
-                      </div>
-                      <p class="text-xs text-stone-800 dark:text-stone-200 font-medium leading-relaxed">${item.notes.top}</p>
+                    <div class="bg-amber-50 dark:bg-amber-950/30 border border-amber-200/60 p-2.5 rounded-xl space-y-0.5">
+                      <span class="text-[10px] font-bold text-amber-800 dark:text-amber-300 uppercase">Top (前調)</span>
+                      <p class="text-xs text-stone-800 dark:text-stone-200 font-medium">${item.notes.top}</p>
                     </div>
-
-                    <!-- Heart Notes Tier -->
-                    <div class="bg-rose-50 dark:bg-rose-950/30 border border-rose-200/60 dark:border-rose-900/40 p-2.5 rounded-xl space-y-0.5">
-                      <div class="flex items-center justify-between">
-                        <span class="text-[10px] font-bold text-rose-800 dark:text-rose-300 uppercase tracking-wider">Heart Notes (中調)</span>
-                        <span class="text-[9px] bg-rose-200/60 dark:bg-rose-900/60 text-rose-900 dark:text-rose-200 px-1.5 py-0.2 rounded font-medium">Core</span>
-                      </div>
-                      <p class="text-xs text-stone-800 dark:text-stone-200 font-medium leading-relaxed">${item.notes.heart}</p>
+                    <div class="bg-rose-50 dark:bg-rose-950/30 border border-rose-200/60 p-2.5 rounded-xl space-y-0.5">
+                      <span class="text-[10px] font-bold text-rose-800 dark:text-rose-300 uppercase">Heart (中調)</span>
+                      <p class="text-xs text-stone-800 dark:text-stone-200 font-medium">${item.notes.heart}</p>
                     </div>
-
-                    <!-- Base Notes Tier -->
-                    <div class="bg-stone-100 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 p-2.5 rounded-xl space-y-0.5">
-                      <div class="flex items-center justify-between">
-                        <span class="text-[10px] font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider">Base Notes (後調)</span>
-                        <span class="text-[9px] bg-stone-200 dark:bg-stone-700 text-stone-800 dark:text-stone-200 px-1.5 py-0.2 rounded font-medium">Drydown</span>
-                      </div>
-                      <p class="text-xs text-stone-800 dark:text-stone-200 font-medium leading-relaxed">${item.notes.base}</p>
+                    <div class="bg-stone-100 dark:bg-stone-800/80 border border-stone-200 p-2.5 rounded-xl space-y-0.5">
+                      <span class="text-[10px] font-bold text-stone-700 dark:text-stone-300 uppercase">Base (後調)</span>
+                      <p class="text-xs text-stone-800 dark:text-stone-200 font-medium">${item.notes.base}</p>
                     </div>
                   </div>
-
-                  <!-- Specs Footer -->
-                  <div class="text-[10px] text-stone-400 pt-2 border-t border-stone-100 dark:border-stone-800 flex justify-between">
-                    <span>${item.merchant}</span>
-                    <span>Total: $${item.price.toFixed(2)}</span>
-                  </div>
-
                 </div>
               `;
             }).join('')}
           </div>
         </div>
       `;
-
       lucide.createIcons();
     }
 
-    // --- TOAST NOTIFICATION HELPER ---
     function showToast(message) {
       const toast = document.getElementById('toast');
       const msg = document.getElementById('toastMessage');
       msg.innerText = message;
-
       toast.classList.remove('opacity-0', 'pointer-events-none');
       toast.classList.add('opacity-100');
-
       setTimeout(() => {
         toast.classList.remove('opacity-100');
         toast.classList.add('opacity-0', 'pointer-events-none');
