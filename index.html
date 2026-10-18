@@ -315,7 +315,15 @@
           <p class="text-xs text-stone-500 dark:text-stone-400" id="collectionCountText">0 Fragrances stored</p>
         </div>
       </div>
-
+<!-- Sorting Dropdown -->
+<div style="margin-bottom: 15px; display: flex; justify-content: flex-end;">
+  <select id="sortSelect" onchange="sortCollection()" style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
+    <option value="date-desc">Newest Purchase Date</option>
+    <option value="date-asc">Oldest Purchase Date</option>
+    <option value="price-asc">Price per mL: Low to High</option>
+    <option value="price-desc">Price per mL: High to Low</option>
+  </select>
+</div>
       <!-- Search & Filter Controls -->
       <div class="flex gap-2">
         <div class="relative flex-1">
