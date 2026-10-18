@@ -359,11 +359,11 @@
         </div>
 
         <div class="flex gap-2 pt-2 border-t border-stone-100 dark:border-stone-800">
-          <button id="modalEditBtn" class="flex-1 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-medium text-xs rounded-xl transition-colors flex items-center justify-center gap-1.5">
+          <button id="modalEditBtn" onclick="handleModalEdit()" class="flex-1 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-medium text-xs rounded-xl transition-colors flex items-center justify-center gap-1.5">
             <i data-lucide="edit-3" class="w-4 h-4"></i>
             <span>Edit Perfume</span>
           </button>
-          <button id="modalDeleteBtn" class="py-2.5 px-4 bg-rose-100 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 font-medium text-xs rounded-xl hover:bg-rose-200 dark:hover:bg-rose-900/60 transition-colors flex items-center justify-center gap-1.5">
+          <button id="modalDeleteBtn" onclick="handleModalDelete()" class="py-2.5 px-4 bg-rose-100 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 font-medium text-xs rounded-xl hover:bg-rose-200 dark:hover:bg-rose-900/60 transition-colors flex items-center justify-center gap-1.5">
             <i data-lucide="trash-2" class="w-4 h-4"></i>
             <span>Delete</span>
           </button>
@@ -384,21 +384,34 @@
         <form id="editForm" onsubmit="handleUpdateEntry(event)" class="space-y-4">
           <input type="hidden" id="editId">
 
-          <div>
-            <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Purchase Type</label>
-            <select id="editType" onchange="updateEditVolumeOptions()" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
-              <option value="Bottle">Bottle</option>
-              <option value="Decant">Decant</option>
-              <option value="Sample">Sample</option>
-            </select>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Purchase Type</label>
+              <select id="editType" onchange="updateEditVolumeOptions()" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
+                <option value="Bottle">Bottle</option>
+                <option value="Decant">Decant</option>
+                <option value="Sample">Sample</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Status</label>
+              <select id="editStatus" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 font-medium">
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+            </div>
           </div>
 
-          <div>
-            <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Status</label>
-            <select id="editStatus" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 font-medium">
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Brand *</label>
+              <input type="text" id="editBrand" required class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
+            </div>
+            <div>
+              <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Fragrance Name *</label>
+              <input type="text" id="editName" required class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
+            </div>
           </div>
 
           <div class="grid grid-cols-2 gap-3">
@@ -938,17 +951,68 @@
         </div>
       `;
 
-      document.getElementById('modalEditBtn').onclick = () => {
-        closeDetailModal();
-        openEditModal(id);
-      };
-      document.getElementById('modalDeleteBtn').onclick = () => {
-        deleteEntry(id);
-        closeDetailModal();
-      };
-
       document.getElementById('detailModal').classList.remove('hidden');
       lucide.createIcons();
+    }
+
+    function closeDetailModal() {
+      document.getElementById('detailModal').classList.add('hidden');
+      currentActiveDetailId = null;
+    }
+
+    function handleModalEdit() {
+      if (!currentActiveDetailId) return;
+      const id = currentActiveDetailId;
+      closeDetailModal();
+      openEditModal(id);
+    }
+
+    function handleModalDelete() {
+      if (!currentActiveDetailId) return;
+      const id = currentActiveDetailId;
+      deleteEntry(id);
+      closeDetailModal();
+    }
+
+    // --- EDIT MODAL HELPERS ---
+    function updateEditVolumeOptions(selectedVolume) {
+      const type = document.getElementById('editType').value;
+      const select = document.getElementById('editVolumeSelect');
+      const presets = volumePresets[type] || volumePresets['Bottle'];
+
+      select.innerHTML = presets.map(val => {
+        if (val === 'Others') return `<option value="Others">Others (Enter mL)</option>`;
+        return `<option value="${val}">${val} mL</option>`;
+      }).join('');
+
+      if (selectedVolume !== undefined) {
+        if (presets.includes(selectedVolume.toString())) {
+          select.value = selectedVolume.toString();
+        } else {
+          select.value = 'Others';
+          document.getElementById('editCustomVolume').value = selectedVolume;
+        }
+      }
+
+      toggleEditCustomVolume();
+    }
+
+    function toggleEditCustomVolume() {
+      const select = document.getElementById('editVolumeSelect');
+      const container = document.getElementById('editCustomVolContainer');
+      const input = document.getElementById('editCustomVolume');
+
+      if (select.value === 'Others') {
+        container.classList.remove('hidden');
+        input.setAttribute('required', 'true');
+      } else {
+        container.classList.add('hidden');
+        input.removeAttribute('required');
+      }
+    }
+
+    function closeEditModal() {
+      document.getElementById('editModal').classList.add('hidden');
     }
 
     // --- EDIT MODAL LOGIC ---
@@ -965,9 +1029,9 @@
       document.getElementById('editMerchant').value = item.merchant === 'N/A' ? '' : item.merchant;
       document.getElementById('editPurchaseDate').value = item.purchaseDate;
       document.getElementById('editPhotoUrl').value = item.photoUrl === DEFAULT_PLACEHOLDER ? '' : item.photoUrl;
-      document.getElementById('editTopNotes').value = item.notes.top;
-      document.getElementById('editHeartNotes').value = item.notes.heart;
-      document.getElementById('editBaseNotes').value = item.notes.base;
+      document.getElementById('editTopNotes').value = item.notes.top === 'N/A' ? '' : item.notes.top;
+      document.getElementById('editHeartNotes').value = item.notes.heart === 'N/A' ? '' : item.notes.heart;
+      document.getElementById('editBaseNotes').value = item.notes.base === 'N/A' ? '' : item.notes.base;
 
       updateEditVolumeOptions(item.volume);
       document.getElementById('editModal').classList.remove('hidden');
