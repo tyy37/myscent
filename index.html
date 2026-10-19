@@ -328,7 +328,11 @@
       <div class="flex justify-between items-end">
         <div>
           <h2 class="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">My Collection</h2>
-          <p class="text-xs text-stone-500 dark:text-stone-400" id="collectionCountText">0 Fragrances stored</p>
+          <div class="flex flex-col gap-0.5 mt-0.5">
+            <p class="text-xs text-stone-500 dark:text-stone-400" id="collectionTotalPurchaseText">0 Total Purchase</p>
+            <p class="text-xs text-stone-500 dark:text-stone-400" id="collectionActivePerfumesText">0 Available Perfumes</p>
+            <p class="text-xs text-stone-500 dark:text-stone-400" id="collectionStoredPerfumesText">0 Perfumes Stored</p>
+          </div>
         </div>
       </div>
 
@@ -635,7 +639,7 @@
   <!-- BOTTOM NAVIGATION BAR (iOS Style - 5 Tabs with Center Add New) -->
   <nav class="fixed bottom-0 left-0 right-0 z-40 glass-nav border-t border-brand-200/50 dark:border-stone-800 px-2 py-2">
     <div class="max-w-md mx-auto grid grid-cols-5 gap-1 items-center">
-      <button onclick="switchTab('collection')" id="nav-collection" class="flex flex-col items-center py-1 rounded-xl text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-colors">
+      <button onclick="switchTab('collection')" id="nav-collection" class="flex flex-col items-center py-1 rounded-xl text-brand-600 dark:text-brand-400 font-semibold transition-colors">
         <i data-lucide="grid" class="w-5 h-5"></i>
         <span class="text-[10px] font-medium mt-1">Collection</span>
       </button>
@@ -645,12 +649,12 @@
         <span class="text-[10px] font-medium mt-1">Smelling List</span>
       </button>
 
-      <!-- Center Add New Button with Larger Circle Icon -->
+      <!-- Center Add New Button with Larger Circle Icon (Always Displayed) -->
       <div class="flex flex-col items-center justify-center -mt-4">
         <button onclick="switchTab('purchase')" id="nav-purchase" class="w-13 h-13 rounded-full bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/30 flex items-center justify-center transition-all active:scale-95" title="Add New">
           <i data-lucide="plus" class="w-7 h-7"></i>
         </button>
-        <span class="text-[10px] font-semibold text-brand-600 dark:text-brand-400 mt-0.5">Add New</span>
+        <span id="nav-purchase-label" class="text-[10px] font-semibold text-brand-600 dark:text-brand-400 mt-0.5">Add New</span>
       </div>
 
       <button onclick="switchTab('wishlist')" id="nav-wishlist" class="flex flex-col items-center py-1 rounded-xl text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-colors">
@@ -718,6 +722,17 @@
           btn.className = "flex flex-col items-center py-1 rounded-xl text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-colors";
         }
       });
+
+      // Highlight or dim the Add New button depending on whether 'purchase' tab is active
+      const purchaseBtn = document.getElementById('nav-purchase');
+      const purchaseLabel = document.getElementById('nav-purchase-label');
+      if (tabKey === 'purchase') {
+        purchaseBtn.className = "w-13 h-13 rounded-full bg-brand-600 text-white ring-4 ring-brand-500/30 shadow-lg flex items-center justify-center transition-all active:scale-95";
+        purchaseLabel.className = "text-[10px] font-bold text-brand-600 dark:text-brand-400 mt-0.5";
+      } else {
+        purchaseBtn.className = "w-13 h-13 rounded-full bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/30 flex items-center justify-center transition-all active:scale-95";
+        purchaseLabel.className = "text-[10px] font-semibold text-brand-600 dark:text-brand-400 mt-0.5";
+      }
 
       if (tabKey === 'collection') {
         renderCollection();
@@ -1009,12 +1024,29 @@
       const statusFilter = document.getElementById('filterStatus').value;
       const sortBy = document.getElementById('sortSelect').value;
 
-      let filtered = perfumeVault.filter(item => {
-        const isCollection = (item.section || 'Collection') === 'Collection';
+      // All collection items for header metrics
+      const collectionItemsAll = perfumeVault.filter(item => (item.section || 'Collection') === 'Collection');
+      const totalPurchases = collectionItemsAll.length;
+      const availablePerfumesCount = collectionItemsAll.filter(item => (item.status || 'Active') === 'Active').length;
+      
+      // Unique perfumes stored (without repeated ones with same brand and name)
+      const uniquePerfumesSet = new Set();
+      collectionItemsAll.forEach(item => {
+        const key = `${item.brand.toLowerCase().trim()}|${item.name.toLowerCase().trim()}`;
+        uniquePerfumesSet.add(key);
+      });
+      const perfumesStoredCount = uniquePerfumesSet.size;
+
+      // Update header counter texts
+      document.getElementById('collectionTotalPurchaseText').innerText = `${totalPurchases} Total Purchase${totalPurchases === 1 ? '' : 's'}`;
+      document.getElementById('collectionActivePerfumesText').innerText = `${availablePerfumesCount} Available Perfume${availablePerfumesCount === 1 ? '' : 's'}`;
+      document.getElementById('collectionStoredPerfumesText').innerText = `${perfumesStoredCount} Perfume${perfumesStoredCount === 1 ? '' : 's'} Stored`;
+
+      let filtered = collectionItemsAll.filter(item => {
         const matchesSearch = item.brand.toLowerCase().includes(search) || item.name.toLowerCase().includes(search);
         const matchesType = filter === 'All' || item.type === filter;
         const matchesStatus = statusFilter === 'All' || (item.status || 'Active') === statusFilter;
-        return isCollection && matchesSearch && matchesType && matchesStatus;
+        return matchesSearch && matchesType && matchesStatus;
       });
 
       filtered.sort((a, b) => {
@@ -1024,8 +1056,6 @@
         if (sortBy === 'price-desc') return (b.pricePerMl || 0) - (a.pricePerMl || 0);
         return 0;
       });
-
-      document.getElementById('collectionCountText').innerText = `${filtered.length} Fragrance${filtered.length === 1 ? '' : 's'} stored`;
 
       if (filtered.length === 0) {
         grid.innerHTML = `
@@ -1497,12 +1527,12 @@
         collectionContainer.innerHTML = `<p class="text-xs text-stone-400 py-1">No items in collection.</p>`;
       } else {
         collectionContainer.innerHTML = collectionItems.map(item => `
-          <label class="flex items-center justify-between py-1.5 cursor-pointer text-xs">
-            <div class="flex items-center gap-2 truncate">
-              <input type="checkbox" value="${item.id}" ${selectedCompareIds.has(item.id) ? 'checked' : ''} onchange="toggleCompareSelection('${item.id}')" class="rounded border-stone-300 text-brand-600 focus:ring-brand-500">
-              <span class="font-medium text-stone-800 dark:text-stone-200 truncate">${item.brand} - ${item.name}</span>
+          <label class="flex items-start justify-between py-1.5 cursor-pointer text-xs gap-2">
+            <div class="flex items-start gap-2 flex-1 min-w-0">
+              <input type="checkbox" value="${item.id}" ${selectedCompareIds.has(item.id) ? 'checked' : ''} onchange="toggleCompareSelection('${item.id}')" class="rounded border-stone-300 text-brand-600 focus:ring-brand-500 mt-0.5 flex-shrink-0">
+              <span class="font-medium text-stone-800 dark:text-stone-200 leading-snug break-words">${item.brand} - ${item.name}</span>
             </div>
-            <span class="text-[10px] text-stone-400 font-mono">${item.volume}mL • $${item.pricePerMl}/mL</span>
+            <span class="text-[10px] text-stone-400 font-mono flex-shrink-0 pt-0.5">${item.volume}mL • $${item.pricePerMl}/mL</span>
           </label>
         `).join('');
       }
@@ -1511,12 +1541,12 @@
         smellingContainer.innerHTML = `<p class="text-xs text-stone-400 py-1">No items in smelling list.</p>`;
       } else {
         smellingContainer.innerHTML = smellingItems.map(item => `
-          <label class="flex items-center justify-between py-1.5 cursor-pointer text-xs">
-            <div class="flex items-center gap-2 truncate">
-              <input type="checkbox" value="${item.id}" ${selectedCompareIds.has(item.id) ? 'checked' : ''} onchange="toggleCompareSelection('${item.id}')" class="rounded border-stone-300 text-brand-600 focus:ring-brand-500">
-              <span class="font-medium text-stone-800 dark:text-stone-200 truncate">${item.brand} - ${item.name}</span>
+          <label class="flex items-start justify-between py-1.5 cursor-pointer text-xs gap-2">
+            <div class="flex items-start gap-2 flex-1 min-w-0">
+              <input type="checkbox" value="${item.id}" ${selectedCompareIds.has(item.id) ? 'checked' : ''} onchange="toggleCompareSelection('${item.id}')" class="rounded border-stone-300 text-brand-600 focus:ring-brand-500 mt-0.5 flex-shrink-0">
+              <span class="font-medium text-stone-800 dark:text-stone-200 leading-snug break-words">${item.brand} - ${item.name}</span>
             </div>
-            <span class="text-[10px] text-stone-400 font-mono">${item.volume}mL • $${item.pricePerMl}/mL</span>
+            <span class="text-[10px] text-stone-400 font-mono flex-shrink-0 pt-0.5">${item.volume}mL • $${item.pricePerMl}/mL</span>
           </label>
         `).join('');
       }
@@ -1525,12 +1555,12 @@
         wishlistContainer.innerHTML = `<p class="text-xs text-stone-400 py-1">No items in wish list.</p>`;
       } else {
         wishlistContainer.innerHTML = wishlistItems.map(item => `
-          <label class="flex items-center justify-between py-1.5 cursor-pointer text-xs">
-            <div class="flex items-center gap-2 truncate">
-              <input type="checkbox" value="${item.id}" ${selectedCompareIds.has(item.id) ? 'checked' : ''} onchange="toggleCompareSelection('${item.id}')" class="rounded border-stone-300 text-brand-600 focus:ring-brand-500">
-              <span class="font-medium text-stone-800 dark:text-stone-200 truncate">${item.brand} - ${item.name}</span>
+          <label class="flex items-start justify-between py-1.5 cursor-pointer text-xs gap-2">
+            <div class="flex items-start gap-2 flex-1 min-w-0">
+              <input type="checkbox" value="${item.id}" ${selectedCompareIds.has(item.id) ? 'checked' : ''} onchange="toggleCompareSelection('${item.id}')" class="rounded border-stone-300 text-brand-600 focus:ring-brand-500 mt-0.5 flex-shrink-0">
+              <span class="font-medium text-stone-800 dark:text-stone-200 leading-snug break-words">${item.brand} - ${item.name}</span>
             </div>
-            <span class="text-[10px] text-stone-400 font-mono">${item.volume}mL • $${item.pricePerMl}/mL</span>
+            <span class="text-[10px] text-stone-400 font-mono flex-shrink-0 pt-0.5">${item.volume}mL • $${item.pricePerMl}/mL</span>
           </label>
         `).join('');
       }
@@ -1637,7 +1667,7 @@
                 <div class="w-64 bg-white dark:bg-stone-900 rounded-2xl p-4 border ${isBestValue ? 'border-brand-500 ring-2 ring-brand-500/20' : 'border-stone-200 dark:border-stone-800'} space-y-4 relative flex-shrink-0 shadow-sm">
                   ${isBestValue ? `<span class="absolute -top-2.5 right-3 bg-brand-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shadow">Best Value $/mL</span>` : ''}
 
-                  <div class="flex gap-3 items-center">
+                  <div class="flex gap-3 items-start">
                     <div class="w-16 h-20 rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-800 flex-shrink-0 relative">
                       <img src="${item.photoUrl}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.src='${DEFAULT_PLACEHOLDER}'">
                       <div class="absolute bottom-1 left-1 ${badgeBg} w-6 h-6 rounded-lg flex items-center justify-center shadow">
@@ -1646,7 +1676,7 @@
                     </div>
                     <div class="min-w-0 flex-1">
                       <p class="text-[10px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider">${item.brand}</p>
-                      <h4 class="font-serif font-bold text-sm text-stone-900 dark:text-stone-100 truncate">${item.name}</h4>
+                      <h4 class="font-serif font-bold text-sm text-stone-900 dark:text-stone-100 leading-snug break-words">${item.name}</h4>
                       <p class="text-xs text-stone-500 mt-0.5">${item.volume} mL</p>
                     </div>
                   </div>
