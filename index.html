@@ -373,9 +373,9 @@
     </section>
 
     <!-- ========================================== -->
-    <!-- SECTION 3: SMELLING LIST (TAB 3) -->
+    <!-- SECTION 3: SMELLING LIST (TAB 3) - Grouped by Location -->
     <!-- ========================================== -->
-    <section id="tab-smelling" class="tab-content space-y-3">
+    <section id="tab-smelling" class="tab-content space-y-4">
       <div class="flex justify-between items-end">
         <div>
           <h2 class="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">Smelling List</h2>
@@ -399,9 +399,9 @@
           </select>
 
           <select id="smellingFilterStatus" onchange="renderSmellingList()" class="px-2 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
-            <option value="All">All Smelling</option>
-            <option value="Yes">Smelling: Yes</option>
-            <option value="No">Smelling: No</option>
+            <option value="All">All Status</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
           </select>
 
           <select id="smellingSortSelect" onchange="renderSmellingList()" class="px-2 py-2 rounded-xl text-xs font-medium border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
@@ -413,16 +413,16 @@
         </div>
       </div>
 
-      <!-- Smelling List Cards Container (Flat List) -->
-      <div id="smellingGrid" class="space-y-3">
-        <!-- Rendered dynamically -->
+      <!-- Smelling List Categorized Container -->
+      <div id="smellingGrid" class="space-y-5">
+        <!-- Rendered dynamically grouped by Smelling Location -->
       </div>
     </section>
 
     <!-- ========================================== -->
-    <!-- SECTION 4: WISH LIST (TAB 4) -->
+    <!-- SECTION 4: WISH LIST (TAB 4) - Flat List -->
     <!-- ========================================== -->
-    <section id="tab-wishlist" class="tab-content space-y-4">
+    <section id="tab-wishlist" class="tab-content space-y-3">
       <div class="flex justify-between items-end">
         <div>
           <h2 class="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">Wish List</h2>
@@ -430,15 +430,15 @@
         </div>
       </div>
 
-      <!-- Controls: Search & Filter -->
+      <!-- Controls: Search -->
       <div class="relative w-full">
         <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-stone-400"></i>
         <input type="text" id="wishlistSearchInput" oninput="renderWishlist()" placeholder="Search wishlist brand or name..." class="w-full pl-9 pr-3 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
       </div>
 
-      <!-- Wishlist Categorized Container (Grouped by Location) -->
-      <div id="wishlistGrid" class="space-y-5">
-        <!-- Rendered dynamically grouped by Smelling Location -->
+      <!-- Wishlist Flat Cards Container -->
+      <div id="wishlistGrid" class="space-y-3">
+        <!-- Rendered dynamically -->
       </div>
     </section>
 
@@ -868,7 +868,7 @@
       }
 
       const pricePerMl = parseFloat((price / volume).toFixed(2));
-      const defaultStatus = destination === 'Wishlist' ? 'Yes' : 'Yes';
+      const defaultStatus = 'Yes';
 
       const newEntry = {
         id: Date.now().toString(),
@@ -989,9 +989,9 @@
       const item = perfumeVault.find(p => p.id === id);
       if (item) {
         const isWishlistSec = (item.section || '') === 'Wishlist';
-        if (isWishlistSec) {
+        if (isWishlistSec || item.section === 'SmellingList') {
           item.status = item.status === 'Yes' ? 'No' : 'Yes';
-          showToast(`Smelling updated to ${item.status}`);
+          showToast(`Status updated to ${item.status}`);
         } else {
           item.status = item.status === 'Active' ? 'Inactive' : 'Active';
           showToast(`Status updated to ${item.status}`);
@@ -1095,7 +1095,7 @@
       lucide.createIcons();
     }
 
-    // --- RENDER SMELLING LIST (Tab 3) - Flat List ---
+    // --- RENDER SMELLING LIST (Tab 3) - Grouped by Location ---
     function renderSmellingList() {
       const grid = document.getElementById('smellingGrid');
       const search = document.getElementById('smellingSearchInput').value.toLowerCase();
@@ -1103,7 +1103,7 @@
       const statusFilter = document.getElementById('smellingFilterStatus').value;
       const sortBy = document.getElementById('smellingSortSelect').value;
 
-      let filtered = perfumeVault.filter(item => {
+      let smellingItems = perfumeVault.filter(item => {
         const isSmelling = (item.section || '') === 'SmellingList';
         const matchesSearch = item.brand.toLowerCase().includes(search) || item.name.toLowerCase().includes(search);
         const matchesType = filter === 'All' || item.type === filter;
@@ -1111,7 +1111,7 @@
         return isSmelling && matchesSearch && matchesType && matchesStatus;
       });
 
-      filtered.sort((a, b) => {
+      smellingItems.sort((a, b) => {
         if (sortBy === 'date-desc') return new Date(b.purchaseDate || 0) - new Date(a.purchaseDate || 0);
         if (sortBy === 'date-asc') return new Date(a.purchaseDate || 0) - new Date(b.purchaseDate || 0);
         if (sortBy === 'price-asc') return (a.pricePerMl || 0) - (b.pricePerMl || 0);
@@ -1119,9 +1119,9 @@
         return 0;
       });
 
-      document.getElementById('smellingCountText').innerText = `${filtered.length} Fragrance${filtered.length === 1 ? '' : 's'} stored`;
+      document.getElementById('smellingCountText').innerText = `${smellingItems.length} Fragrance${smellingItems.length === 1 ? '' : 's'} stored`;
 
-      if (filtered.length === 0) {
+      if (smellingItems.length === 0) {
         grid.innerHTML = `
           <div class="text-center py-12 bg-white dark:bg-stone-900 rounded-2xl border border-dashed border-stone-200 dark:border-stone-800 p-6">
             <i data-lucide="compass" class="w-8 h-8 mx-auto text-stone-300 dark:text-stone-600 mb-2"></i>
@@ -1133,68 +1133,9 @@
         return;
       }
 
-      grid.innerHTML = filtered.map(item => {
-        const isSmellingYes = (item.status || 'Yes') === 'Yes';
-        const isWish = item.isWishlisted;
-        return `
-          <div onclick="openDetailModal('${item.id}')" class="bg-white dark:bg-stone-900 rounded-2xl p-3.5 shadow-sm border border-stone-100 dark:border-stone-800 flex items-center gap-3.5 cursor-pointer hover:border-brand-300 dark:hover:border-stone-700 transition-all active:scale-[0.99] ${!isSmellingYes ? 'opacity-60' : ''}">
-            <div class="w-16 h-16 rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-800 flex-shrink-0 relative">
-              <img src="${item.photoUrl}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.src='${DEFAULT_PLACEHOLDER}'">
-            </div>
-            <div class="flex-1 min-w-0">
-              <p class="text-[10px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider truncate">${item.brand}</p>
-              <h3 class="font-serif font-bold text-base text-stone-900 dark:text-stone-100 truncate">${item.name}</h3>
-              <p class="text-xs font-medium text-stone-500 dark:text-stone-400 mt-0.5">${item.volume} mL • ${item.type} ${item.smellingLocation ? '• ' + item.smellingLocation : ''}</p>
-            </div>
-            
-            <div class="flex items-center gap-2 flex-shrink-0">
-              <button onclick="toggleStatus('${item.id}', event)" class="px-2.5 py-1 rounded-full text-[10px] font-semibold transition-all flex items-center gap-1 ${
-                isSmellingYes ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-300' : 'bg-stone-200 dark:bg-stone-800 text-stone-600'
-              }">
-                <span class="w-1.5 h-1.5 rounded-full ${isSmellingYes ? 'bg-amber-500' : 'bg-stone-400'}"></span>
-                <span>Smelling: ${item.status || 'Yes'}</span>
-              </button>
-
-              <button onclick="toggleHeartWishlist('${item.id}', event)" title="Toggle Wish List" class="w-9 h-9 rounded-xl flex items-center justify-center bg-brand-50 hover:bg-brand-100 dark:bg-stone-800 dark:hover:bg-stone-700 text-brand-500 transition-colors border border-brand-200 dark:border-stone-700">
-                <i data-lucide="heart" class="w-4 h-4 ${isWish ? 'fill-brand-500 text-brand-500' : 'text-stone-400'}"></i>
-              </button>
-            </div>
-          </div>
-        `;
-      }).join('');
-
-      lucide.createIcons();
-    }
-
-    // --- RENDER WISH LIST (Tab 4) - Grouped by Smelling Location ---
-    function renderWishlist() {
-      const grid = document.getElementById('wishlistGrid');
-      const search = document.getElementById('wishlistSearchInput').value.toLowerCase();
-
-      let wishlistItems = perfumeVault.filter(item => {
-        const isWishSec = (item.section || '') === 'Wishlist';
-        const isHearted = item.isWishlisted === true;
-        const matchesSearch = item.brand.toLowerCase().includes(search) || item.name.toLowerCase().includes(search);
-        return (isWishSec || isHearted) && matchesSearch;
-      });
-
-      document.getElementById('wishlistCountText').innerText = `${wishlistItems.length} Fragrance${wishlistItems.length === 1 ? '' : 's'} stored`;
-
-      if (wishlistItems.length === 0) {
-        grid.innerHTML = `
-          <div class="text-center py-12 bg-white dark:bg-stone-900 rounded-2xl border border-dashed border-stone-200 dark:border-stone-800 p-6">
-            <i data-lucide="heart" class="w-8 h-8 mx-auto text-stone-300 dark:text-stone-600 mb-2"></i>
-            <p class="text-sm font-medium text-stone-600 dark:text-stone-300">No fragrances in wish list</p>
-            <p class="text-xs text-stone-400 mt-1">Tap the heart icon on items in your Smelling List or save directly here.</p>
-          </div>
-        `;
-        lucide.createIcons();
-        return;
-      }
-
       // Group items by Smelling Location (splitting by ';' and trimming)
       const locationMap = {};
-      wishlistItems.forEach(item => {
+      smellingItems.forEach(item => {
         let locs = [];
         if (item.smellingLocation && item.smellingLocation.trim()) {
           locs = item.smellingLocation.split(';').map(l => l.trim()).filter(l => l.length > 0);
@@ -1222,6 +1163,7 @@
             <div class="space-y-2">
               ${items.map(item => {
                 const isSmellingYes = (item.status || 'Yes') === 'Yes';
+                const isWish = item.isWishlisted;
                 return `
                   <div onclick="openDetailModal('${item.id}')" class="bg-white dark:bg-stone-900 rounded-2xl p-3.5 shadow-sm border border-stone-100 dark:border-stone-800 flex items-center gap-3.5 cursor-pointer hover:border-brand-300 dark:hover:border-stone-700 transition-all active:scale-[0.99] ${!isSmellingYes ? 'opacity-60' : ''}">
                     <div class="w-16 h-16 rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-800 flex-shrink-0 relative">
@@ -1232,9 +1174,19 @@
                       <h3 class="font-serif font-bold text-base text-stone-900 dark:text-stone-100 truncate">${item.name}</h3>
                       <p class="text-xs font-medium text-stone-500 dark:text-stone-400 mt-0.5">${item.volume} mL • ${item.type}</p>
                     </div>
-                    <button onclick="toggleHeartWishlist('${item.id}', event)" title="Remove from Wish List" class="w-9 h-9 rounded-xl flex items-center justify-center bg-brand-50 hover:bg-brand-100 dark:bg-stone-800 dark:hover:bg-stone-700 text-brand-500 transition-colors border border-brand-200 dark:border-stone-700 flex-shrink-0">
-                      <i data-lucide="heart" class="w-4 h-4 fill-brand-500 text-brand-500"></i>
-                    </button>
+                    
+                    <div class="flex items-center gap-2 flex-shrink-0">
+                      <button onclick="toggleStatus('${item.id}', event)" class="px-2.5 py-1 rounded-full text-[10px] font-semibold transition-all flex items-center gap-1 ${
+                        isSmellingYes ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-300' : 'bg-stone-200 dark:bg-stone-800 text-stone-600'
+                      }">
+                        <span class="w-1.5 h-1.5 rounded-full ${isSmellingYes ? 'bg-amber-500' : 'bg-stone-400'}"></span>
+                        <span>${item.status || 'Yes'}</span>
+                      </button>
+
+                      <button onclick="toggleHeartWishlist('${item.id}', event)" title="Toggle Wish List" class="w-9 h-9 rounded-xl flex items-center justify-center bg-brand-50 hover:bg-brand-100 dark:bg-stone-800 dark:hover:bg-stone-700 text-brand-500 transition-colors border border-brand-200 dark:border-stone-700">
+                        <i data-lucide="heart" class="w-4 h-4 ${isWish ? 'fill-brand-500 text-brand-500' : 'text-stone-400'}"></i>
+                      </button>
+                    </div>
                   </div>
                 `;
               }).join('')}
@@ -1247,6 +1199,54 @@
       lucide.createIcons();
     }
 
+    // --- RENDER WISH LIST (Tab 4) - Flat List ---
+    function renderWishlist() {
+      const grid = document.getElementById('wishlistGrid');
+      const search = document.getElementById('wishlistSearchInput').value.toLowerCase();
+
+      let wishlistItems = perfumeVault.filter(item => {
+        const isWishSec = (item.section || '') === 'Wishlist';
+        const isHearted = item.isWishlisted === true;
+        const matchesSearch = item.brand.toLowerCase().includes(search) || item.name.toLowerCase().includes(search);
+        return (isWishSec || isHearted) && matchesSearch;
+      });
+
+      document.getElementById('wishlistCountText').innerText = `${wishlistItems.length} Fragrance${wishlistItems.length === 1 ? '' : 's'} stored`;
+
+      if (wishlistItems.length === 0) {
+        grid.innerHTML = `
+          <div class="text-center py-12 bg-white dark:bg-stone-900 rounded-2xl border border-dashed border-stone-200 dark:border-stone-800 p-6">
+            <i data-lucide="heart" class="w-8 h-8 mx-auto text-stone-300 dark:text-stone-600 mb-2"></i>
+            <p class="text-sm font-medium text-stone-600 dark:text-stone-300">No fragrances in wish list</p>
+            <p class="text-xs text-stone-400 mt-1">Tap the heart icon on items in your Smelling List or save directly here.</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      grid.innerHTML = wishlistItems.map(item => {
+        const isSmellingYes = (item.status || 'Yes') === 'Yes';
+        return `
+          <div onclick="openDetailModal('${item.id}')" class="bg-white dark:bg-stone-900 rounded-2xl p-3.5 shadow-sm border border-stone-100 dark:border-stone-800 flex items-center gap-3.5 cursor-pointer hover:border-brand-300 dark:hover:border-stone-700 transition-all active:scale-[0.99] ${!isSmellingYes ? 'opacity-60' : ''}">
+            <div class="w-16 h-16 rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-800 flex-shrink-0 relative">
+              <img src="${item.photoUrl}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.src='${DEFAULT_PLACEHOLDER}'">
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-[10px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider truncate">${item.brand}</p>
+              <h3 class="font-serif font-bold text-base text-stone-900 dark:text-stone-100 truncate">${item.name}</h3>
+              <p class="text-xs font-medium text-stone-500 dark:text-stone-400 mt-0.5">${item.volume} mL • ${item.type} ${item.smellingLocation ? '• ' + item.smellingLocation : ''}</p>
+            </div>
+            <button onclick="toggleHeartWishlist('${item.id}', event)" title="Remove from Wish List" class="w-9 h-9 rounded-xl flex items-center justify-center bg-brand-50 hover:bg-brand-100 dark:bg-stone-800 dark:hover:bg-stone-700 text-brand-500 transition-colors border border-brand-200 dark:border-stone-700 flex-shrink-0">
+              <i data-lucide="heart" class="w-4 h-4 fill-brand-500 text-brand-500"></i>
+            </button>
+          </div>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
     // --- DETAIL MODAL LOGIC ---
     function openDetailModal(id) {
       const item = perfumeVault.find(p => p.id === id);
@@ -1254,7 +1254,7 @@
 
       currentActiveDetailId = id;
       const isCollectionSec = (item.section || 'Collection') === 'Collection';
-      const statusLabel = isCollectionSec ? 'Status' : 'Smelling';
+      const statusLabel = isCollectionSec ? 'Status' : 'Status';
       const statusVal = item.status || 'Yes';
       const isPositive = statusVal === 'Active' || statusVal === 'Yes';
 
@@ -1277,7 +1277,7 @@
               <button onclick="toggleStatus('${item.id}'); openDetailModal('${item.id}');" class="px-2 py-0.5 rounded-full text-[10px] font-semibold transition-colors ${
                 isPositive ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 border border-emerald-300' : 'bg-stone-200 text-stone-600'
               }">
-                ${!isCollectionSec ? 'Smelling: ' + statusVal : statusVal}
+                ${statusVal}
               </button>
             </div>
             <div class="flex justify-between">
@@ -1386,7 +1386,7 @@
       const statusLabel = document.getElementById('editStatusLabel');
 
       if (section === 'SmellingList' || section === 'Wishlist') {
-        statusLabel.innerText = 'Smelling';
+        statusLabel.innerText = 'Status';
         statusSelect.innerHTML = `
           <option value="Yes">Yes</option>
           <option value="No">No</option>
