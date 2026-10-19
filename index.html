@@ -912,6 +912,39 @@
       }
     }
 
+    // Purchase from Wish List: prefill Add New form with brand, name, notes, and photo
+    function purchaseFromWishlist(id, event) {
+      if (event) event.stopPropagation();
+      const item = perfumeVault.find(p => p.id === id);
+      if (!item) return;
+
+      // Prefill fields in Add New form
+      document.getElementById('brand').value = item.brand;
+      document.getElementById('name').value = item.name;
+      document.getElementById('topNotes').value = item.notes.top;
+      document.getElementById('heartNotes').value = item.notes.heart;
+      document.getElementById('baseNotes').value = item.notes.base;
+      document.getElementById('smellingLocation').value = item.smellingLocation || '';
+      
+      // Prefill photo
+      if (item.photoUrl && item.photoUrl !== DEFAULT_PLACEHOLDER) {
+        currentImageData = item.photoUrl;
+        showPhotoPreview(item.photoUrl);
+        document.getElementById('imageUrl').value = item.photoUrl.startsWith('data:') ? '' : item.photoUrl;
+      } else {
+        clearPhotoPreview();
+      }
+
+      // Reset pricing fields so user manually enters price, store, and date
+      document.getElementById('price').value = '';
+      document.getElementById('merchant').value = '';
+      document.getElementById('purchaseDate').valueAsDate = new Date();
+
+      // Switch to Add New tab
+      switchTab('purchase');
+      showToast("Prefilled from Wish List. Enter price & store!");
+    }
+
     function saveVaultToStorage() {
       try {
         localStorage.setItem('scent_vault_data', JSON.stringify(perfumeVault));
@@ -1201,7 +1234,7 @@
       lucide.createIcons();
     }
 
-    // --- RENDER WISH LIST (Tab 4) - Flat List ---
+    // --- RENDER WISH LIST (Tab 4) - Flat List with Purchase Button ---
     function renderWishlist() {
       const grid = document.getElementById('wishlistGrid');
       const search = document.getElementById('wishlistSearchInput').value.toLowerCase();
@@ -1238,9 +1271,19 @@
               <h3 class="font-serif font-bold text-base text-stone-900 dark:text-stone-100 truncate">${item.name}</h3>
               <p class="text-xs font-medium text-stone-500 dark:text-stone-400 mt-0.5">${item.volume} mL • ${item.type} ${item.smellingLocation ? '• ' + item.smellingLocation : ''}</p>
             </div>
-            <button onclick="toggleHeartWishlist('${item.id}', event)" title="Move back to Smelling List" class="w-9 h-9 rounded-xl flex items-center justify-center bg-brand-50 hover:bg-brand-100 dark:bg-stone-800 dark:hover:bg-stone-700 text-brand-500 transition-colors border border-brand-200 dark:border-stone-700 flex-shrink-0">
-              <i data-lucide="heart" class="w-4 h-4 fill-brand-500 text-brand-500"></i>
-            </button>
+            
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+              <!-- Purchase Button -->
+              <button onclick="purchaseFromWishlist('${item.id}', event)" title="Purchase Perfume (Re-entry)" class="px-2.5 py-1.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-[10px] font-semibold transition-colors flex items-center gap-1 shadow-sm">
+                <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>
+                <span>Purchase</span>
+              </button>
+
+              <!-- Remove from Wishlist (Un-heart) -->
+              <button onclick="toggleHeartWishlist('${item.id}', event)" title="Move back to Smelling List" class="w-9 h-9 rounded-xl flex items-center justify-center bg-brand-50 hover:bg-brand-100 dark:bg-stone-800 dark:hover:bg-stone-700 text-brand-500 transition-colors border border-brand-200 dark:border-stone-700">
+                <i data-lucide="heart" class="w-4 h-4 fill-brand-500 text-brand-500"></i>
+              </button>
+            </div>
           </div>
         `;
       }).join('');
