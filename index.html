@@ -99,7 +99,7 @@
     }
   </style>
 </head>
-<body class="bg-brand-50 text-stone-800 dark:bg-stone-950 dark:text-stone-100 min-h-screen pb-24 antialiased selection:bg-brand-300">
+<body class="bg-brand-50 text-stone-800 dark:bg-stone-950 dark:text-stone-100 min-h-screen pb-28 antialiased selection:bg-brand-300">
 
   <!-- APP HEADER -->
   <header class="sticky top-0 z-30 glass-nav border-b border-brand-200/50 dark:border-stone-800 px-4 py-3">
@@ -361,25 +361,46 @@
     <!-- ========================================== -->
     <!-- SECTION 3: WISH LIST (TAB 3) -->
     <!-- ========================================== -->
-    <section id="tab-wishlist" class="tab-content space-y-4">
-      <div class="space-y-1">
-        <h2 class="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">Wish List Vault</h2>
-        <p class="text-xs text-stone-500 dark:text-stone-400">Select wishlist & collection items to compare side-by-side.</p>
-      </div>
-
-      <!-- Wishlist Picker Checklist -->
-      <div class="bg-white dark:bg-stone-900 p-3 rounded-2xl border border-brand-100 dark:border-stone-800 space-y-2">
-        <div class="flex justify-between items-center px-1">
-          <span class="text-xs font-semibold text-stone-700 dark:text-stone-300">Wish List Items</span>
-          <button onclick="selectAllWishlistForCompare()" class="text-[11px] text-brand-600 dark:text-brand-400 font-medium hover:underline">Select All Wishlist</button>
-        </div>
-        <div id="wishlistChecklist" class="max-h-40 overflow-y-auto space-y-1.5 pr-1 divide-y divide-stone-100 dark:divide-stone-800">
-          <!-- Rendered dynamically -->
+    <section id="tab-wishlist" class="tab-content space-y-3">
+      <div class="flex justify-between items-end">
+        <div>
+          <h2 class="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">Wish List</h2>
+          <p class="text-xs text-stone-500 dark:text-stone-400" id="wishlistCountText">0 Fragrances stored</p>
         </div>
       </div>
 
-      <!-- Wishlist Comparison Output View -->
-      <div id="wishlistComparisonOutput">
+      <!-- Controls: Search, Filter & Sorting for Wishlist -->
+      <div class="space-y-2">
+        <div class="relative w-full">
+          <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-stone-400"></i>
+          <input type="text" id="wishlistSearchInput" oninput="renderWishlist()" placeholder="Search wishlist brand or name..." class="w-full pl-9 pr-3 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
+        </div>
+
+        <div class="grid grid-cols-3 gap-2">
+          <select id="wishlistFilterType" onchange="renderWishlist()" class="px-2 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
+            <option value="All">All Types</option>
+            <option value="Bottle">Bottle</option>
+            <option value="Decant">Decant</option>
+            <option value="Sample">Sample</option>
+          </select>
+
+          <select id="wishlistFilterStatus" onchange="renderWishlist()" class="px-2 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
+            <option value="All">All Status</option>
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+
+          <select id="wishlistSortSelect" onchange="renderWishlist()" class="px-2 py-2 rounded-xl text-xs font-medium border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
+            <option value="date-desc">Newest Date</option>
+            <option value="date-asc">Oldest Date</option>
+            <option value="price-asc">$/mL: Low to High</option>
+            <option value="price-desc">$/mL: High to Low</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Wishlist Cards Container -->
+      <div id="wishlistGrid" class="space-y-3">
         <!-- Rendered dynamically -->
       </div>
     </section>
@@ -389,17 +410,28 @@
     <!-- ========================================== -->
     <section id="tab-compare" class="tab-content space-y-4">
       <div class="space-y-1">
-        <h2 class="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">Compare Collection</h2>
-        <p class="text-xs text-stone-500 dark:text-stone-400">Select 2 or more perfumes to analyze specs & value ($/mL).</p>
+        <h2 class="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">Compare Vault & Wish List</h2>
+        <p class="text-xs text-stone-500 dark:text-stone-400">Select perfumes from your collection and wish list to compare side-by-side.</p>
       </div>
 
-      <!-- Picker Checklist -->
+      <!-- Picker Checklist: Collection -->
       <div class="bg-white dark:bg-stone-900 p-3 rounded-2xl border border-brand-100 dark:border-stone-800 space-y-2">
         <div class="flex justify-between items-center px-1">
-          <span class="text-xs font-semibold text-stone-700 dark:text-stone-300">Select Collection Items</span>
-          <button onclick="selectAllForCompare()" class="text-[11px] text-brand-600 dark:text-brand-400 font-medium hover:underline">Select All</button>
+          <span class="text-xs font-semibold text-stone-700 dark:text-stone-300">My Collection Items</span>
+          <button onclick="selectAllCollectionForCompare()" class="text-[11px] text-brand-600 dark:text-brand-400 font-medium hover:underline">Select All Collection</button>
         </div>
-        <div id="compareChecklist" class="max-h-40 overflow-y-auto space-y-1.5 pr-1 divide-y divide-stone-100 dark:divide-stone-800">
+        <div id="compareCollectionChecklist" class="max-h-36 overflow-y-auto space-y-1.5 pr-1 divide-y divide-stone-100 dark:divide-stone-800">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- Picker Checklist: Wish List -->
+      <div class="bg-white dark:bg-stone-900 p-3 rounded-2xl border border-brand-100 dark:border-stone-800 space-y-2">
+        <div class="flex justify-between items-center px-1">
+          <span class="text-xs font-semibold text-stone-700 dark:text-stone-300">Wish List Items</span>
+          <button onclick="selectAllWishlistForCompare()" class="text-[11px] text-brand-600 dark:text-brand-400 font-medium hover:underline">Select All Wish List</button>
+        </div>
+        <div id="compareWishlistChecklist" class="max-h-36 overflow-y-auto space-y-1.5 pr-1 divide-y divide-stone-100 dark:divide-stone-800">
           <!-- Rendered dynamically -->
         </div>
       </div>
@@ -583,7 +615,6 @@
     let perfumeVault = [];
     let currentImageData = '';
     let selectedCompareIds = new Set();
-    let selectedWishlistCompareIds = new Set();
     let currentActiveDetailId = null;
 
     // Default Preset Volumes by Type
@@ -628,9 +659,9 @@
       if (tabKey === 'collection') {
         renderCollection();
       } else if (tabKey === 'wishlist') {
-        renderWishlistSection();
+        renderWishlist();
       } else if (tabKey === 'compare') {
-        renderCompareChecklist();
+        renderCompareChecklists();
         renderComparisonOutput();
       }
     }
@@ -848,6 +879,7 @@
             perfumeVault = imported;
             saveVaultToStorage();
             renderCollection();
+            renderWishlist();
             showToast("Backup restored successfully!");
           } else {
             alert("Invalid JSON format.");
@@ -866,7 +898,7 @@
         item.status = item.status === 'Active' ? 'Inactive' : 'Active';
         saveVaultToStorage();
         renderCollection();
-        renderWishlistSection();
+        renderWishlist();
         showToast(`Status updated to ${item.status}`);
       }
     }
@@ -935,121 +967,67 @@
       lucide.createIcons();
     }
 
-    // --- RENDER WISH LIST SECTION (Tab 3) ---
-    function renderWishlistSection() {
-      const checklist = document.getElementById('wishlistChecklist');
-      const wishlistItems = perfumeVault.filter(item => (item.section || 'Collection') === 'Wishlist');
+    // --- RENDER WISH LIST (Tab 3) ---
+    function renderWishlist() {
+      const grid = document.getElementById('wishlistGrid');
+      const search = document.getElementById('wishlistSearchInput').value.toLowerCase();
+      const filter = document.getElementById('wishlistFilterType').value;
+      const statusFilter = document.getElementById('wishlistFilterStatus').value;
+      const sortBy = document.getElementById('wishlistSortSelect').value;
 
-      if (wishlistItems.length === 0) {
-        checklist.innerHTML = `<p class="text-xs text-stone-400 py-2">No items in your wish list yet.</p>`;
-        document.getElementById('wishlistComparisonOutput').innerHTML = `
-          <div class="text-center py-10 bg-white dark:bg-stone-900 rounded-2xl border border-stone-100 dark:border-stone-800 p-6">
-            <i data-lucide="heart" class="w-8 h-8 mx-auto text-stone-300 mb-2"></i>
-            <p class="text-xs text-stone-500">Save items to your Wish List to compare them here.</p>
+      let filtered = perfumeVault.filter(item => {
+        const isWishlist = (item.section || 'Collection') === 'Wishlist';
+        const matchesSearch = item.brand.toLowerCase().includes(search) || item.name.toLowerCase().includes(search);
+        const matchesType = filter === 'All' || item.type === filter;
+        const matchesStatus = statusFilter === 'All' || (item.status || 'Active') === statusFilter;
+        return isWishlist && matchesSearch && matchesType && matchesStatus;
+      });
+
+      filtered.sort((a, b) => {
+        if (sortBy === 'date-desc') return new Date(b.purchaseDate || 0) - new Date(a.purchaseDate || 0);
+        if (sortBy === 'date-asc') return new Date(a.purchaseDate || 0) - new Date(b.purchaseDate || 0);
+        if (sortBy === 'price-asc') return (a.pricePerMl || 0) - (b.pricePerMl || 0);
+        if (sortBy === 'price-desc') return (b.pricePerMl || 0) - (a.pricePerMl || 0);
+        return 0;
+      });
+
+      document.getElementById('wishlistCountText').innerText = `${filtered.length} Fragrance${filtered.length === 1 ? '' : 's'} stored`;
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="text-center py-12 bg-white dark:bg-stone-900 rounded-2xl border border-dashed border-stone-200 dark:border-stone-800 p-6">
+            <i data-lucide="heart" class="w-8 h-8 mx-auto text-stone-300 dark:text-stone-600 mb-2"></i>
+            <p class="text-sm font-medium text-stone-600 dark:text-stone-300">No fragrances in wish list</p>
+            <p class="text-xs text-stone-400 mt-1">Tap 'Add New' and select 'Save to Wish List'.</p>
           </div>
         `;
         lucide.createIcons();
         return;
       }
 
-      checklist.innerHTML = wishlistItems.map(item => `
-        <label class="flex items-center justify-between py-1.5 cursor-pointer text-xs">
-          <div class="flex items-center gap-2 truncate" onclick="openDetailModal('${item.id}')">
-            <input type="checkbox" value="${item.id}" ${selectedWishlistCompareIds.has(item.id) ? 'checked' : ''} onchange="toggleWishlistCompareSelection('${item.id}', event)" class="rounded border-stone-300 text-brand-600 focus:ring-brand-500">
-            <span class="font-medium text-stone-800 dark:text-stone-200 truncate">${item.brand} - ${item.name}</span>
-          </div>
-          <span class="text-[10px] text-stone-400 font-mono">$${item.pricePerMl}/mL (${item.volume}mL)</span>
-        </label>
-      `).join('');
-
-      renderWishlistComparisonOutput();
-    }
-
-    function toggleWishlistCompareSelection(id, event) {
-      if (event) event.stopPropagation();
-      if (selectedWishlistCompareIds.has(id)) {
-        selectedWishlistCompareIds.delete(id);
-      } else {
-        selectedWishlistCompareIds.add(id);
-      }
-      renderWishlistComparisonOutput();
-    }
-
-    function selectAllWishlistForCompare() {
-      const wishlistItems = perfumeVault.filter(item => (item.section || 'Collection') === 'Wishlist');
-      if (selectedWishlistCompareIds.size === wishlistItems.length) {
-        selectedWishlistCompareIds.clear();
-      } else {
-        wishlistItems.forEach(item => selectedWishlistCompareIds.add(item.id));
-      }
-      renderWishlistSection();
-    }
-
-    function renderWishlistComparisonOutput() {
-      const output = document.getElementById('wishlistComparisonOutput');
-      const selectedItems = perfumeVault.filter(item => selectedWishlistCompareIds.has(item.id));
-
-      if (selectedItems.length === 0) {
-        output.innerHTML = `
-          <div class="text-center py-10 bg-white dark:bg-stone-900 rounded-2xl border border-stone-100 dark:border-stone-800 p-6">
-            <i data-lucide="sliders-horizontal" class="w-8 h-8 mx-auto text-stone-300 mb-2"></i>
-            <p class="text-xs text-stone-500">Check boxes above to analyze and compare wishlist items side-by-side.</p>
+      grid.innerHTML = filtered.map(item => {
+        const isActive = (item.status || 'Active') === 'Active';
+        return `
+          <div onclick="openDetailModal('${item.id}')" class="bg-white dark:bg-stone-900 rounded-2xl p-3.5 shadow-sm border border-stone-100 dark:border-stone-800 flex items-center gap-3.5 cursor-pointer hover:border-brand-300 dark:hover:border-stone-700 transition-all active:scale-[0.99] ${!isActive ? 'opacity-60' : ''}">
+            <div class="w-16 h-16 rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-800 flex-shrink-0 relative">
+              <img src="${item.photoUrl}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.src='${DEFAULT_PLACEHOLDER}'">
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-[10px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider truncate">${item.brand}</p>
+              <h3 class="font-serif font-bold text-base text-stone-900 dark:text-stone-100 truncate">${item.name}</h3>
+              <p class="text-xs font-medium text-stone-500 dark:text-stone-400 mt-0.5">${item.volume} mL • ${item.type}</p>
+            </div>
+            <button onclick="toggleStatus('${item.id}', event)" class="flex-shrink-0 px-2.5 py-1 rounded-full text-[10px] font-semibold transition-all flex items-center gap-1 ${
+              isActive ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-300' : 'bg-stone-200 dark:bg-stone-800 text-stone-600'
+            }">
+              <span class="w-1.5 h-1.5 rounded-full ${isActive ? 'bg-emerald-500' : 'bg-stone-400'}"></span>
+              <span>${isActive ? 'Active' : 'Inactive'}</span>
+            </button>
+            <i data-lucide="chevron-right" class="w-4 h-4 text-stone-300 dark:text-stone-600 flex-shrink-0"></i>
           </div>
         `;
-        lucide.createIcons();
-        return;
-      }
+      }).join('');
 
-      const minPricePerMl = Math.min(...selectedItems.map(i => i.pricePerMl));
-
-      output.innerHTML = `
-        <div class="overflow-x-auto no-scrollbar pb-2">
-          <div class="flex gap-4 min-w-max">
-            ${selectedItems.map(item => {
-              const isBestValue = item.pricePerMl === minPricePerMl && selectedItems.length > 1;
-              return `
-                <div class="w-64 bg-white dark:bg-stone-900 rounded-2xl p-4 border ${isBestValue ? 'border-brand-500 ring-2 ring-brand-500/20' : 'border-stone-200 dark:border-stone-800'} space-y-4 relative flex-shrink-0 shadow-sm">
-                  ${isBestValue ? `<span class="absolute -top-2.5 right-3 bg-brand-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shadow">Best Value $/mL</span>` : ''}
-
-                  <div class="flex gap-3 items-center">
-                    <div class="w-16 h-20 rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-800 flex-shrink-0">
-                      <img src="${item.photoUrl}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.src='${DEFAULT_PLACEHOLDER}'">
-                    </div>
-                    <div class="min-w-0 flex-1">
-                      <p class="text-[10px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider">${item.brand}</p>
-                      <h4 class="font-serif font-bold text-sm text-stone-900 dark:text-stone-100 truncate">${item.name}</h4>
-                      <p class="text-xs text-stone-500 mt-0.5">${item.type} •${item.volume} mL</p>
-                    </div>
-                  </div>
-
-                  <div class="bg-brand-50 dark:bg-brand-950/40 border border-brand-200 dark:border-brand-900/50 p-2.5 rounded-xl flex justify-between items-center text-xs">
-                    <span class="text-brand-800 dark:text-brand-300 font-semibold">Unit Price ($/mL)</span> <span class="text-sm font-bold text-brand-700 dark:text-brand-300">$${item.pricePerMl.toFixed(2)}</span>
-                  </div>
-
-                  <div class="space-y-2">
-                    <p class="text-xs font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider flex items-center gap-1">
-                      <i data-lucide="layers" class="w-3.5 h-3.5 text-brand-500"></i>
-                      <span>Notes Hierarchy</span>
-                    </p>
-                    <div class="bg-amber-50 dark:bg-amber-950/30 border border-amber-200/60 p-2.5 rounded-xl space-y-0.5">
-                      <span class="text-[10px] font-bold text-amber-800 dark:text-amber-300 uppercase">Top (前調)</span>
-                      <p class="text-xs text-stone-800 dark:text-stone-200 font-medium">${item.notes.top}</p>
-                    </div>
-                    <div class="bg-rose-50 dark:bg-rose-950/30 border border-rose-200/60 p-2.5 rounded-xl space-y-0.5">
-                      <span class="text-[10px] font-bold text-rose-800 dark:text-rose-300 uppercase">Heart (中調)</span>
-                      <p class="text-xs text-stone-800 dark:text-stone-200 font-medium">${item.notes.heart}</p>
-                    </div>
-                    <div class="bg-stone-100 dark:bg-stone-800/80 border border-stone-200 p-2.5 rounded-xl space-y-0.5">
-                      <span class="text-[10px] font-bold text-stone-700 dark:text-stone-300 uppercase">Base (後調)</span>
-                      <p class="text-xs text-stone-800 dark:text-stone-200 font-medium">${item.notes.base}</p>
-                    </div>
-                  </div>
-                </div>
-              `;
-            }).join('')}
-          </div>
-        </div>
-      `;
       lucide.createIcons();
     }
 
@@ -1244,7 +1222,7 @@
       saveVaultToStorage();
       closeEditModal();
       renderCollection();
-      renderWishlistSection();
+      renderWishlist();
       showToast("Perfume entry updated!");
     }
 
@@ -1252,31 +1230,48 @@
       if (confirm("Are you sure you want to remove this perfume?")) {
         perfumeVault = perfumeVault.filter(item => item.id !== id);
         selectedCompareIds.delete(id);
-        selectedWishlistCompareIds.delete(id);
         saveVaultToStorage();
         renderCollection();
-        renderWishlistSection();
+        renderWishlist();
         showToast("Entry deleted.");
       }
     }
 
-    // --- COMPARISON VIEW (Collection) ---
-    function renderCompareChecklist() {
-      const container = document.getElementById('compareChecklist');
+    // --- COMPARISON VIEW (Collection & Wishlist Combined) ---
+    function renderCompareChecklists() {
+      const collectionContainer = document.getElementById('compareCollectionChecklist');
+      const wishlistContainer = document.getElementById('compareWishlistChecklist');
+
       const collectionItems = perfumeVault.filter(item => (item.section || 'Collection') === 'Collection');
+      const wishlistItems = perfumeVault.filter(item => (item.section || 'Collection') === 'Wishlist');
+
       if (collectionItems.length === 0) {
-        container.innerHTML = `<p class="text-xs text-stone-400 py-2">No items in collection to compare.</p>`;
-        return;
+        collectionContainer.innerHTML = `<p class="text-xs text-stone-400 py-1">No items in collection.</p>`;
+      } else {
+        collectionContainer.innerHTML = collectionItems.map(item => `
+          <label class="flex items-center justify-between py-1.5 cursor-pointer text-xs">
+            <div class="flex items-center gap-2 truncate">
+              <input type="checkbox" value="${item.id}" ${selectedCompareIds.has(item.id) ? 'checked' : ''} onchange="toggleCompareSelection('${item.id}')" class="rounded border-stone-300 text-brand-600 focus:ring-brand-500">
+              <span class="font-medium text-stone-800 dark:text-stone-200 truncate">${item.brand} - ${item.name}</span>
+            </div>
+            <span class="text-[10px] text-stone-400 font-mono">Coll • ${item.volume}mL ($${item.pricePerMl}/mL)</span>
+          </label>
+        `).join('');
       }
-      container.innerHTML = collectionItems.map(item => `
-        <label class="flex items-center justify-between py-1.5 cursor-pointer text-xs">
-          <div class="flex items-center gap-2 truncate">
-            <input type="checkbox" value="${item.id}" ${selectedCompareIds.has(item.id) ? 'checked' : ''} onchange="toggleCompareSelection('${item.id}')" class="rounded border-stone-300 text-brand-600 focus:ring-brand-500">
-            <span class="font-medium text-stone-800 dark:text-stone-200 truncate">${item.brand} - ${item.name}</span>
-          </div>
-          <span class="text-[10px] text-stone-400 font-mono">${item.volume}mL ($${item.pricePerMl}/mL)</span>
-        </label>
-      `).join('');
+
+      if (wishlistItems.length === 0) {
+        wishlistContainer.innerHTML = `<p class="text-xs text-stone-400 py-1">No items in wish list.</p>`;
+      } else {
+        wishlistContainer.innerHTML = wishlistItems.map(item => `
+          <label class="flex items-center justify-between py-1.5 cursor-pointer text-xs">
+            <div class="flex items-center gap-2 truncate">
+              <input type="checkbox" value="${item.id}" ${selectedCompareIds.has(item.id) ? 'checked' : ''} onchange="toggleCompareSelection('${item.id}')" class="rounded border-stone-300 text-brand-600 focus:ring-brand-500">
+              <span class="font-medium text-stone-800 dark:text-stone-200 truncate">${item.brand} - ${item.name}</span>
+            </div>
+            <span class="text-[10px] text-brand-400 font-mono">Wish • ${item.volume}mL ($${item.pricePerMl}/mL)</span>
+          </label>
+        `).join('');
+      }
     }
 
     function toggleCompareSelection(id) {
@@ -1285,11 +1280,25 @@
       renderComparisonOutput();
     }
 
-    function selectAllForCompare() {
+    function selectAllCollectionForCompare() {
       const collectionItems = perfumeVault.filter(item => (item.section || 'Collection') === 'Collection');
-      if (selectedCompareIds.size === collectionItems.length) selectedCompareIds.clear();
-      else collectionItems.forEach(item => selectedCompareIds.add(item.id));
-      renderCompareChecklist();
+      const allSelected = collectionItems.every(item => selectedCompareIds.has(item.id));
+      collectionItems.forEach(item => {
+        if (allSelected) selectedCompareIds.delete(item.id);
+        else selectedCompareIds.add(item.id);
+      });
+      renderCompareChecklists();
+      renderComparisonOutput();
+    }
+
+    function selectAllWishlistForCompare() {
+      const wishlistItems = perfumeVault.filter(item => (item.section || 'Collection') === 'Wishlist');
+      const allSelected = wishlistItems.every(item => selectedCompareIds.has(item.id));
+      wishlistItems.forEach(item => {
+        if (allSelected) selectedCompareIds.delete(item.id);
+        else selectedCompareIds.add(item.id);
+      });
+      renderCompareChecklists();
       renderComparisonOutput();
     }
 
@@ -1301,7 +1310,7 @@
         output.innerHTML = `
           <div class="text-center py-10 bg-white dark:bg-stone-900 rounded-2xl border border-stone-100 dark:border-stone-800 p-6">
             <i data-lucide="sliders-horizontal" class="w-8 h-8 mx-auto text-stone-300 mb-2"></i>
-            <p class="text-xs text-stone-500">Check boxes above to pick collection perfumes to compare side-by-side.</p>
+            <p class="text-xs text-stone-500">Check boxes above to pick perfumes from collection or wish list to compare side-by-side.</p>
           </div>
         `;
         lucide.createIcons();
@@ -1315,13 +1324,15 @@
           <div class="flex gap-4 min-w-max">
             ${selectedItems.map(item => {
               const isBestValue = item.pricePerMl === minPricePerMl && selectedItems.length > 1;
+              const isWishlist = (item.section || 'Collection') === 'Wishlist';
               return `
                 <div class="w-64 bg-white dark:bg-stone-900 rounded-2xl p-4 border ${isBestValue ? 'border-brand-500 ring-2 ring-brand-500/20' : 'border-stone-200 dark:border-stone-800'} space-y-4 relative flex-shrink-0 shadow-sm">
                   ${isBestValue ? `<span class="absolute -top-2.5 right-3 bg-brand-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shadow">Best Value $/mL</span>` : ''}
 
                   <div class="flex gap-3 items-center">
-                    <div class="w-16 h-20 rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-800 flex-shrink-0">
+                    <div class="w-16 h-20 rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-800 flex-shrink-0 relative">
                       <img src="${item.photoUrl}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.src='${DEFAULT_PLACEHOLDER}'">
+                      <span class="absolute bottom-1 left-1 bg-stone-900/80 text-white text-[8px] px-1.5 py-0.5 rounded">${isWishlist ? 'Wish' : 'Coll'}</span>
                     </div>
                     <div class="min-w-0 flex-1">
                       <p class="text-[10px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider">${item.brand}</p>
