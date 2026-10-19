@@ -318,6 +318,14 @@
           </button>
         </div>
 
+        <!-- Clear Form Button -->
+        <div>
+          <button type="button" onclick="handleClearForm()" class="w-full py-3 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/60 active:scale-[0.99] text-rose-600 dark:text-rose-400 font-medium text-xs rounded-2xl border border-rose-200 dark:border-rose-900 transition-all flex items-center justify-center gap-1.5">
+            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+            <span>Clear Entry Form</span>
+          </button>
+        </div>
+
       </form>
     </section>
 
@@ -373,7 +381,7 @@
     </section>
 
     <!-- ========================================== -->
-    <!-- SECTION 3: SMELLING LIST (TAB 3) - Grouped by Location -->
+    <!-- SECTION 3: SMELLING LIST (TAB 3) - Grouped by Status & Location -->
     <!-- ========================================== -->
     <section id="tab-smelling" class="tab-content space-y-4">
       <div class="flex justify-between items-end">
@@ -415,7 +423,7 @@
 
       <!-- Smelling List Categorized Container -->
       <div id="smellingGrid" class="space-y-5">
-        <!-- Rendered dynamically grouped by Smelling Location -->
+        <!-- Rendered dynamically grouped by Status (No above Yes) and Location -->
       </div>
     </section>
 
@@ -841,6 +849,15 @@
       return line.replace(pattern, '').replace(/^[\s:：\-–•]+/, '').trim();
     }
 
+    // --- CLEAR ADD NEW FORM ---
+    function handleClearForm() {
+      document.getElementById('purchaseForm').reset();
+      clearPhotoPreview();
+      updateVolumeOptions();
+      document.getElementById('purchaseDate').valueAsDate = new Date();
+      showToast("Entry form cleared.");
+    }
+
     // --- SAVE ENTRY ---
     function handleSaveEntry(destination) {
       const brand = document.getElementById('brand').value.trim();
@@ -1131,7 +1148,7 @@
       lucide.createIcons();
     }
 
-    // --- RENDER SMELLING LIST (Tab 3) - Grouped by Location ---
+    // --- RENDER SMELLING LIST (Tab 3) - Grouped by Status (No above Yes) and Location ---
     function renderSmellingList() {
       const grid = document.getElementById('smellingGrid');
       const search = document.getElementById('smellingSearchInput').value.toLowerCase();
@@ -1169,66 +1186,94 @@
         return;
       }
 
-      // Group items by Smelling Location (splitting by ';' and trimming)
-      const locationMap = {};
-      smellingItems.forEach(item => {
-        let locs = [];
-        if (item.smellingLocation && item.smellingLocation.trim()) {
-          locs = item.smellingLocation.split(';').map(l => l.trim()).filter(l => l.length > 0);
-        }
-        if (locs.length === 0) {
-          locs = ['Uncategorized'];
-        }
+      // Separate into "No" and "Yes" buckets
+      const statusNoItems = smellingItems.filter(item => (item.status || 'Yes') === 'No');
+      const statusYesItems = smellingItems.filter(item => (item.status || 'Yes') === 'Yes');
 
-        locs.forEach(loc => {
-          if (!locationMap[loc]) locationMap[loc] = [];
-          locationMap[loc].push(item);
+      // Helper function to build location map for a subset of items
+      function buildLocationMap(items) {
+        const locationMap = {};
+        items.forEach(item => {
+          let locs = [];
+          if (item.smellingLocation && item.smellingLocation.trim()) {
+            locs = item.smellingLocation.split(';').map(l => l.trim()).filter(l => l.length > 0);
+          }
+          if (locs.length === 0) {
+            locs = ['Uncategorized'];
+          }
+          locs.forEach(loc => {
+            if (!locationMap[loc]) locationMap[loc] = [];
+            locationMap[loc].push(item);
+          });
         });
-      });
-
-      // Render categorized groups
-      let htmlOutput = '';
-      for (const [loc, items] of Object.entries(locationMap)) {
-        htmlOutput += `
-          <div class="space-y-2">
-            <div class="flex items-center gap-2 px-1">
-              <i data-lucide="map-pin" class="w-3.5 h-3.5 text-brand-600 dark:text-brand-400"></i>
-              <h3 class="font-serif font-bold text-sm text-stone-900 dark:text-stone-100 uppercase tracking-wide">${loc}</h3>
-              <span class="text-[10px] bg-brand-100 dark:bg-brand-900/50 text-brand-700 dark:text-brand-300 px-2 py-0.5 rounded-full font-medium">${items.length}</span>
-            </div>
-            <div class="space-y-2">
-              ${items.map(item => {
-                const isSmellingYes = (item.status || 'Yes') === 'Yes';
-                return `
-                  <div onclick="openDetailModal('${item.id}')" class="bg-white dark:bg-stone-900 rounded-2xl p-3.5 shadow-sm border border-stone-100 dark:border-stone-800 flex items-center gap-3.5 cursor-pointer hover:border-brand-300 dark:hover:border-stone-700 transition-all active:scale-[0.99] ${!isSmellingYes ? 'opacity-60' : ''}">
-                    <div class="w-16 h-16 rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-800 flex-shrink-0 relative">
-                      <img src="${item.photoUrl}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.src='${DEFAULT_PLACEHOLDER}'">
-                    </div>
-                    <div class="flex-1 min-w-0">
-                      <p class="text-[10px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider truncate">${item.brand}</p>
-                      <h3 class="font-serif font-bold text-base text-stone-900 dark:text-stone-100 truncate">${item.name}</h3>
-                      <p class="text-xs font-medium text-stone-500 dark:text-stone-400 mt-0.5">${item.volume} mL • ${item.type}</p>
-                    </div>
-                    
-                    <div class="flex items-center gap-2 flex-shrink-0">
-                      <button onclick="toggleStatus('${item.id}', event)" class="px-2.5 py-1 rounded-full text-[10px] font-semibold transition-all flex items-center gap-1 ${
-                        isSmellingYes ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-300' : 'bg-stone-200 dark:bg-stone-800 text-stone-600'
-                      }">
-                        <span class="w-1.5 h-1.5 rounded-full ${isSmellingYes ? 'bg-amber-500' : 'bg-stone-400'}"></span>
-                        <span>${item.status || 'Yes'}</span>
-                      </button>
-
-                      <button onclick="toggleHeartWishlist('${item.id}', event)" title="Move to Wish List" class="w-9 h-9 rounded-xl flex items-center justify-center bg-brand-50 hover:bg-brand-100 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-400 hover:text-brand-500 transition-colors border border-brand-200 dark:border-stone-700">
-                        <i data-lucide="heart" class="w-4 h-4"></i>
-                      </button>
-                    </div>
-                  </div>
-                `;
-              }).join('')}
-            </div>
-          </div>
-        `;
+        return locationMap;
       }
+
+      const noLocationMap = buildLocationMap(statusNoItems);
+      const yesLocationMap = buildLocationMap(statusYesItems);
+
+      let htmlOutput = '';
+
+      // Helper function to render a status group
+      function renderStatusGroup(statusTitle, badgeColorClass, locationMap) {
+        if (Object.keys(locationMap).length === 0) return '';
+        
+        let sectionHtml = `
+          <div class="space-y-3 pb-2">
+            <div class="flex items-center gap-2 border-b border-brand-200 dark:border-stone-800 pb-1.5">
+              <span class="text-xs font-bold uppercase tracking-wider text-stone-900 dark:text-stone-100">Status: ${statusTitle}</span>
+            </div>
+        `;
+
+        for (const [loc, items] of Object.entries(locationMap)) {
+          sectionHtml += `
+            <div class="space-y-2 pl-2">
+              <div class="flex items-center gap-2 px-1">
+                <i data-lucide="map-pin" class="w-3.5 h-3.5 text-brand-600 dark:text-brand-400"></i>
+                <h4 class="font-serif font-bold text-xs text-stone-800 dark:text-stone-200 uppercase tracking-wide">${loc}</h4>
+                <span class="text-[10px] bg-brand-100 dark:bg-brand-900/50 text-brand-700 dark:text-brand-300 px-2 py-0.5 rounded-full font-medium">${items.length}</span>
+              </div>
+              <div class="space-y-2">
+                ${items.map(item => {
+                  const isSmellingYes = (item.status || 'Yes') === 'Yes';
+                  return `
+                    <div onclick="openDetailModal('${item.id}')" class="bg-white dark:bg-stone-900 rounded-2xl p-3.5 shadow-sm border border-stone-100 dark:border-stone-800 flex items-center gap-3.5 cursor-pointer hover:border-brand-300 dark:hover:border-stone-700 transition-all active:scale-[0.99] ${!isSmellingYes ? 'opacity-60' : ''}">
+                      <div class="w-16 h-16 rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-800 flex-shrink-0 relative">
+                        <img src="${item.photoUrl}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.src='${DEFAULT_PLACEHOLDER}'">
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-[10px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider truncate">${item.brand}</p>
+                        <h3 class="font-serif font-bold text-base text-stone-900 dark:text-stone-100 truncate">${item.name}</h3>
+                        <p class="text-xs font-medium text-stone-500 dark:text-stone-400 mt-0.5">${item.volume} mL • ${item.type}</p>
+                      </div>
+                      
+                      <div class="flex items-center gap-2 flex-shrink-0">
+                        <button onclick="toggleStatus('${item.id}', event)" class="px-2.5 py-1 rounded-full text-[10px] font-semibold transition-all flex items-center gap-1 ${
+                          isSmellingYes ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-300' : 'bg-stone-200 dark:bg-stone-800 text-stone-600'
+                        }">
+                          <span class="w-1.5 h-1.5 rounded-full ${isSmellingYes ? 'bg-amber-500' : 'bg-stone-400'}"></span>
+                          <span>${item.status || 'Yes'}</span>
+                        </button>
+
+                        <button onclick="toggleHeartWishlist('${item.id}', event)" title="Move to Wish List" class="w-9 h-9 rounded-xl flex items-center justify-center bg-brand-50 hover:bg-brand-100 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-400 hover:text-brand-500 transition-colors border border-brand-200 dark:border-stone-700">
+                          <i data-lucide="heart" class="w-4 h-4"></i>
+                        </button>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          `;
+        }
+
+        sectionHtml += `</div>`;
+        return sectionHtml;
+      }
+
+      // Put "No" items ABOVE "Yes" items
+      htmlOutput += renderStatusGroup("No", "bg-stone-200 text-stone-700", noLocationMap);
+      htmlOutput += renderStatusGroup("Yes", "bg-amber-100 text-amber-700", yesLocationMap);
 
       grid.innerHTML = htmlOutput;
       lucide.createIcons();
