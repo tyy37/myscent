@@ -884,7 +884,6 @@
         purchaseDate,
         smellingLocation,
         remarks,
-        isWishlisted: destination === 'Wishlist',
         photoUrl: currentImageData || DEFAULT_PLACEHOLDER,
         notes: {
           top: document.getElementById('topNotes').value.trim() || 'N/A',
@@ -931,7 +930,6 @@
             if (!p.status) p.status = 'Yes';
             if (p.remarks === undefined) p.remarks = '';
             if (p.smellingLocation === undefined) p.smellingLocation = '';
-            if (p.isWishlisted === undefined) p.isWishlisted = (p.section === 'Wishlist');
           });
         } catch (e) {
           perfumeVault = [];
@@ -1003,16 +1001,21 @@
       }
     }
 
-    // Toggle Heart in Smelling List to add/remove from Wish List (flat list in Wish List)
+    // Toggle Heart to move between Smelling List and Wish List
     function toggleHeartWishlist(id, event) {
       if (event) event.stopPropagation();
       const item = perfumeVault.find(p => p.id === id);
       if (item) {
-        item.isWishlisted = !item.isWishlisted;
+        if (item.section === 'SmellingList') {
+          item.section = 'Wishlist';
+          showToast("Moved to Wish List!");
+        } else if (item.section === 'Wishlist') {
+          item.section = 'SmellingList';
+          showToast("Moved back to Smelling List!");
+        }
         saveVaultToStorage();
         renderSmellingList();
         renderWishlist();
-        showToast(item.isWishlisted ? "Added to Wish List!" : "Removed from Wish List!");
       }
     }
 
@@ -1163,7 +1166,6 @@
             <div class="space-y-2">
               ${items.map(item => {
                 const isSmellingYes = (item.status || 'Yes') === 'Yes';
-                const isWish = item.isWishlisted;
                 return `
                   <div onclick="openDetailModal('${item.id}')" class="bg-white dark:bg-stone-900 rounded-2xl p-3.5 shadow-sm border border-stone-100 dark:border-stone-800 flex items-center gap-3.5 cursor-pointer hover:border-brand-300 dark:hover:border-stone-700 transition-all active:scale-[0.99] ${!isSmellingYes ? 'opacity-60' : ''}">
                     <div class="w-16 h-16 rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-800 flex-shrink-0 relative">
@@ -1183,8 +1185,8 @@
                         <span>${item.status || 'Yes'}</span>
                       </button>
 
-                      <button onclick="toggleHeartWishlist('${item.id}', event)" title="Toggle Wish List" class="w-9 h-9 rounded-xl flex items-center justify-center bg-brand-50 hover:bg-brand-100 dark:bg-stone-800 dark:hover:bg-stone-700 text-brand-500 transition-colors border border-brand-200 dark:border-stone-700">
-                        <i data-lucide="heart" class="w-4 h-4 ${isWish ? 'fill-brand-500 text-brand-500' : 'text-stone-400'}"></i>
+                      <button onclick="toggleHeartWishlist('${item.id}', event)" title="Move to Wish List" class="w-9 h-9 rounded-xl flex items-center justify-center bg-brand-50 hover:bg-brand-100 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-400 hover:text-brand-500 transition-colors border border-brand-200 dark:border-stone-700">
+                        <i data-lucide="heart" class="w-4 h-4"></i>
                       </button>
                     </div>
                   </div>
@@ -1206,9 +1208,8 @@
 
       let wishlistItems = perfumeVault.filter(item => {
         const isWishSec = (item.section || '') === 'Wishlist';
-        const isHearted = item.isWishlisted === true;
         const matchesSearch = item.brand.toLowerCase().includes(search) || item.name.toLowerCase().includes(search);
-        return (isWishSec || isHearted) && matchesSearch;
+        return isWishSec && matchesSearch;
       });
 
       document.getElementById('wishlistCountText').innerText = `${wishlistItems.length} Fragrance${wishlistItems.length === 1 ? '' : 's'} stored`;
@@ -1237,7 +1238,7 @@
               <h3 class="font-serif font-bold text-base text-stone-900 dark:text-stone-100 truncate">${item.name}</h3>
               <p class="text-xs font-medium text-stone-500 dark:text-stone-400 mt-0.5">${item.volume} mL • ${item.type} ${item.smellingLocation ? '• ' + item.smellingLocation : ''}</p>
             </div>
-            <button onclick="toggleHeartWishlist('${item.id}', event)" title="Remove from Wish List" class="w-9 h-9 rounded-xl flex items-center justify-center bg-brand-50 hover:bg-brand-100 dark:bg-stone-800 dark:hover:bg-stone-700 text-brand-500 transition-colors border border-brand-200 dark:border-stone-700 flex-shrink-0">
+            <button onclick="toggleHeartWishlist('${item.id}', event)" title="Move back to Smelling List" class="w-9 h-9 rounded-xl flex items-center justify-center bg-brand-50 hover:bg-brand-100 dark:bg-stone-800 dark:hover:bg-stone-700 text-brand-500 transition-colors border border-brand-200 dark:border-stone-700 flex-shrink-0">
               <i data-lucide="heart" class="w-4 h-4 fill-brand-500 text-brand-500"></i>
             </button>
           </div>
@@ -1521,7 +1522,7 @@
       const collectionItems = Array.from(collMap.values());
 
       const smellingItems = perfumeVault.filter(item => (item.section || '') === 'SmellingList');
-      const wishlistItems = perfumeVault.filter(item => (item.section || '') === 'Wishlist' || item.isWishlisted);
+      const wishlistItems = perfumeVault.filter(item => (item.section || '') === 'Wishlist');
 
       if (collectionItems.length === 0) {
         collectionContainer.innerHTML = `<p class="text-xs text-stone-400 py-1">No items in collection.</p>`;
@@ -1608,7 +1609,7 @@
     }
 
     function selectAllWishlistForCompare() {
-      const items = perfumeVault.filter(item => (item.section || '') === 'Wishlist' || item.isWishlisted);
+      const items = perfumeVault.filter(item => (item.section || '') === 'Wishlist');
       const allSelected = items.every(item => selectedCompareIds.has(item.id));
       items.forEach(item => {
         if (allSelected) selectedCompareIds.delete(item.id);
@@ -1648,7 +1649,7 @@
               if (sec === 'SmellingList') {
                 iconName = 'compass';
                 badgeBg = 'bg-stone-900/80 text-white';
-              } else if (sec === 'Wishlist' || item.isWishlisted) {
+              } else if (sec === 'Wishlist') {
                 iconName = 'heart';
                 badgeBg = 'bg-rose-500/90 text-white';
               }
