@@ -224,6 +224,11 @@
                 <input type="date" id="purchaseDate" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
               </div>
             </div>
+
+            <div>
+              <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Remarks</label>
+              <textarea id="remarks" rows="2" placeholder="e.g., Blind buy, great longevity, batch code #..." class="w-full mt-1 px-3 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
+            </div>
           </div>
         </div>
 
@@ -385,9 +390,9 @@
           </select>
 
           <select id="wishlistFilterStatus" onchange="renderWishlist()" class="px-2 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
-            <option value="All">All Status</option>
-            <option value="Active">Active</option>
-            <option value="Inactive">Inactive</option>
+            <option value="All">All Smelling</option>
+            <option value="Yes">Smelling: Yes</option>
+            <option value="No">Smelling: No</option>
           </select>
 
           <select id="wishlistSortSelect" onchange="renderWishlist()" class="px-2 py-2 rounded-xl text-xs font-medium border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
@@ -488,7 +493,7 @@
           <div class="grid grid-cols-3 gap-2">
             <div>
               <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Section</label>
-              <select id="editSection" class="w-full mt-1 px-2 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 font-medium">
+              <select id="editSection" onchange="updateEditStatusOptions()" class="w-full mt-1 px-2 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 font-medium">
                 <option value="Collection">Collection</option>
                 <option value="Wishlist">Wish List</option>
               </select>
@@ -502,10 +507,9 @@
               </select>
             </div>
             <div>
-              <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Status</label>
+              <label id="editStatusLabel" class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Status</label>
               <select id="editStatus" class="w-full mt-1 px-2 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 font-medium">
-                <option value="Active">Active</option>
-                <option value="Inactive">Inactive</option>
+                <!-- Populated via JS -->
               </select>
             </div>
           </div>
@@ -546,6 +550,11 @@
               <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Purchase Date</label>
               <input type="date" id="editPurchaseDate" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
             </div>
+          </div>
+
+          <div>
+            <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Remarks</label>
+            <textarea id="editRemarks" rows="2" class="w-full mt-1 px-3 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800"></textarea>
           </div>
 
           <div>
@@ -776,6 +785,7 @@
       const price = parseFloat(priceStr);
       const merchant = document.getElementById('merchant').value.trim() || 'N/A';
       const purchaseDate = document.getElementById('purchaseDate').value;
+      const remarks = document.getElementById('remarks').value.trim() || '';
 
       const volSelect = document.getElementById('volumeSelect').value;
       let volume = (volSelect === 'Others') ? parseFloat(document.getElementById('customVolume').value) : parseFloat(volSelect);
@@ -786,12 +796,13 @@
       }
 
       const pricePerMl = parseFloat((price / volume).toFixed(2));
+      const defaultStatus = destination === 'Wishlist' ? 'Yes' : 'Active';
 
       const newEntry = {
         id: Date.now().toString(),
         section: destination, // 'Collection' or 'Wishlist'
         type,
-        status: 'Active',
+        status: defaultStatus,
         brand,
         name,
         volume,
@@ -799,6 +810,7 @@
         pricePerMl,
         merchant,
         purchaseDate,
+        remarks,
         photoUrl: currentImageData || DEFAULT_PLACEHOLDER,
         notes: {
           top: document.getElementById('topNotes').value.trim() || 'N/A',
@@ -839,7 +851,10 @@
           perfumeVault = JSON.parse(data);
           perfumeVault.forEach(p => {
             if (!p.section) p.section = 'Collection';
-            if (!p.status) p.status = 'Active';
+            if (!p.status) {
+              p.status = p.section === 'Wishlist' ? 'Yes' : 'Active';
+            }
+            if (p.remarks === undefined) p.remarks = '';
           });
         } catch (e) {
           perfumeVault = [];
@@ -895,11 +910,17 @@
       if (event) event.stopPropagation();
       const item = perfumeVault.find(p => p.id === id);
       if (item) {
-        item.status = item.status === 'Active' ? 'Inactive' : 'Active';
+        const isWishlist = (item.section || 'Collection') === 'Wishlist';
+        if (isWishlist) {
+          item.status = item.status === 'Yes' ? 'No' : 'Yes';
+          showToast(`Smelling updated to ${item.status}`);
+        } else {
+          item.status = item.status === 'Active' ? 'Inactive' : 'Active';
+          showToast(`Status updated to ${item.status}`);
+        }
         saveVaultToStorage();
         renderCollection();
         renderWishlist();
-        showToast(`Status updated to ${item.status}`);
       }
     }
 
@@ -979,7 +1000,7 @@
         const isWishlist = (item.section || 'Collection') === 'Wishlist';
         const matchesSearch = item.brand.toLowerCase().includes(search) || item.name.toLowerCase().includes(search);
         const matchesType = filter === 'All' || item.type === filter;
-        const matchesStatus = statusFilter === 'All' || (item.status || 'Active') === statusFilter;
+        const matchesStatus = statusFilter === 'All' || (item.status || 'Yes') === statusFilter;
         return isWishlist && matchesSearch && matchesType && matchesStatus;
       });
 
@@ -1006,9 +1027,9 @@
       }
 
       grid.innerHTML = filtered.map(item => {
-        const isActive = (item.status || 'Active') === 'Active';
+        const isSmellingYes = (item.status || 'Yes') === 'Yes';
         return `
-          <div onclick="openDetailModal('${item.id}')" class="bg-white dark:bg-stone-900 rounded-2xl p-3.5 shadow-sm border border-stone-100 dark:border-stone-800 flex items-center gap-3.5 cursor-pointer hover:border-brand-300 dark:hover:border-stone-700 transition-all active:scale-[0.99] ${!isActive ? 'opacity-60' : ''}">
+          <div onclick="openDetailModal('${item.id}')" class="bg-white dark:bg-stone-900 rounded-2xl p-3.5 shadow-sm border border-stone-100 dark:border-stone-800 flex items-center gap-3.5 cursor-pointer hover:border-brand-300 dark:hover:border-stone-700 transition-all active:scale-[0.99] ${!isSmellingYes ? 'opacity-60' : ''}">
             <div class="w-16 h-16 rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-800 flex-shrink-0 relative">
               <img src="${item.photoUrl}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.src='${DEFAULT_PLACEHOLDER}'">
             </div>
@@ -1018,10 +1039,10 @@
               <p class="text-xs font-medium text-stone-500 dark:text-stone-400 mt-0.5">${item.volume} mL • ${item.type}</p>
             </div>
             <button onclick="toggleStatus('${item.id}', event)" class="flex-shrink-0 px-2.5 py-1 rounded-full text-[10px] font-semibold transition-all flex items-center gap-1 ${
-              isActive ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-300' : 'bg-stone-200 dark:bg-stone-800 text-stone-600'
+              isSmellingYes ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-300' : 'bg-stone-200 dark:bg-stone-800 text-stone-600'
             }">
-              <span class="w-1.5 h-1.5 rounded-full ${isActive ? 'bg-emerald-500' : 'bg-stone-400'}"></span>
-              <span>${isActive ? 'Active' : 'Inactive'}</span>
+              <span class="w-1.5 h-1.5 rounded-full ${isSmellingYes ? 'bg-amber-500' : 'bg-stone-400'}"></span>
+              <span>Smelling: ${item.status || 'Yes'}</span>
             </button>
             <i data-lucide="chevron-right" class="w-4 h-4 text-stone-300 dark:text-stone-600 flex-shrink-0"></i>
           </div>
@@ -1037,7 +1058,10 @@
       if (!item) return;
 
       currentActiveDetailId = id;
-      const isActive = (item.status || 'Active') === 'Active';
+      const isWishlist = (item.section || 'Collection') === 'Wishlist';
+      const statusLabel = isWishlist ? 'Smelling' : 'Status';
+      const statusVal = item.status || (isWishlist ? 'Yes' : 'Active');
+      const isPositive = statusVal === 'Active' || statusVal === 'Yes';
 
       document.getElementById('modalBrand').innerText = item.brand;
       document.getElementById('modalName').innerText = item.name;
@@ -1054,11 +1078,11 @@
               <span class="font-semibold text-brand-600 dark:text-brand-400">${item.section || 'Collection'}</span>
             </div>
             <div class="flex justify-between items-center">
-              <span class="text-stone-400">Status:</span>
+              <span class="text-stone-400">${statusLabel}:</span>
               <button onclick="toggleStatus('${item.id}'); openDetailModal('${item.id}');" class="px-2 py-0.5 rounded-full text-[10px] font-semibold transition-colors ${
-                isActive ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 border border-emerald-300' : 'bg-stone-200 text-stone-600'
+                isPositive ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 border border-emerald-300' : 'bg-stone-200 text-stone-600'
               }">
-                ${isActive ? 'Active' : 'Inactive'}
+                ${isWishlist ? 'Smelling: ' + statusVal : statusVal}
               </button>
             </div>
             <div class="flex justify-between">
@@ -1085,6 +1109,12 @@
             <span class="text-stone-400">Date:</span>
             <span class="font-medium text-stone-700 dark:text-stone-300">${item.purchaseDate}</span>
           </div>
+          ${item.remarks ? `
+            <div class="pt-1.5 border-t border-stone-200 dark:border-stone-700">
+              <span class="text-stone-400 block mb-0.5">Remarks:</span>
+              <p class="text-stone-700 dark:text-stone-300 whitespace-pre-wrap">${item.remarks}</p>
+            </div>
+          ` : ''}
         </div>
 
         <div class="space-y-2 pt-1">
@@ -1149,6 +1179,30 @@
       toggleEditCustomVolume();
     }
 
+    function updateEditStatusOptions(selectedStatus) {
+      const section = document.getElementById('editSection').value;
+      const statusSelect = document.getElementById('editStatus');
+      const statusLabel = document.getElementById('editStatusLabel');
+
+      if (section === 'Wishlist') {
+        statusLabel.innerText = 'Smelling';
+        statusSelect.innerHTML = `
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        `;
+      } else {
+        statusLabel.innerText = 'Status';
+        statusSelect.innerHTML = `
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
+        `;
+      }
+
+      if (selectedStatus !== undefined) {
+        statusSelect.value = selectedStatus;
+      }
+    }
+
     function toggleEditCustomVolume() {
       const select = document.getElementById('editVolumeSelect');
       const container = document.getElementById('editCustomVolContainer');
@@ -1173,13 +1227,14 @@
 
       document.getElementById('editId').value = item.id;
       document.getElementById('editSection').value = item.section || 'Collection';
+      updateEditStatusOptions(item.status || (item.section === 'Wishlist' ? 'Yes' : 'Active'));
       document.getElementById('editType').value = item.type;
-      document.getElementById('editStatus').value = item.status || 'Active';
       document.getElementById('editBrand').value = item.brand;
       document.getElementById('editName').value = item.name;
       document.getElementById('editPrice').value = item.price;
       document.getElementById('editMerchant').value = item.merchant === 'N/A' ? '' : item.merchant;
       document.getElementById('editPurchaseDate').value = item.purchaseDate;
+      document.getElementById('editRemarks').value = item.remarks || '';
       document.getElementById('editPhotoUrl').value = item.photoUrl === DEFAULT_PLACEHOLDER ? '' : item.photoUrl;
       document.getElementById('editTopNotes').value = item.notes.top === 'N/A' ? '' : item.notes.top;
       document.getElementById('editHeartNotes').value = item.notes.heart === 'N/A' ? '' : item.notes.heart;
@@ -1203,6 +1258,7 @@
       const price = parseFloat(document.getElementById('editPrice').value);
       const merchant = document.getElementById('editMerchant').value.trim() || 'N/A';
       const purchaseDate = document.getElementById('editPurchaseDate').value;
+      const remarks = document.getElementById('editRemarks').value.trim() || '';
 
       const volSelect = document.getElementById('editVolumeSelect').value;
       let volume = (volSelect === 'Others') ? parseFloat(document.getElementById('editCustomVolume').value) : parseFloat(volSelect);
@@ -1211,7 +1267,7 @@
 
       perfumeVault[index] = {
         ...perfumeVault[index],
-        section, type, status, brand, name, volume, price, pricePerMl, merchant, purchaseDate, photoUrl,
+        section, type, status, brand, name, volume, price, pricePerMl, merchant, purchaseDate, remarks, photoUrl,
         notes: {
           top: document.getElementById('editTopNotes').value.trim() || 'N/A',
           heart: document.getElementById('editHeartNotes').value.trim() || 'N/A',
@@ -1344,6 +1400,13 @@
                   <div class="bg-brand-50 dark:bg-brand-950/40 border border-brand-200 dark:border-brand-900/50 p-2.5 rounded-xl flex justify-between items-center text-xs">
                     <span class="text-brand-800 dark:text-brand-300 font-semibold">Unit Price ($/mL)</span> <span class="text-sm font-bold text-brand-700 dark:text-brand-300">$${item.pricePerMl.toFixed(2)}</span>
                   </div>
+
+                  ${item.remarks ? `
+                    <div class="bg-stone-50 dark:bg-stone-800/60 p-2.5 rounded-xl border border-stone-200 dark:border-stone-700 text-xs space-y-0.5">
+                      <span class="text-[10px] font-bold text-stone-400 uppercase">Remarks</span>
+                      <p class="text-stone-700 dark:text-stone-300">${item.remarks}</p>
+                    </div>
+                  ` : ''}
 
                   <div class="space-y-2">
                     <p class="text-xs font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider flex items-center gap-1">
