@@ -226,7 +226,7 @@
             </div>
 
             <div>
-              <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Smelling Location</label>
+              <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">To-smell Location</label>
               <input type="text" id="smellingLocation" placeholder="e.g., TST; CWB" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
             </div>
 
@@ -306,7 +306,7 @@
           </div>
         </div>
 
-        <!-- Action Buttons (Save to Collection & Save to Smelling List) -->
+        <!-- Action Buttons (Save to Collection & Save to To-smell List) -->
         <div class="grid grid-cols-2 gap-3">
           <button type="button" onclick="handleSaveEntry('Collection')" class="w-full py-3.5 bg-brand-500 hover:bg-brand-600 active:scale-[0.99] text-white font-medium text-xs rounded-2xl shadow-lg shadow-brand-500/25 transition-all flex items-center justify-center gap-1.5">
             <i data-lucide="bookmark-check" class="w-4 h-4"></i>
@@ -314,7 +314,7 @@
           </button>
           <button type="button" onclick="handleSaveEntry('SmellingList')" class="w-full py-3.5 bg-stone-200 dark:bg-stone-800 hover:bg-stone-300 dark:hover:bg-stone-700 active:scale-[0.99] text-stone-800 dark:text-stone-200 font-medium text-xs rounded-2xl border border-stone-300 dark:border-stone-700 transition-all flex items-center justify-center gap-1.5">
             <i data-lucide="compass" class="w-4 h-4 text-brand-500"></i>
-            <span>Save to Smelling List</span>
+            <span>Save to To-smell List</span>
           </button>
         </div>
 
@@ -381,35 +381,29 @@
     </section>
 
     <!-- ========================================== -->
-    <!-- SECTION 3: SMELLING LIST (TAB 3) - Grouped by Status & Location -->
+    <!-- SECTION 3: TO-SMELL LIST (TAB 3) -->
     <!-- ========================================== -->
     <section id="tab-smelling" class="tab-content space-y-4">
       <div class="flex justify-between items-end">
         <div>
-          <h2 class="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">Smelling List</h2>
+          <h2 class="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">To-smell List</h2>
           <p class="text-xs text-stone-500 dark:text-stone-400" id="smellingCountText">0 Fragrances stored</p>
         </div>
       </div>
 
-      <!-- Controls: Search, Filter & Sorting for Smelling List -->
+      <!-- Controls: Search & Sorting for To-smell List -->
       <div class="space-y-2">
         <div class="relative w-full">
           <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-stone-400"></i>
-          <input type="text" id="smellingSearchInput" oninput="renderSmellingList()" placeholder="Search smelling list brand or name..." class="w-full pl-9 pr-3 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
+          <input type="text" id="smellingSearchInput" oninput="renderSmellingList()" placeholder="Search to-smell brand or name..." class="w-full pl-9 pr-3 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
         </div>
 
-        <div class="grid grid-cols-3 gap-2">
+        <div class="grid grid-cols-2 gap-2">
           <select id="smellingFilterType" onchange="renderSmellingList()" class="px-2 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
             <option value="All">All Types</option>
             <option value="Bottle">Bottle</option>
             <option value="Decant">Decant</option>
             <option value="Sample">Sample</option>
-          </select>
-
-          <select id="smellingFilterStatus" onchange="renderSmellingList()" class="px-2 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
-            <option value="All">All Status</option>
-            <option value="Yes">Yes</option>
-            <option value="No">No</option>
           </select>
 
           <select id="smellingSortSelect" onchange="renderSmellingList()" class="px-2 py-2 rounded-xl text-xs font-medium border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
@@ -421,32 +415,71 @@
         </div>
       </div>
 
-      <!-- Smelling List Categorized Container -->
+      <!-- To-smell List Categorized Container -->
       <div id="smellingGrid" class="space-y-5">
-        <!-- Rendered dynamically grouped by Status (No above Yes) and Location -->
+        <!-- Rendered dynamically -->
       </div>
     </section>
 
     <!-- ========================================== -->
-    <!-- SECTION 4: WISH LIST (TAB 4) - Flat List -->
+    <!-- SECTION 4: SCENT CALENDAR (TAB 4) -->
     <!-- ========================================== -->
-    <section id="tab-wishlist" class="tab-content space-y-3">
+    <section id="tab-calendar" class="tab-content space-y-4">
       <div class="flex justify-between items-end">
         <div>
-          <h2 class="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">Wish List</h2>
-          <p class="text-xs text-stone-500 dark:text-stone-400" id="wishlistCountText">0 Fragrances stored</p>
+          <h2 class="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">Scent Calendar</h2>
+          <p class="text-xs text-stone-500 dark:text-stone-400">Log and track what you wore each day.</p>
         </div>
       </div>
 
-      <!-- Controls: Search -->
-      <div class="relative w-full">
-        <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-stone-400"></i>
-        <input type="text" id="wishlistSearchInput" oninput="renderWishlist()" placeholder="Search wishlist brand or name..." class="w-full pl-9 pr-3 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
+      <!-- Calendar Navigation & Grid Container -->
+      <div class="bg-white dark:bg-stone-900 p-4 rounded-2xl shadow-sm border border-brand-100 dark:border-stone-800 space-y-4">
+        <div class="flex justify-between items-center">
+          <button onclick="changeCalendarMonth(-1)" class="p-2 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 transition-colors">
+            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+          </button>
+          <h3 id="calMonthYearTitle" class="font-serif font-bold text-base text-stone-900 dark:text-stone-100"></h3>
+          <button onclick="changeCalendarMonth(1)" class="p-2 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 transition-colors">
+            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Weekday Headers -->
+        <div class="grid grid-cols-7 text-center text-[10px] font-bold text-stone-400 uppercase tracking-wider">
+          <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+        </div>
+
+        <!-- Days Grid -->
+        <div id="calDaysGrid" class="grid grid-cols-7 gap-1">
+          <!-- Rendered dynamically -->
+        </div>
       </div>
 
-      <!-- Wishlist Flat Cards Container -->
-      <div id="wishlistGrid" class="space-y-3">
-        <!-- Rendered dynamically -->
+      <!-- Selected Date Log Panel -->
+      <div class="bg-white dark:bg-stone-900 p-4 rounded-2xl shadow-sm border border-brand-100 dark:border-stone-800 space-y-3">
+        <div class="flex justify-between items-center pb-2 border-b border-stone-100 dark:border-stone-800">
+          <div>
+            <span class="text-[10px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider">Selected Date</span>
+            <h4 id="selectedDateTitle" class="font-serif font-bold text-base text-stone-900 dark:text-stone-100"></h4>
+          </div>
+          <button onclick="setCalendarToToday()" class="px-2.5 py-1 rounded-xl bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300 text-[10px] font-semibold border border-brand-200 dark:border-brand-900">
+            Today
+          </button>
+        </div>
+
+        <div class="space-y-2">
+          <label class="block text-xs font-semibold text-stone-700 dark:text-stone-300">Perfumes Worn on This Day:</label>
+          <div id="selectedDateWornList" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+            <!-- Worn perfumes rendered dynamically -->
+          </div>
+        </div>
+
+        <div class="pt-2 border-t border-stone-100 dark:border-stone-800">
+          <button onclick="openWearPickerModal()" class="w-full py-2.5 bg-brand-500 hover:bg-brand-600 active:scale-[0.99] text-white font-medium text-xs rounded-xl shadow-md transition-colors flex items-center justify-center gap-1.5">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            <span>Choose Perfume Worn</span>
+          </button>
+        </div>
       </div>
     </section>
 
@@ -456,7 +489,7 @@
     <section id="tab-compare" class="tab-content space-y-4">
       <div class="space-y-1">
         <h2 class="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">Compare Vault & Lists</h2>
-        <p class="text-xs text-stone-500 dark:text-stone-400">Select perfumes from your collection, smelling list, and wish list to compare side-by-side.</p>
+        <p class="text-xs text-stone-500 dark:text-stone-400">Select perfumes from your collection and to-smell list to compare side-by-side.</p>
       </div>
 
       <!-- Picker Checklist: Collection -->
@@ -470,24 +503,13 @@
         </div>
       </div>
 
-      <!-- Picker Checklist: Smelling List -->
+      <!-- Picker Checklist: To-smell List -->
       <div class="bg-white dark:bg-stone-900 p-3 rounded-2xl border border-brand-100 dark:border-stone-800 space-y-2">
         <div class="flex justify-between items-center px-1">
-          <span class="text-xs font-semibold text-stone-700 dark:text-stone-300">Smelling List Items</span>
-          <button onclick="selectAllSmellingForCompare()" class="text-[11px] text-brand-600 dark:text-brand-400 font-medium hover:underline">Select All Smelling List</button>
+          <span class="text-xs font-semibold text-stone-700 dark:text-stone-300">To-smell List Items</span>
+          <button onclick="selectAllSmellingForCompare()" class="text-[11px] text-brand-600 dark:text-brand-400 font-medium hover:underline">Select All To-smell List</button>
         </div>
         <div id="compareSmellingChecklist" class="max-h-36 overflow-y-auto space-y-1.5 pr-1 divide-y divide-stone-100 dark:divide-stone-800">
-          <!-- Rendered dynamically -->
-        </div>
-      </div>
-
-      <!-- Picker Checklist: Wish List -->
-      <div class="bg-white dark:bg-stone-900 p-3 rounded-2xl border border-brand-100 dark:border-stone-800 space-y-2">
-        <div class="flex justify-between items-center px-1">
-          <span class="text-xs font-semibold text-stone-700 dark:text-stone-300">Wish List Items</span>
-          <button onclick="selectAllWishlistForCompare()" class="text-[11px] text-brand-600 dark:text-brand-400 font-medium hover:underline">Select All Wish List</button>
-        </div>
-        <div id="compareWishlistChecklist" class="max-h-36 overflow-y-auto space-y-1.5 pr-1 divide-y divide-stone-100 dark:divide-stone-800">
           <!-- Rendered dynamically -->
         </div>
       </div>
@@ -528,6 +550,27 @@
       </div>
     </div>
 
+    <!-- Wear Picker Modal (Calendar) -->
+    <div id="wearPickerModal" class="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 hidden transition-opacity">
+      <div class="bg-white dark:bg-stone-900 w-full max-w-md rounded-t-3xl sm:rounded-2xl max-h-[85vh] overflow-y-auto p-5 space-y-4 shadow-2xl border border-stone-200 dark:border-stone-800">
+        <div class="flex justify-between items-center pb-2 border-b border-stone-100 dark:border-stone-800">
+          <h3 class="font-serif font-bold text-lg text-stone-900 dark:text-stone-100">Select Collection Perfume</h3>
+          <button onclick="closeWearPickerModal()" class="text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 p-1">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <div class="relative w-full">
+          <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-stone-400"></i>
+          <input type="text" id="wearSearchInput" oninput="renderWearPickerList()" placeholder="Search collection..." class="w-full pl-9 pr-3 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+        </div>
+
+        <div id="wearPickerGrid" class="space-y-2 max-h-64 overflow-y-auto pr-1">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </div>
+
     <!-- Edit Modal -->
     <div id="editModal" class="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 hidden transition-opacity">
       <div class="bg-white dark:bg-stone-900 w-full max-w-md rounded-t-3xl sm:rounded-2xl max-h-[90vh] overflow-y-auto p-5 space-y-4 shadow-2xl border border-stone-200 dark:border-stone-800">
@@ -541,13 +584,12 @@
         <form id="editForm" onsubmit="handleUpdateEntry(event)" class="space-y-4">
           <input type="hidden" id="editId">
 
-          <div class="grid grid-cols-3 gap-2">
+          <div class="grid grid-cols-2 gap-2">
             <div>
               <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Section</label>
               <select id="editSection" onchange="updateEditStatusOptions()" class="w-full mt-1 px-2 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 font-medium">
                 <option value="Collection">Collection</option>
-                <option value="SmellingList">Smelling List</option>
-                <option value="Wishlist">Wish List</option>
+                <option value="SmellingList">To-smell List</option>
               </select>
             </div>
             <div>
@@ -556,12 +598,6 @@
                 <option value="Bottle">Bottle</option>
                 <option value="Decant">Decant</option>
                 <option value="Sample">Sample</option>
-              </select>
-            </div>
-            <div>
-              <label id="editStatusLabel" class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Status</label>
-              <select id="editStatus" class="w-full mt-1 px-2 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 font-medium">
-                <!-- Populated via JS -->
               </select>
             </div>
           </div>
@@ -605,7 +641,7 @@
           </div>
 
           <div>
-            <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Smelling Location</label>
+            <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">To-smell Location</label>
             <input type="text" id="editSmellingLocation" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
           </div>
 
@@ -654,7 +690,7 @@
 
       <button onclick="switchTab('smelling')" id="nav-smelling" class="flex flex-col items-center py-1 rounded-xl text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-colors">
         <i data-lucide="compass" class="w-5 h-5"></i>
-        <span class="text-[10px] font-medium mt-1">Smelling List</span>
+        <span class="text-[10px] font-medium mt-1">To-smell List</span>
       </button>
 
       <!-- Center Add New Button with Larger Circle Icon (Always Displayed) -->
@@ -665,9 +701,9 @@
         <span id="nav-purchase-label" class="text-[10px] font-semibold text-brand-600 dark:text-brand-400 mt-0.5">Add New</span>
       </div>
 
-      <button onclick="switchTab('wishlist')" id="nav-wishlist" class="flex flex-col items-center py-1 rounded-xl text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-colors">
-        <i data-lucide="heart" class="w-5 h-5"></i>
-        <span class="text-[10px] font-medium mt-1">Wish List</span>
+      <button onclick="switchTab('calendar')" id="nav-calendar" class="flex flex-col items-center py-1 rounded-xl text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-colors">
+        <i data-lucide="calendar" class="w-5 h-5"></i>
+        <span class="text-[10px] font-medium mt-1">Calendar</span>
       </button>
 
       <button onclick="switchTab('compare')" id="nav-compare" class="flex flex-col items-center py-1 rounded-xl text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-colors">
@@ -687,9 +723,14 @@
   <script>
     // --- STATE MANAGEMENT ---
     let perfumeVault = [];
+    let scentWornRecords = {}; // Format: { "YYYY-MM-DD": [perfumeId1, perfumeId2] }
     let currentImageData = '';
     let selectedCompareIds = new Set();
     let currentActiveDetailId = null;
+
+    // Calendar State
+    let currentCalDate = new Date();
+    let selectedCalDateStr = formatDateKey(new Date());
 
     // Default Preset Volumes by Type
     const volumePresets = {
@@ -704,6 +745,7 @@
       lucide.createIcons();
       document.getElementById('purchaseDate').valueAsDate = new Date();
       loadVaultFromStorage();
+      loadCalendarFromStorage();
       updateVolumeOptions();
       renderCollection();
     };
@@ -720,7 +762,7 @@
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.getElementById(`tab-${tabKey}`).classList.add('active');
 
-      const tabs = ['purchase', 'collection', 'smelling', 'wishlist', 'compare'];
+      const tabs = ['purchase', 'collection', 'smelling', 'calendar', 'compare'];
       tabs.forEach(t => {
         const btn = document.getElementById(`nav-${t}`);
         if (!btn) return;
@@ -746,8 +788,9 @@
         renderCollection();
       } else if (tabKey === 'smelling') {
         renderSmellingList();
-      } else if (tabKey === 'wishlist') {
-        renderWishlist();
+      } else if (tabKey === 'calendar') {
+        renderCalendar();
+        renderSelectedDateLog();
       } else if (tabKey === 'compare') {
         renderCompareChecklists();
         renderComparisonOutput();
@@ -885,13 +928,12 @@
       }
 
       const pricePerMl = parseFloat((price / volume).toFixed(2));
-      const defaultStatus = 'Yes';
 
       const newEntry = {
         id: Date.now().toString(),
-        section: destination, // 'Collection', 'SmellingList', or 'Wishlist'
+        section: destination, // 'Collection' or 'SmellingList'
         type,
-        status: defaultStatus,
+        isToBuy: false,
         brand,
         name,
         volume,
@@ -917,49 +959,13 @@
       updateVolumeOptions();
       document.getElementById('purchaseDate').valueAsDate = new Date();
 
-      if (destination === 'Wishlist') {
-        showToast("Saved to your Wish List!");
-        switchTab('wishlist');
-      } else if (destination === 'SmellingList') {
-        showToast("Saved to your Smelling List!");
+      if (destination === 'SmellingList') {
+        showToast("Saved to your To-smell List!");
         switchTab('smelling');
       } else {
         showToast("Saved to your Collection!");
         switchTab('collection');
       }
-    }
-
-    // Purchase from Wish List: prefill Add New form with brand, name, notes, and photo
-    function purchaseFromWishlist(id, event) {
-      if (event) event.stopPropagation();
-      const item = perfumeVault.find(p => p.id === id);
-      if (!item) return;
-
-      // Prefill fields in Add New form
-      document.getElementById('brand').value = item.brand;
-      document.getElementById('name').value = item.name;
-      document.getElementById('topNotes').value = item.notes.top;
-      document.getElementById('heartNotes').value = item.notes.heart;
-      document.getElementById('baseNotes').value = item.notes.base;
-      document.getElementById('smellingLocation').value = item.smellingLocation || '';
-      
-      // Prefill photo
-      if (item.photoUrl && item.photoUrl !== DEFAULT_PLACEHOLDER) {
-        currentImageData = item.photoUrl;
-        showPhotoPreview(item.photoUrl);
-        document.getElementById('imageUrl').value = item.photoUrl.startsWith('data:') ? '' : item.photoUrl;
-      } else {
-        clearPhotoPreview();
-      }
-
-      // Reset pricing fields so user manually enters price, store, and date
-      document.getElementById('price').value = '';
-      document.getElementById('merchant').value = '';
-      document.getElementById('purchaseDate').valueAsDate = new Date();
-
-      // Switch to Add New tab
-      switchTab('purchase');
-      showToast("Prefilled from Wish List. Enter price & store!");
     }
 
     function saveVaultToStorage() {
@@ -977,7 +983,11 @@
           perfumeVault = JSON.parse(data);
           perfumeVault.forEach(p => {
             if (!p.section) p.section = 'Collection';
-            if (!p.status) p.status = 'Yes';
+            if (p.section === 'Wishlist') {
+              p.section = 'SmellingList';
+              p.isToBuy = true;
+            }
+            if (p.isToBuy === undefined) p.isToBuy = false;
             if (p.remarks === undefined) p.remarks = '';
             if (p.smellingLocation === undefined) p.smellingLocation = '';
           });
@@ -987,13 +997,43 @@
       }
     }
 
+    function saveCalendarToStorage() {
+      try {
+        localStorage.setItem('scent_calendar_data', JSON.stringify(scentWornRecords));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function loadCalendarFromStorage() {
+      const data = localStorage.getItem('scent_calendar_data');
+      if (data) {
+        try {
+          scentWornRecords = JSON.parse(data);
+        } catch (e) {
+          scentWornRecords = {};
+        }
+      }
+    }
+
+    function formatDateKey(dateObj) {
+      const y = dateObj.getFullYear();
+      const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const d = String(dateObj.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
     function exportBackupData() {
       if (perfumeVault.length === 0) {
         showToast("No perfume data to backup!");
         return;
       }
       try {
-        const jsonString = JSON.stringify(perfumeVault, null, 2);
+        const backupObj = {
+          vault: perfumeVault,
+          calendar: scentWornRecords
+        };
+        const jsonString = JSON.stringify(backupObj, null, 2);
         const dateStr = new Date().toISOString().slice(0, 10);
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(jsonString);
         const downloadAnchor = document.createElement('a');
@@ -1014,17 +1054,26 @@
       const reader = new FileReader();
       reader.onload = function(e) {
         try {
-          const imported = JSON.parse(e.target.result);
-          if (Array.isArray(imported)) {
-            perfumeVault = imported;
+          const parsed = JSON.parse(e.target.result);
+          if (Array.isArray(parsed)) {
+            // Legacy vault array backup
+            perfumeVault = parsed;
             saveVaultToStorage();
-            renderCollection();
-            renderSmellingList();
-            renderWishlist();
-            showToast("Backup restored successfully!");
-          } else {
-            alert("Invalid JSON format.");
+          } else if (parsed && typeof parsed === 'object') {
+            if (parsed.vault) {
+              perfumeVault = parsed.vault;
+              saveVaultToStorage();
+            }
+            if (parsed.calendar) {
+              scentWornRecords = parsed.calendar;
+              saveCalendarToStorage();
+            }
           }
+          renderCollection();
+          renderSmellingList();
+          renderCalendar();
+          renderSelectedDateLog();
+          showToast("Backup restored successfully!");
         } catch (err) {
           alert("Error parsing backup file.");
         }
@@ -1035,37 +1084,22 @@
     function toggleStatus(id, event) {
       if (event) event.stopPropagation();
       const item = perfumeVault.find(p => p.id === id);
-      if (item) {
-        const isWishlistSec = (item.section || '') === 'Wishlist';
-        if (isWishlistSec || item.section === 'SmellingList') {
-          item.status = item.status === 'Yes' ? 'No' : 'Yes';
-          showToast(`Status updated to ${item.status}`);
-        } else {
-          item.status = item.status === 'Active' ? 'Inactive' : 'Active';
-          showToast(`Status updated to ${item.status}`);
-        }
+      if (item && item.section === 'Collection') {
+        item.status = item.status === 'Active' ? 'Inactive' : 'Active';
+        showToast(`Status updated to ${item.status}`);
         saveVaultToStorage();
         renderCollection();
-        renderSmellingList();
-        renderWishlist();
       }
     }
 
-    // Toggle Heart to move between Smelling List and Wish List
-    function toggleHeartWishlist(id, event) {
+    function toggleHeartToBuy(id, event) {
       if (event) event.stopPropagation();
       const item = perfumeVault.find(p => p.id === id);
       if (item) {
-        if (item.section === 'SmellingList') {
-          item.section = 'Wishlist';
-          showToast("Moved to Wish List!");
-        } else if (item.section === 'Wishlist') {
-          item.section = 'SmellingList';
-          showToast("Moved back to Smelling List!");
-        }
+        item.isToBuy = !item.isToBuy;
+        showToast(item.isToBuy ? "Added to To-buy List!" : "Removed from To-buy List");
         saveVaultToStorage();
         renderSmellingList();
-        renderWishlist();
       }
     }
 
@@ -1077,12 +1111,10 @@
       const statusFilter = document.getElementById('filterStatus').value;
       const sortBy = document.getElementById('sortSelect').value;
 
-      // All collection items for header metrics
       const collectionItemsAll = perfumeVault.filter(item => (item.section || 'Collection') === 'Collection');
       const totalPurchases = collectionItemsAll.length;
       const availablePerfumesCount = collectionItemsAll.filter(item => (item.status || 'Active') === 'Active').length;
       
-      // Unique perfumes stored (without repeated ones with same brand and name)
       const uniquePerfumesSet = new Set();
       collectionItemsAll.forEach(item => {
         const key = `${item.brand.toLowerCase().trim()}|${item.name.toLowerCase().trim()}`;
@@ -1090,7 +1122,6 @@
       });
       const perfumesStoredCount = uniquePerfumesSet.size;
 
-      // Update header counter texts (Available Perfumes stacked above Total Purchases with larger font)
       document.getElementById('collectionActivePerfumesText').innerText = `${availablePerfumesCount} Available Perfume${availablePerfumesCount === 1 ? '' : 's'}`;
       document.getElementById('collectionTotalPurchaseText').innerText = `${totalPurchases} Total Purchase${totalPurchases === 1 ? '' : 's'}`;
       document.getElementById('collectionStoredPerfumesText').innerText = `${perfumesStoredCount} Perfume${perfumesStoredCount === 1 ? '' : 's'} Stored`;
@@ -1148,20 +1179,18 @@
       lucide.createIcons();
     }
 
-    // --- RENDER SMELLING LIST (Tab 3) - Grouped by Status (No above Yes) and Location ---
+    // --- RENDER TO-SMELL LIST (Tab 3) ---
     function renderSmellingList() {
       const grid = document.getElementById('smellingGrid');
       const search = document.getElementById('smellingSearchInput').value.toLowerCase();
       const filter = document.getElementById('smellingFilterType').value;
-      const statusFilter = document.getElementById('smellingFilterStatus').value;
       const sortBy = document.getElementById('smellingSortSelect').value;
 
       let smellingItems = perfumeVault.filter(item => {
         const isSmelling = (item.section || '') === 'SmellingList';
         const matchesSearch = item.brand.toLowerCase().includes(search) || item.name.toLowerCase().includes(search);
         const matchesType = filter === 'All' || item.type === filter;
-        const matchesStatus = statusFilter === 'All' || (item.status || 'Yes') === statusFilter;
-        return isSmelling && matchesSearch && matchesType && matchesStatus;
+        return isSmelling && matchesSearch && matchesType;
       });
 
       smellingItems.sort((a, b) => {
@@ -1178,162 +1207,280 @@
         grid.innerHTML = `
           <div class="text-center py-12 bg-white dark:bg-stone-900 rounded-2xl border border-dashed border-stone-200 dark:border-stone-800 p-6">
             <i data-lucide="compass" class="w-8 h-8 mx-auto text-stone-300 dark:text-stone-600 mb-2"></i>
-            <p class="text-sm font-medium text-stone-600 dark:text-stone-300">No fragrances in smelling list</p>
-            <p class="text-xs text-stone-400 mt-1">Tap 'Add New' in the center and select 'Save to Smelling List'.</p>
+            <p class="text-sm font-medium text-stone-600 dark:text-stone-300">No fragrances in to-smell list</p>
+            <p class="text-xs text-stone-400 mt-1">Tap 'Add New' in the center and select 'Save to To-smell List'.</p>
           </div>
         `;
         lucide.createIcons();
         return;
       }
 
-      // Separate into "No" and "Yes" buckets
-      const statusNoItems = smellingItems.filter(item => (item.status || 'Yes') === 'No');
-      const statusYesItems = smellingItems.filter(item => (item.status || 'Yes') === 'Yes');
+      const toBuyItems = smellingItems.filter(item => item.isToBuy);
+      const remainingItems = smellingItems.filter(item => !item.isToBuy);
 
-      // Helper function to build location map for a subset of items
-      function buildLocationMap(items) {
-        const locationMap = {};
-        items.forEach(item => {
-          let locs = [];
-          if (item.smellingLocation && item.smellingLocation.trim()) {
-            locs = item.smellingLocation.split(';').map(l => l.trim()).filter(l => l.length > 0);
-          }
-          if (locs.length === 0) {
-            locs = ['Uncategorized'];
-          }
-          locs.forEach(loc => {
-            if (!locationMap[loc]) locationMap[loc] = [];
-            locationMap[loc].push(item);
-          });
+      const locationMap = {};
+      remainingItems.forEach(item => {
+        let locs = [];
+        if (item.smellingLocation && item.smellingLocation.trim()) {
+          locs = item.smellingLocation.split(';').map(l => l.trim()).filter(l => l.length > 0);
+        }
+        if (locs.length === 0) {
+          locs = ['Uncategorized'];
+        }
+
+        locs.forEach(loc => {
+          if (!locationMap[loc]) locationMap[loc] = [];
+          locationMap[loc].push(item);
         });
-        return locationMap;
-      }
-
-      const noLocationMap = buildLocationMap(statusNoItems);
-      const yesLocationMap = buildLocationMap(statusYesItems);
+      });
 
       let htmlOutput = '';
 
-      // Helper function to render a status group
-      function renderStatusGroup(statusTitle, badgeColorClass, locationMap) {
-        if (Object.keys(locationMap).length === 0) return '';
-        
-        let sectionHtml = `
-          <div class="space-y-3 pb-2">
-            <div class="flex items-center gap-2 border-b border-brand-200 dark:border-stone-800 pb-1.5">
-              <span class="text-xs font-bold uppercase tracking-wider text-stone-900 dark:text-stone-100">Status: ${statusTitle}</span>
+      if (toBuyItems.length > 0) {
+        htmlOutput += `
+          <div class="space-y-2">
+            <div class="flex items-center gap-2 px-1 border-b border-rose-200 dark:border-rose-900/50 pb-1.5">
+              <i data-lucide="heart" class="w-4 h-4 text-rose-500 fill-rose-500"></i>
+              <h3 class="font-serif font-bold text-sm text-stone-900 dark:text-stone-100 uppercase tracking-wide">To-buy List</h3>
+              <span class="text-[10px] bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 px-2 py-0.5 rounded-full font-medium">${toBuyItems.length}</span>
             </div>
+            <div class="space-y-2">
+              ${toBuyItems.map(item => `
+                <div onclick="openDetailModal('${item.id}')" class="bg-white dark:bg-stone-900 rounded-2xl p-3.5 shadow-sm border border-stone-100 dark:border-stone-800 flex items-center gap-3.5 cursor-pointer hover:border-brand-300 dark:hover:border-stone-700 transition-all active:scale-[0.99]">
+                  <div class="w-16 h-16 rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-800 flex-shrink-0 relative">
+                    <img src="${item.photoUrl}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.src='${DEFAULT_PLACEHOLDER}'">
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-[10px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider truncate">${item.brand}</p>
+                    <h3 class="font-serif font-bold text-base text-stone-900 dark:text-stone-100 truncate">${item.name}</h3>
+                    <p class="text-xs font-medium text-stone-500 dark:text-stone-400 mt-0.5">${item.volume} mL • ${item.type} ${item.smellingLocation ? '• ' + item.smellingLocation : ''}</p>
+                  </div>
+                  
+                  <div class="flex items-center gap-1.5 flex-shrink-0">
+                    <button onclick="toggleHeartToBuy('${item.id}', event)" title="Remove from To-buy List" class="w-9 h-9 rounded-xl flex items-center justify-center bg-rose-50 hover:bg-rose-100 dark:bg-stone-800 dark:hover:bg-stone-700 text-rose-500 transition-colors border border-rose-200 dark:border-stone-700">
+                      <i data-lucide="heart" class="w-4 h-4 fill-rose-500 text-rose-500"></i>
+                    </button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
         `;
-
-        for (const [loc, items] of Object.entries(locationMap)) {
-          sectionHtml += `
-            <div class="space-y-2 pl-2">
-              <div class="flex items-center gap-2 px-1">
-                <i data-lucide="map-pin" class="w-3.5 h-3.5 text-brand-600 dark:text-brand-400"></i>
-                <h4 class="font-serif font-bold text-xs text-stone-800 dark:text-stone-200 uppercase tracking-wide">${loc}</h4>
-                <span class="text-[10px] bg-brand-100 dark:bg-brand-900/50 text-brand-700 dark:text-brand-300 px-2 py-0.5 rounded-full font-medium">${items.length}</span>
-              </div>
-              <div class="space-y-2">
-                ${items.map(item => {
-                  const isSmellingYes = (item.status || 'Yes') === 'Yes';
-                  return `
-                    <div onclick="openDetailModal('${item.id}')" class="bg-white dark:bg-stone-900 rounded-2xl p-3.5 shadow-sm border border-stone-100 dark:border-stone-800 flex items-center gap-3.5 cursor-pointer hover:border-brand-300 dark:hover:border-stone-700 transition-all active:scale-[0.99] ${!isSmellingYes ? 'opacity-60' : ''}">
-                      <div class="w-16 h-16 rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-800 flex-shrink-0 relative">
-                        <img src="${item.photoUrl}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.src='${DEFAULT_PLACEHOLDER}'">
-                      </div>
-                      <div class="flex-1 min-w-0">
-                        <p class="text-[10px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider truncate">${item.brand}</p>
-                        <h3 class="font-serif font-bold text-base text-stone-900 dark:text-stone-100 truncate">${item.name}</h3>
-                        <p class="text-xs font-medium text-stone-500 dark:text-stone-400 mt-0.5">${item.volume} mL • ${item.type}</p>
-                      </div>
-                      
-                      <div class="flex items-center gap-2 flex-shrink-0">
-                        <button onclick="toggleStatus('${item.id}', event)" class="px-2.5 py-1 rounded-full text-[10px] font-semibold transition-all flex items-center gap-1 ${
-                          isSmellingYes ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-300' : 'bg-stone-200 dark:bg-stone-800 text-stone-600'
-                        }">
-                          <span class="w-1.5 h-1.5 rounded-full ${isSmellingYes ? 'bg-amber-500' : 'bg-stone-400'}"></span>
-                          <span>${item.status || 'Yes'}</span>
-                        </button>
-
-                        <button onclick="toggleHeartWishlist('${item.id}', event)" title="Move to Wish List" class="w-9 h-9 rounded-xl flex items-center justify-center bg-brand-50 hover:bg-brand-100 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-400 hover:text-brand-500 transition-colors border border-brand-200 dark:border-stone-700">
-                          <i data-lucide="heart" class="w-4 h-4"></i>
-                        </button>
-                      </div>
-                    </div>
-                  `;
-                }).join('')}
-              </div>
-            </div>
-          `;
-        }
-
-        sectionHtml += `</div>`;
-        return sectionHtml;
       }
 
-      // Put "No" items ABOVE "Yes" items
-      htmlOutput += renderStatusGroup("No", "bg-stone-200 text-stone-700", noLocationMap);
-      htmlOutput += renderStatusGroup("Yes", "bg-amber-100 text-amber-700", yesLocationMap);
+      for (const [loc, items] of Object.entries(locationMap)) {
+        htmlOutput += `
+          <div class="space-y-2 pt-2">
+            <div class="flex items-center gap-2 px-1">
+              <i data-lucide="map-pin" class="w-3.5 h-3.5 text-brand-600 dark:text-brand-400"></i>
+              <h3 class="font-serif font-bold text-sm text-stone-900 dark:text-stone-100 uppercase tracking-wide">${loc}</h3>
+              <span class="text-[10px] bg-brand-100 dark:bg-brand-900/50 text-brand-700 dark:text-brand-300 px-2 py-0.5 rounded-full font-medium">${items.length}</span>
+            </div>
+            <div class="space-y-2">
+              ${items.map(item => `
+                <div onclick="openDetailModal('${item.id}')" class="bg-white dark:bg-stone-900 rounded-2xl p-3.5 shadow-sm border border-stone-100 dark:border-stone-800 flex items-center gap-3.5 cursor-pointer hover:border-brand-300 dark:hover:border-stone-700 transition-all active:scale-[0.99]">
+                  <div class="w-16 h-16 rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-800 flex-shrink-0 relative">
+                    <img src="${item.photoUrl}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.src='${DEFAULT_PLACEHOLDER}'">
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-[10px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider truncate">${item.brand}</p>
+                    <h3 class="font-serif font-bold text-base text-stone-900 dark:text-stone-100 truncate">${item.name}</h3>
+                    <p class="text-xs font-medium text-stone-500 dark:text-stone-400 mt-0.5">${item.volume} mL • ${item.type}</p>
+                  </div>
+                  
+                  <div class="flex items-center gap-2 flex-shrink-0">
+                    <button onclick="toggleHeartToBuy('${item.id}', event)" title="Add to To-buy List" class="w-9 h-9 rounded-xl flex items-center justify-center bg-brand-50 hover:bg-brand-100 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-400 hover:text-rose-500 transition-colors border border-brand-200 dark:border-stone-700">
+                      <i data-lucide="heart" class="w-4 h-4"></i>
+                    </button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
 
       grid.innerHTML = htmlOutput;
       lucide.createIcons();
     }
 
-    // --- RENDER WISH LIST (Tab 4) - Flat List with Purchase Button ---
-    function renderWishlist() {
-      const grid = document.getElementById('wishlistGrid');
-      const search = document.getElementById('wishlistSearchInput').value.toLowerCase();
+    // --- SCENT CALENDAR LOGIC ---
+    function changeCalendarMonth(direction) {
+      currentCalDate.setMonth(currentCalDate.getMonth() + direction);
+      renderCalendar();
+    }
 
-      let wishlistItems = perfumeVault.filter(item => {
-        const isWishSec = (item.section || '') === 'Wishlist';
-        const matchesSearch = item.brand.toLowerCase().includes(search) || item.name.toLowerCase().includes(search);
-        return isWishSec && matchesSearch;
-      });
+    function setCalendarToToday() {
+      currentCalDate = new Date();
+      selectedCalDateStr = formatDateKey(currentCalDate);
+      renderCalendar();
+      renderSelectedDateLog();
+    }
 
-      document.getElementById('wishlistCountText').innerText = `${wishlistItems.length} Fragrance${wishlistItems.length === 1 ? '' : 's'} stored`;
+    function renderCalendar() {
+      const titleEl = document.getElementById('calMonthYearTitle');
+      const gridEl = document.getElementById('calDaysGrid');
 
-      if (wishlistItems.length === 0) {
-        grid.innerHTML = `
-          <div class="text-center py-12 bg-white dark:bg-stone-900 rounded-2xl border border-dashed border-stone-200 dark:border-stone-800 p-6">
-            <i data-lucide="heart" class="w-8 h-8 mx-auto text-stone-300 dark:text-stone-600 mb-2"></i>
-            <p class="text-sm font-medium text-stone-600 dark:text-stone-300">No fragrances in wish list</p>
-            <p class="text-xs text-stone-400 mt-1">Tap the heart icon on items in your Smelling List or save directly here.</p>
+      const year = currentCalDate.getFullYear();
+      const month = currentCalDate.getMonth();
+
+      const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      titleEl.innerText = `${monthNames[month]} ${year}`;
+
+      const firstDayIndex = new Date(year, month, 1).getDay();
+      const totalDays = new Date(year, month + 1, 0).getDate();
+      const todayStr = formatDateKey(new Date());
+
+      let daysHtml = '';
+
+      // Blank padding slots before 1st of month
+      for (let i = 0; i < firstDayIndex; i++) {
+        daysHtml += `<div class="h-10"></div>`;
+      }
+
+      // Days of the month
+      for (let day = 1; day <= totalDays; day++) {
+        const dateObj = new Date(year, month, day);
+        const dateKey = formatDateKey(dateObj);
+        const isSelected = dateKey === selectedCalDateStr;
+        const isToday = dateKey === todayStr;
+        const hasWorn = scentWornRecords[dateKey] && scentWornRecords[dateKey].length > 0;
+
+        let bgClass = "bg-stone-50 dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300";
+        if (isSelected) {
+          bgClass = "bg-brand-500 text-white font-bold ring-2 ring-brand-500/40 shadow-sm";
+        } else if (isToday) {
+          bgClass = "border border-brand-500 text-brand-700 dark:text-brand-300 font-bold";
+        }
+
+        daysHtml += `
+          <button onclick="selectCalendarDate('${dateKey}')" class="h-10 rounded-xl flex flex-col items-center justify-center relative text-xs font-medium transition-all ${bgClass}">
+            <span>${day}</span>
+            ${hasWorn ? `<span class="w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white' : 'bg-brand-500'} mt-0.5"></span>` : ''}
+          </button>
+        `;
+      }
+
+      gridEl.innerHTML = daysHtml;
+    }
+
+    function selectCalendarDate(dateKey) {
+      selectedCalDateStr = dateKey;
+      renderCalendar();
+      renderSelectedDateLog();
+    }
+
+    function renderSelectedDateLog() {
+      const titleEl = document.getElementById('selectedDateTitle');
+      const listEl = document.getElementById('selectedDateWornList');
+
+      const parts = selectedCalDateStr.split('-');
+      const dateObj = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+      const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+      titleEl.innerText = dateObj.toLocaleDateString(undefined, options);
+
+      const wornIds = scentWornRecords[selectedCalDateStr] || [];
+      const wornItems = perfumeVault.filter(p => wornIds.includes(p.id));
+
+      if (wornItems.length === 0) {
+        listEl.innerHTML = `
+          <div class="text-center py-6 bg-stone-50 dark:bg-stone-800/50 rounded-xl border border-dashed border-stone-200 dark:border-stone-700">
+            <p class="text-xs text-stone-400">No perfume logged for this day.</p>
           </div>
         `;
-        lucide.createIcons();
         return;
       }
 
-      grid.innerHTML = wishlistItems.map(item => {
-        const isSmellingYes = (item.status || 'Yes') === 'Yes';
-        return `
-          <div onclick="openDetailModal('${item.id}')" class="bg-white dark:bg-stone-900 rounded-2xl p-3.5 shadow-sm border border-stone-100 dark:border-stone-800 flex items-center gap-3.5 cursor-pointer hover:border-brand-300 dark:hover:border-stone-700 transition-all active:scale-[0.99] ${!isSmellingYes ? 'opacity-60' : ''}">
-            <div class="w-16 h-16 rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-800 flex-shrink-0 relative">
+      listEl.innerHTML = wornItems.map(item => `
+        <div class="bg-stone-50 dark:bg-stone-800/70 p-2.5 rounded-xl border border-stone-200 dark:border-stone-700 flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-10 h-10 rounded-lg overflow-hidden bg-stone-200 dark:bg-stone-700 flex-shrink-0">
               <img src="${item.photoUrl}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.src='${DEFAULT_PLACEHOLDER}'">
             </div>
-            <div class="flex-1 min-w-0">
-              <p class="text-[10px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider truncate">${item.brand}</p>
-              <h3 class="font-serif font-bold text-base text-stone-900 dark:text-stone-100 truncate">${item.name}</h3>
-              <p class="text-xs font-medium text-stone-500 dark:text-stone-400 mt-0.5">${item.volume} mL • ${item.type} ${item.smellingLocation ? '• ' + item.smellingLocation : ''}</p>
+            <div class="min-w-0">
+              <p class="text-[9px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider truncate">${item.brand}</p>
+              <h4 class="font-serif font-bold text-xs text-stone-900 dark:text-stone-100 truncate">${item.name}</h4>
             </div>
-            
-            <div class="flex items-center gap-1.5 flex-shrink-0">
-              <!-- Purchase Button -->
-              <button onclick="purchaseFromWishlist('${item.id}', event)" title="Purchase Perfume (Re-entry)" class="px-2.5 py-1.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-[10px] font-semibold transition-colors flex items-center gap-1 shadow-sm">
-                <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>
-                <span>Purchase</span>
-              </button>
+          </div>
+          <button onclick="removeWornPerfume('${item.id}')" class="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors" title="Remove record">
+            <i data-lucide="trash-2" class="w-4 h-4"></i>
+          </button>
+        </div>
+      `).join('');
+      lucide.createIcons();
+    }
 
-              <!-- Remove from Wishlist (Un-heart) -->
-              <button onclick="toggleHeartWishlist('${item.id}', event)" title="Move back to Smelling List" class="w-9 h-9 rounded-xl flex items-center justify-center bg-brand-50 hover:bg-brand-100 dark:bg-stone-800 dark:hover:bg-stone-700 text-brand-500 transition-colors border border-brand-200 dark:border-stone-700">
-                <i data-lucide="heart" class="w-4 h-4 fill-brand-500 text-brand-500"></i>
-              </button>
+    function openWearPickerModal() {
+      renderWearPickerList();
+      document.getElementById('wearPickerModal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeWearPickerModal() {
+      document.getElementById('wearPickerModal').classList.add('hidden');
+    }
+
+    function renderWearPickerList() {
+      const grid = document.getElementById('wearPickerGrid');
+      const search = document.getElementById('wearSearchInput').value.toLowerCase();
+      const collectionItems = perfumeVault.filter(item => (item.section || 'Collection') === 'Collection');
+
+      const filtered = collectionItems.filter(item => item.brand.toLowerCase().includes(search) || item.name.toLowerCase().includes(search));
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `<p class="text-xs text-stone-400 text-center py-4">No collection perfumes found.</p>`;
+        return;
+      }
+
+      const wornIds = scentWornRecords[selectedCalDateStr] || [];
+
+      grid.innerHTML = filtered.map(item => {
+        const isAlreadyWorn = wornIds.includes(item.id);
+        return `
+          <div onclick="toggleWornPerfume('${item.id}')" class="p-2.5 rounded-xl border ${isAlreadyWorn ? 'border-brand-500 bg-brand-50 dark:bg-brand-950/40' : 'border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800'} flex items-center justify-between cursor-pointer hover:border-brand-300 transition-all">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-10 h-10 rounded-lg overflow-hidden bg-stone-100 dark:bg-stone-700 flex-shrink-0">
+                <img src="${item.photoUrl}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.src='${DEFAULT_PLACEHOLDER}'">
+              </div>
+              <div class="min-w-0">
+                <p class="text-[9px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider truncate">${item.brand}</p>
+                <h4 class="font-serif font-bold text-xs text-stone-900 dark:text-stone-100 truncate">${item.name}</h4>
+              </div>
+            </div>
+            <div class="w-5 h-5 rounded-full border ${isAlreadyWorn ? 'bg-brand-500 border-brand-500 text-white' : 'border-stone-300'} flex items-center justify-center text-xs">
+              ${isAlreadyWorn ? '<i data-lucide="check" class="w-3 h-3"></i>' : ''}
             </div>
           </div>
         `;
       }).join('');
-
       lucide.createIcons();
+    }
+
+    function toggleWornPerfume(id) {
+      if (!scentWornRecords[selectedCalDateStr]) {
+        scentWornRecords[selectedCalDateStr] = [];
+      }
+      const idx = scentWornRecords[selectedCalDateStr].indexOf(id);
+      if (idx > -1) {
+        scentWornRecords[selectedCalDateStr].splice(idx, 1);
+        showToast("Removed from worn log.");
+      } else {
+        scentWornRecords[selectedCalDateStr].push(id);
+        showToast("Logged perfume for today!");
+      }
+      saveCalendarToStorage();
+      renderCalendar();
+      renderSelectedDateLog();
+      renderWearPickerList();
+    }
+
+    function removeWornPerfume(id) {
+      if (!scentWornRecords[selectedCalDateStr]) return;
+      scentWornRecords[selectedCalDateStr] = scentWornRecords[selectedCalDateStr.trim()].filter(i => i !== id);
+      saveCalendarToStorage();
+      renderCalendar();
+      renderSelectedDateLog();
+      showToast("Record removed.");
     }
 
     // --- DETAIL MODAL LOGIC ---
@@ -1343,9 +1490,8 @@
 
       currentActiveDetailId = id;
       const isCollectionSec = (item.section || 'Collection') === 'Collection';
-      const statusLabel = isCollectionSec ? 'Status' : 'Status';
-      const statusVal = item.status || 'Yes';
-      const isPositive = statusVal === 'Active' || statusVal === 'Yes';
+      const statusVal = item.status || 'Active';
+      const isPositive = statusVal === 'Active';
 
       document.getElementById('modalBrand').innerText = item.brand;
       document.getElementById('modalName').innerText = item.name;
@@ -1359,16 +1505,23 @@
           <div class="space-y-1.5 text-xs flex-1">
             <div class="flex justify-between items-center">
               <span class="text-stone-400">Section:</span>
-              <span class="font-semibold text-brand-600 dark:text-brand-400">${item.section || 'Collection'}</span>
+              <span class="font-semibold text-brand-600 dark:text-brand-400">${item.section === 'SmellingList' ? 'To-smell List' : 'Collection'}</span>
             </div>
-            <div class="flex justify-between items-center">
-              <span class="text-stone-400">${statusLabel}:</span>
-              <button onclick="toggleStatus('${item.id}'); openDetailModal('${item.id}');" class="px-2 py-0.5 rounded-full text-[10px] font-semibold transition-colors ${
-                isPositive ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 border border-emerald-300' : 'bg-stone-200 text-stone-600'
-              }">
-                ${statusVal}
-              </button>
-            </div>
+            ${isCollectionSec ? `
+              <div class="flex justify-between items-center">
+                <span class="text-stone-400">Status:</span>
+                <button onclick="toggleStatus('${item.id}'); openDetailModal('${item.id}');" class="px-2 py-0.5 rounded-full text-[10px] font-semibold transition-colors ${
+                  isPositive ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 border border-emerald-300' : 'bg-stone-200 text-stone-600'
+                }">
+                  ${statusVal}
+                </button>
+              </div>
+            ` : `
+              <div class="flex justify-between items-center">
+                <span class="text-stone-400">To-buy List:</span>
+                <span class="font-semibold text-rose-600">${item.isToBuy ? 'Yes (Hearted)' : 'No'}</span>
+              </div>
+            `}
             <div class="flex justify-between">
               <span class="text-stone-400">Type & Vol:</span>
               <span class="font-semibold text-stone-800 dark:text-stone-200">${item.type} • ${item.volume} mL</span>
@@ -1395,7 +1548,7 @@
           </div>
           ${item.smellingLocation ? `
             <div class="flex justify-between">
-              <span class="text-stone-400">Smelling Location:</span>
+              <span class="text-stone-400">To-smell Location:</span>
               <span class="font-medium text-brand-600 dark:text-brand-400">${item.smellingLocation}</span>
             </div>
           ` : ''}
@@ -1469,29 +1622,7 @@
       toggleEditCustomVolume();
     }
 
-    function updateEditStatusOptions(selectedStatus) {
-      const section = document.getElementById('editSection').value;
-      const statusSelect = document.getElementById('editStatus');
-      const statusLabel = document.getElementById('editStatusLabel');
-
-      if (section === 'SmellingList' || section === 'Wishlist') {
-        statusLabel.innerText = 'Status';
-        statusSelect.innerHTML = `
-          <option value="Yes">Yes</option>
-          <option value="No">No</option>
-        `;
-      } else {
-        statusLabel.innerText = 'Status';
-        statusSelect.innerHTML = `
-          <option value="Active">Active</option>
-          <option value="Inactive">Inactive</option>
-        `;
-      }
-
-      if (selectedStatus !== undefined) {
-        statusSelect.value = selectedStatus;
-      }
-    }
+    function updateEditStatusOptions() {}
 
     function toggleEditCustomVolume() {
       const select = document.getElementById('editVolumeSelect');
@@ -1517,7 +1648,6 @@
 
       document.getElementById('editId').value = item.id;
       document.getElementById('editSection').value = item.section || 'Collection';
-      updateEditStatusOptions(item.status || 'Yes');
       document.getElementById('editType').value = item.type;
       document.getElementById('editBrand').value = item.brand;
       document.getElementById('editName').value = item.name;
@@ -1543,7 +1673,6 @@
 
       const section = document.getElementById('editSection').value;
       const type = document.getElementById('editType').value;
-      const status = document.getElementById('editStatus').value;
       const brand = document.getElementById('editBrand').value.trim();
       const name = document.getElementById('editName').value.trim();
       const price = parseFloat(document.getElementById('editPrice').value);
@@ -1559,7 +1688,7 @@
 
       perfumeVault[index] = {
         ...perfumeVault[index],
-        section, type, status, brand, name, volume, price, pricePerMl, merchant, purchaseDate, smellingLocation, remarks, photoUrl,
+        section, type, brand, name, volume, price, pricePerMl, merchant, purchaseDate, smellingLocation, remarks, photoUrl,
         notes: {
           top: document.getElementById('editTopNotes').value.trim() || 'N/A',
           heart: document.getElementById('editHeartNotes').value.trim() || 'N/A',
@@ -1571,7 +1700,6 @@
       closeEditModal();
       renderCollection();
       renderSmellingList();
-      renderWishlist();
       showToast("Perfume entry updated!");
     }
 
@@ -1582,7 +1710,6 @@
         saveVaultToStorage();
         renderCollection();
         renderSmellingList();
-        renderWishlist();
         showToast("Entry deleted.");
       }
     }
@@ -1591,9 +1718,7 @@
     function renderCompareChecklists() {
       const collectionContainer = document.getElementById('compareCollectionChecklist');
       const smellingContainer = document.getElementById('compareSmellingChecklist');
-      const wishlistContainer = document.getElementById('compareWishlistChecklist');
 
-      // For Collection checklist, group by same brand & name, keeping only the latest item for selection
       const rawCollectionItems = perfumeVault.filter(item => (item.section || 'Collection') === 'Collection');
       const collMap = new Map();
       rawCollectionItems.forEach(item => {
@@ -1608,9 +1733,7 @@
         }
       });
       const collectionItems = Array.from(collMap.values());
-
       const smellingItems = perfumeVault.filter(item => (item.section || '') === 'SmellingList');
-      const wishlistItems = perfumeVault.filter(item => (item.section || '') === 'Wishlist');
 
       if (collectionItems.length === 0) {
         collectionContainer.innerHTML = `<p class="text-xs text-stone-400 py-1">No items in collection.</p>`;
@@ -1627,23 +1750,9 @@
       }
 
       if (smellingItems.length === 0) {
-        smellingContainer.innerHTML = `<p class="text-xs text-stone-400 py-1">No items in smelling list.</p>`;
+        smellingContainer.innerHTML = `<p class="text-xs text-stone-400 py-1">No items in to-smell list.</p>`;
       } else {
         smellingContainer.innerHTML = smellingItems.map(item => `
-          <label class="flex items-start justify-between py-1.5 cursor-pointer text-xs gap-2">
-            <div class="flex items-start gap-2 flex-1 min-w-0">
-              <input type="checkbox" value="${item.id}" ${selectedCompareIds.has(item.id) ? 'checked' : ''} onchange="toggleCompareSelection('${item.id}')" class="rounded border-stone-300 text-brand-600 focus:ring-brand-500 mt-0.5 flex-shrink-0">
-              <span class="font-medium text-stone-800 dark:text-stone-200 leading-snug break-words">${item.brand} - ${item.name}</span>
-            </div>
-            <span class="text-[10px] text-stone-400 font-mono flex-shrink-0 pt-0.5">${item.volume}mL • $${item.pricePerMl}/mL</span>
-          </label>
-        `).join('');
-      }
-
-      if (wishlistItems.length === 0) {
-        wishlistContainer.innerHTML = `<p class="text-xs text-stone-400 py-1">No items in wish list.</p>`;
-      } else {
-        wishlistContainer.innerHTML = wishlistItems.map(item => `
           <label class="flex items-start justify-between py-1.5 cursor-pointer text-xs gap-2">
             <div class="flex items-start gap-2 flex-1 min-w-0">
               <input type="checkbox" value="${item.id}" ${selectedCompareIds.has(item.id) ? 'checked' : ''} onchange="toggleCompareSelection('${item.id}')" class="rounded border-stone-300 text-brand-600 focus:ring-brand-500 mt-0.5 flex-shrink-0">
@@ -1696,17 +1805,6 @@
       renderComparisonOutput();
     }
 
-    function selectAllWishlistForCompare() {
-      const items = perfumeVault.filter(item => (item.section || '') === 'Wishlist');
-      const allSelected = items.every(item => selectedCompareIds.has(item.id));
-      items.forEach(item => {
-        if (allSelected) selectedCompareIds.delete(item.id);
-        else selectedCompareIds.add(item.id);
-      });
-      renderCompareChecklists();
-      renderComparisonOutput();
-    }
-
     function renderComparisonOutput() {
       const output = document.getElementById('comparisonOutput');
       const selectedItems = perfumeVault.filter(item => selectedCompareIds.has(item.id));
@@ -1731,18 +1829,13 @@
               const isBestValue = item.pricePerMl === minPricePerMl && selectedItems.length > 1;
               const sec = item.section || 'Collection';
               
-              // Determine category icon
               let iconName = 'home';
               let badgeBg = 'bg-brand-500/90 text-white';
               if (sec === 'SmellingList') {
                 iconName = 'compass';
                 badgeBg = 'bg-stone-900/80 text-white';
-              } else if (sec === 'Wishlist') {
-                iconName = 'heart';
-                badgeBg = 'bg-rose-500/90 text-white';
               }
 
-              // Count total purchases with same brand & name in Collection
               let purchaseCount = 0;
               if (sec === 'Collection') {
                 purchaseCount = perfumeVault.filter(p => 
@@ -1771,7 +1864,8 @@
                   </div>
 
                   <div class="bg-brand-50 dark:bg-brand-950/40 border border-brand-200 dark:border-brand-900/50 p-2.5 rounded-xl flex justify-between items-center text-xs">
-                    <span class="text-brand-800 dark:text-brand-300 font-semibold">Unit Price ($/mL)</span> <span class="text-sm font-bold text-brand-700 dark:text-brand-300">$${item.pricePerMl.toFixed(2)}</span>
+                    <span class="text-brand-800 dark:text-brand-300 font-semibold">Unit Price ($/mL)</span>
+                    <span class="text-sm font-bold text-brand-700 dark:text-brand-300">$${item.pricePerMl.toFixed(2)}</span>
                   </div>
 
                   ${purchaseCount > 0 ? `
