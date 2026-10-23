@@ -261,10 +261,10 @@
           </div>
 
           <p class="text-[11px] text-stone-500 dark:text-stone-400 leading-tight">
-            Paste a note description paragraph (Traditional Chinese, English, etc.) below and tap identify to extract General, Top, Heart, & Base notes automatically.
+            Paste a note description paragraph (Traditional Chinese, English, etc.) below and tap identify to extract Top, Heart, & Base notes automatically.
           </p>
 
-          <textarea id="notesParagraph" rows="3" placeholder="e.g. 香調：木質花香調&#10;前調：白松香精油、黑醋栗&#10;中調：鳶尾花奶油、岩玫瑰&#10;後調：馬達加斯加香草、麝香" class="w-full px-3 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
+          <textarea id="notesParagraph" rows="3" placeholder="e.g. 前調：白松香精油、黑醋栗&#10;中調：鳶尾花奶油、岩玫瑰&#10;後調：馬達加斯加香草、麝香" class="w-full px-3 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
 
           <button type="button" onclick="parseNotesParagraph()" class="w-full py-2 bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 text-xs font-semibold rounded-xl border border-stone-200 dark:border-stone-700 transition-colors flex items-center justify-center gap-1.5">
             <i data-lucide="wand-2" class="w-3.5 h-3.5 text-brand-500"></i>
@@ -290,11 +290,16 @@
             <span class="text-[11px] text-stone-400 block">Pick 1 or 2 colours for card dot</span>
           </div>
 
-          <!-- Identified Notes Rows -->
+          <!-- Notes Rows -->
           <div class="space-y-2 pt-2 border-t border-stone-100 dark:border-stone-800">
             <div>
               <label class="text-[10px] font-semibold text-brand-600 dark:text-brand-400 uppercase">General Note (香調 / 主調)</label>
-              <input type="text" id="generalNotes" placeholder="e.g. Woody Floral, Amber Spicy" class="w-full mt-0.5 px-3 py-1.5 rounded-lg text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-1 focus:ring-brand-500">
+              <select id="generalNotes" class="w-full mt-0.5 px-3 py-1.5 rounded-lg text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-1 focus:ring-brand-500 font-medium">
+                <option value="花香調">花香調</option>
+                <option value="木質調">木質調</option>
+                <option value="清新調">清新調</option>
+                <option value="琥珀調">琥珀調</option>
+              </select>
             </div>
             <div>
               <label class="text-[10px] font-semibold text-brand-600 dark:text-brand-400 uppercase">Top Notes (前調)</label>
@@ -723,7 +728,12 @@
             <label class="block text-xs font-semibold uppercase tracking-wider text-brand-700 dark:text-brand-400">Notes Breakdown</label>
             <div>
               <label class="text-[10px] font-semibold text-stone-500 uppercase">General Note (香調 / 主調)</label>
-              <input type="text" id="editGeneralNotes" class="w-full mt-0.5 px-3 py-1.5 rounded-lg text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
+              <select id="editGeneralNotes" class="w-full mt-0.5 px-3 py-1.5 rounded-lg text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 font-medium">
+                <option value="花香調">花香調</option>
+                <option value="木質調">木質調</option>
+                <option value="清新調">清新調</option>
+                <option value="琥珀調">琥珀調</option>
+              </select>
             </div>
             <div>
               <label class="text-[10px] font-semibold text-stone-500 uppercase">Top Notes</label>
@@ -969,14 +979,12 @@
         return;
       }
 
-      let general = "", top = "", heart = "", base = "";
+      let top = "", heart = "", base = "";
       const lines = text.split(/\r?\n/);
       lines.forEach(line => {
         const trimmed = line.trim();
         if (!trimmed) return;
-        if (/香調|主調|General\s*Notes?|Scent\s*Family/i.test(trimmed)) {
-          general = cleanNoteLine(trimmed, /香調|主調|General\s*Notes?|Scent\s*Family/i);
-        } else if (/前調|前味|Top\s*Notes?/i.test(trimmed)) {
+        if (/前調|前味|Top\s*Notes?/i.test(trimmed)) {
           top = cleanNoteLine(trimmed, /前調|前味|Top\s*Notes?/i);
         } else if (/中調|中味|Heart\s*Notes?|Middle\s*Notes?/i.test(trimmed)) {
           heart = cleanNoteLine(trimmed, /中調|中味|Heart\s*Notes?|Middle\s*Notes?/i);
@@ -985,11 +993,10 @@
         }
       });
 
-      document.getElementById('generalNotes').value = general || "Not detected";
       document.getElementById('topNotes').value = top || "Not detected";
       document.getElementById('heartNotes').value = heart || "Not detected";
       document.getElementById('baseNotes').value = base || "Not detected";
-      showToast("Notes identified and extracted!");
+      showToast("Top, Heart & Base notes extracted!");
     }
 
     function cleanNoteLine(line, pattern) {
@@ -1061,7 +1068,7 @@
         bottleColors,
         photoUrl: currentImageData || DEFAULT_PLACEHOLDER,
         notes: {
-          general: document.getElementById('generalNotes').value.trim() || 'N/A',
+          general: document.getElementById('generalNotes').value || '花香調',
           top: document.getElementById('topNotes').value.trim() || 'N/A',
           heart: document.getElementById('heartNotes').value.trim() || 'N/A',
           base: document.getElementById('baseNotes').value.trim() || 'N/A'
@@ -1114,7 +1121,7 @@
               p.bottleColors = p.bottleColor ? [p.bottleColor] : ['#AC885B'];
             }
             if (!p.notes) p.notes = {};
-            if (p.notes.general === undefined) p.notes.general = 'N/A';
+            if (!p.notes.general || p.notes.general === 'N/A') p.notes.general = '花香調';
           });
         } catch (e) {
           perfumeVault = [];
@@ -1349,17 +1356,22 @@
 
       // Check if Categorized by Notes View is Active
       if (isNotesCategoryActive) {
-        const categoryMap = {};
+        const categoryMap = {
+          '花香調': [],
+          '木質調': [],
+          '清新調': [],
+          '琥珀調': []
+        };
+
         filtered.forEach(item => {
-          let cat = (item.notes && item.notes.general && item.notes.general.trim() !== '' && item.notes.general !== 'N/A')
-            ? item.notes.general.trim()
-            : 'Uncategorized / Other Notes';
+          let cat = (item.notes && item.notes.general) ? item.notes.general : '花香調';
           if (!categoryMap[cat]) categoryMap[cat] = [];
           categoryMap[cat].push(item);
         });
 
         let categorizedHtml = '';
         for (const [categoryName, items] of Object.entries(categoryMap)) {
+          if (items.length === 0) continue;
           categorizedHtml += `
             <div class="space-y-2 pt-2">
               <div class="flex items-center gap-2 px-1 border-b border-brand-200 dark:border-stone-800 pb-1">
@@ -1780,7 +1792,7 @@
           <div class="space-y-1.5 text-xs">
             <div class="bg-brand-50 dark:bg-brand-950/30 p-2.5 rounded-xl border border-brand-100">
               <span class="text-[10px] font-bold text-brand-700 uppercase">General Note (香調)</span>
-              <p class="text-stone-800 dark:text-stone-200 font-medium mt-0.5">${item.notes.general || 'N/A'}</p>
+              <p class="text-stone-800 dark:text-stone-200 font-medium mt-0.5">${item.notes.general || '花香調'}</p>
             </div>
             <div class="bg-amber-50 dark:bg-amber-950/30 p-2.5 rounded-xl border border-amber-100">
               <span class="text-[10px] font-bold text-amber-700 uppercase">Top Notes (前調)</span>
@@ -1888,7 +1900,7 @@
         document.getElementById('editAddSecondColorBtn').classList.remove('hidden');
       }
 
-      document.getElementById('editGeneralNotes').value = item.notes.general === 'N/A' ? '' : (item.notes.general || '');
+      document.getElementById('editGeneralNotes').value = item.notes.general || '花香調';
       document.getElementById('editTopNotes').value = item.notes.top === 'N/A' ? '' : item.notes.top;
       document.getElementById('editHeartNotes').value = item.notes.heart === 'N/A' ? '' : item.notes.heart;
       document.getElementById('editBaseNotes').value = item.notes.base === 'N/A' ? '' : item.notes.base;
@@ -1933,7 +1945,7 @@
         ...perfumeVault[index],
         section, status, type, brand, name, volume, price, pricePerMl, merchant, purchaseDate, smellingLocation, remarks, bottleColors, photoUrl,
         notes: {
-          general: document.getElementById('editGeneralNotes').value.trim() || 'N/A',
+          general: document.getElementById('editGeneralNotes').value || '花香調',
           top: document.getElementById('editTopNotes').value.trim() || 'N/A',
           heart: document.getElementById('editHeartNotes').value.trim() || 'N/A',
           base: document.getElementById('editBaseNotes').value.trim() || 'N/A'
@@ -2162,7 +2174,7 @@
                     </p>
                     <div class="bg-brand-50 dark:bg-brand-950/30 border border-brand-200/60 p-2.5 rounded-xl space-y-0.5">
                       <span class="text-[10px] font-bold text-brand-800 dark:text-brand-300 uppercase">General Note (香調)</span>
-                      <p class="text-xs text-stone-800 dark:text-stone-200 font-medium">${item.notes.general || 'N/A'}</p>
+                      <p class="text-xs text-stone-800 dark:text-stone-200 font-medium">${item.notes.general || '花香調'}</p>
                     </div>
                     <div class="bg-amber-50 dark:bg-amber-950/30 border border-amber-200/60 p-2.5 rounded-xl space-y-0.5">
                       <span class="text-[10px] font-bold text-amber-800 dark:text-amber-300 uppercase">Top (前調)</span>
