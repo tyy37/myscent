@@ -261,30 +261,41 @@
           </div>
 
           <p class="text-[11px] text-stone-500 dark:text-stone-400 leading-tight">
-            Paste a note description paragraph (Traditional Chinese, English, etc.) below and tap identify to extract Top, Heart, & Base notes automatically.
+            Paste a note description paragraph (Traditional Chinese, English, etc.) below and tap identify to extract General, Top, Heart, & Base notes automatically.
           </p>
 
-          <textarea id="notesParagraph" rows="3" placeholder="e.g. 前調：白松香精油、黑醋栗&#10;中調：鳶尾花奶油、岩玫瑰&#10;後調：馬達加斯加香草、麝香" class="w-full px-3 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
+          <textarea id="notesParagraph" rows="3" placeholder="e.g. 香調：木質花香調&#10;前調：白松香精油、黑醋栗&#10;中調：鳶尾花奶油、岩玫瑰&#10;後調：馬達加斯加香草、麝香" class="w-full px-3 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
 
           <button type="button" onclick="parseNotesParagraph()" class="w-full py-2 bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 text-xs font-semibold rounded-xl border border-stone-200 dark:border-stone-700 transition-colors flex items-center justify-center gap-1.5">
             <i data-lucide="wand-2" class="w-3.5 h-3.5 text-brand-500"></i>
             <span>Identify & Extract Notes</span>
           </button>
 
-          <!-- Decant Bottle Colour Picker (Max 2) -->
-          <div class="pt-2">
-            <label class="block text-[11px] font-semibold text-stone-700 dark:text-stone-300 mb-1">Decant Bottle Colours (Up to 2)</label>
-            <div class="flex items-center gap-3">
-              <div class="flex items-center gap-1.5">
-                <input type="color" id="bottleColor1" value="#AC885B" class="w-9 h-9 rounded-xl cursor-pointer border border-stone-200 dark:border-stone-700 bg-transparent p-0.5">
-                <input type="color" id="bottleColor2" value="#D98880" class="w-9 h-9 rounded-xl cursor-pointer border border-stone-200 dark:border-stone-700 bg-transparent p-0.5">
+          <!-- Decant Bottle Colour Picker -->
+          <div class="pt-2 space-y-2">
+            <label class="block text-[11px] font-semibold text-stone-700 dark:text-stone-300">Decant Bottle Colour</label>
+            <div class="flex items-center gap-3 flex-wrap">
+              <div class="flex items-center gap-1.5" id="containerBottleColor1">
+                <input type="color" id="bottleColor1" value="#AC885B" class="w-9 h-9 rounded-xl cursor-pointer border border-stone-200 dark:border-stone-700 bg-transparent p-0.5" title="Primary Colour">
               </div>
-              <span class="text-xs text-stone-500 dark:text-stone-400">Pick 1 or 2 colours for card dot</span>
+              <div class="flex items-center gap-1.5 hidden" id="containerBottleColor2">
+                <input type="color" id="bottleColor2" value="#D98880" class="w-9 h-9 rounded-xl cursor-pointer border border-stone-200 dark:border-stone-700 bg-transparent p-0.5" title="Secondary Colour">
+                <button type="button" onclick="removeSecondColor()" class="text-xs text-rose-500 hover:underline p-1">Remove</button>
+              </div>
+              <button type="button" id="addSecondColorBtn" onclick="addSecondColor()" class="px-2.5 py-1.5 bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 text-xs font-medium rounded-xl border border-stone-200 dark:border-stone-700 transition-colors flex items-center gap-1">
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                <span>Add Another Colour</span>
+              </button>
             </div>
+            <span class="text-[11px] text-stone-400 block">Pick 1 or 2 colours for card dot</span>
           </div>
 
           <!-- Identified Notes Rows -->
           <div class="space-y-2 pt-2 border-t border-stone-100 dark:border-stone-800">
+            <div>
+              <label class="text-[10px] font-semibold text-brand-600 dark:text-brand-400 uppercase">General Note (香調 / 主調)</label>
+              <input type="text" id="generalNotes" placeholder="e.g. Woody Floral, Amber Spicy" class="w-full mt-0.5 px-3 py-1.5 rounded-lg text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-1 focus:ring-brand-500">
+            </div>
             <div>
               <label class="text-[10px] font-semibold text-brand-600 dark:text-brand-400 uppercase">Top Notes (前調)</label>
               <input type="text" id="topNotes" placeholder="e.g. Bergamot, Pink Pepper" class="w-full mt-0.5 px-3 py-1.5 rounded-lg text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-1 focus:ring-brand-500">
@@ -525,14 +536,19 @@
               <span class="text-[10px] text-stone-500 font-semibold block">Colour 1</span>
               <input type="color" id="quickColor1" class="w-10 h-10 rounded-xl cursor-pointer border border-stone-200 dark:border-stone-700 bg-transparent p-0.5">
             </div>
-            <div class="text-center space-y-1">
+            <div class="text-center space-y-1" id="quickContainerColor2">
               <span class="text-[10px] text-stone-500 font-semibold block">Colour 2</span>
               <input type="color" id="quickColor2" class="w-10 h-10 rounded-xl cursor-pointer border border-stone-200 dark:border-stone-700 bg-transparent p-0.5">
             </div>
           </div>
-          <button onclick="saveQuickColor()" class="w-full py-2 bg-brand-500 hover:bg-brand-600 text-white font-medium text-xs rounded-xl shadow-md transition-colors">
-            Apply Colours
-          </button>
+          <div class="flex gap-2">
+            <button type="button" id="quickAddSecondBtn" onclick="quickAddSecondColor()" class="w-full py-2 bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 font-medium text-xs rounded-xl transition-colors">
+              Add 2nd Colour
+            </button>
+            <button type="button" onclick="saveQuickColor()" class="w-full py-2 bg-brand-500 hover:bg-brand-600 text-white font-medium text-xs rounded-xl shadow-md transition-colors">
+              Apply
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -678,20 +694,31 @@
             <input type="url" id="editPhotoUrl" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
           </div>
 
-          <!-- Decant Bottle Colour Picker -->
-          <div>
-            <label class="block text-[11px] font-semibold text-stone-700 dark:text-stone-300 mb-1">Decant Bottle Colours (Up to 2)</label>
-            <div class="flex items-center gap-3">
-              <div class="flex items-center gap-1.5">
-                <input type="color" id="editBottleColor1" value="#AC885B" class="w-9 h-9 rounded-xl cursor-pointer border border-stone-200 dark:border-stone-700 bg-transparent p-0.5">
-                <input type="color" id="editBottleColor2" value="#D98880" class="w-9 h-9 rounded-xl cursor-pointer border border-stone-200 dark:border-stone-700 bg-transparent p-0.5">
+          <!-- Decant Bottle Colour Picker Edit -->
+          <div class="space-y-2">
+            <label class="block text-[11px] font-semibold text-stone-700 dark:text-stone-300">Decant Bottle Colour</label>
+            <div class="flex items-center gap-3 flex-wrap">
+              <div class="flex items-center gap-1.5" id="editContainerBottleColor1">
+                <input type="color" id="editBottleColor1" value="#AC885B" class="w-9 h-9 rounded-xl cursor-pointer border border-stone-200 dark:border-stone-700 bg-transparent p-0.5" title="Primary Colour">
               </div>
-              <span class="text-xs text-stone-500 dark:text-stone-400">Selected colours show in collection dot</span>
+              <div class="flex items-center gap-1.5 hidden" id="editContainerBottleColor2">
+                <input type="color" id="editBottleColor2" value="#D98880" class="w-9 h-9 rounded-xl cursor-pointer border border-stone-200 dark:border-stone-700 bg-transparent p-0.5" title="Secondary Colour">
+                <button type="button" onclick="editRemoveSecondColor()" class="text-xs text-rose-500 hover:underline p-1">Remove</button>
+              </div>
+              <button type="button" id="editAddSecondColorBtn" onclick="editAddSecondColor()" class="px-2.5 py-1.5 bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 text-xs font-medium rounded-xl border border-stone-200 dark:border-stone-700 transition-colors flex items-center gap-1">
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                <span>Add Another Colour</span>
+              </button>
             </div>
+            <span class="text-[11px] text-stone-400 block">Selected colours show in collection dot</span>
           </div>
 
           <div class="space-y-2 pt-2 border-t border-stone-100 dark:border-stone-800">
             <label class="block text-xs font-semibold uppercase tracking-wider text-brand-700 dark:text-brand-400">Notes Breakdown</label>
+            <div>
+              <label class="text-[10px] font-semibold text-stone-500 uppercase">General Note (香調 / 主調)</label>
+              <input type="text" id="editGeneralNotes" class="w-full mt-0.5 px-3 py-1.5 rounded-lg text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
+            </div>
             <div>
               <label class="text-[10px] font-semibold text-stone-500 uppercase">Top Notes</label>
               <input type="text" id="editTopNotes" class="w-full mt-0.5 px-3 py-1.5 rounded-lg text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
@@ -780,6 +807,33 @@
       updateVolumeOptions();
       renderCollection();
     };
+
+    function addSecondColor() {
+      document.getElementById('containerBottleColor2').classList.remove('hidden');
+      document.getElementById('addSecondColorBtn').classList.add('hidden');
+    }
+
+    function removeSecondColor() {
+      document.getElementById('containerBottleColor2').classList.add('hidden');
+      document.getElementById('addSecondColorBtn').classList.remove('hidden');
+      document.getElementById('bottleColor2').value = '#D98880';
+    }
+
+    function editAddSecondColor() {
+      document.getElementById('editContainerBottleColor2').classList.remove('hidden');
+      document.getElementById('editAddSecondColorBtn').classList.add('hidden');
+    }
+
+    function editRemoveSecondColor() {
+      document.getElementById('editContainerBottleColor2').classList.add('hidden');
+      document.getElementById('editAddSecondColorBtn').classList.remove('hidden');
+      document.getElementById('editBottleColor2').value = '#D98880';
+    }
+
+    function quickAddSecondColor() {
+      document.getElementById('quickContainerColor2').classList.remove('hidden');
+      document.getElementById('quickAddSecondBtn').classList.add('hidden');
+    }
 
     function toggleDarkMode() {
       const isDark = document.documentElement.classList.toggle('dark');
@@ -897,12 +951,14 @@
         return;
       }
 
-      let top = "", heart = "", base = "";
+      let general = "", top = "", heart = "", base = "";
       const lines = text.split(/\r?\n/);
       lines.forEach(line => {
         const trimmed = line.trim();
         if (!trimmed) return;
-        if (/前調|前味|Top\s*Notes?/i.test(trimmed)) {
+        if (/香調|主調|General\s*Notes?|Scent\s*Family/i.test(trimmed)) {
+          general = cleanNoteLine(trimmed, /香調|主調|General\s*Notes?|Scent\s*Family/i);
+        } else if (/前調|前味|Top\s*Notes?/i.test(trimmed)) {
           top = cleanNoteLine(trimmed, /前調|前味|Top\s*Notes?/i);
         } else if (/中調|中味|Heart\s*Notes?|Middle\s*Notes?/i.test(trimmed)) {
           heart = cleanNoteLine(trimmed, /中調|中味|Heart\s*Notes?|Middle\s*Notes?/i);
@@ -911,6 +967,7 @@
         }
       });
 
+      document.getElementById('generalNotes').value = general || "Not detected";
       document.getElementById('topNotes').value = top || "Not detected";
       document.getElementById('heartNotes').value = heart || "Not detected";
       document.getElementById('baseNotes').value = base || "Not detected";
@@ -927,7 +984,7 @@
       updateVolumeOptions();
       document.getElementById('purchaseDate').valueAsDate = new Date();
       document.getElementById('bottleColor1').value = '#AC885B';
-      document.getElementById('bottleColor2').value = '#D98880';
+      removeSecondColor();
       showToast("Entry form cleared.");
     }
 
@@ -949,8 +1006,14 @@
       const remarks = document.getElementById('remarks').value.trim() || '';
       
       const c1 = document.getElementById('bottleColor1').value || '#AC885B';
-      const c2 = document.getElementById('bottleColor2').value || '';
-      const bottleColors = c2 ? [c1, c2] : [c1];
+      let bottleColors = [c1];
+      const isSecColorHidden = document.getElementById('containerBottleColor2').classList.contains('hidden');
+      if (!isSecColorHidden) {
+        const c2 = document.getElementById('bottleColor2').value;
+        if (c2 && c2 !== c1) {
+          bottleColors = [c1, c2];
+        }
+      }
 
       const volSelect = document.getElementById('volumeSelect').value;
       let volume = (volSelect === 'Others') ? parseFloat(document.getElementById('customVolume').value) : parseFloat(volSelect);
@@ -980,6 +1043,7 @@
         bottleColors,
         photoUrl: currentImageData || DEFAULT_PLACEHOLDER,
         notes: {
+          general: document.getElementById('generalNotes').value.trim() || 'N/A',
           top: document.getElementById('topNotes').value.trim() || 'N/A',
           heart: document.getElementById('heartNotes').value.trim() || 'N/A',
           base: document.getElementById('baseNotes').value.trim() || 'N/A'
@@ -994,7 +1058,7 @@
       updateVolumeOptions();
       document.getElementById('purchaseDate').valueAsDate = new Date();
       document.getElementById('bottleColor1').value = '#AC885B';
-      document.getElementById('bottleColor2').value = '#D98880';
+      removeSecondColor();
 
       if (destination === 'SmellingList') {
         showToast("Saved to your To-smell List!");
@@ -1031,6 +1095,8 @@
             if (!p.bottleColors) {
               p.bottleColors = p.bottleColor ? [p.bottleColor] : ['#AC885B'];
             }
+            if (!p.notes) p.notes = {};
+            if (p.notes.general === undefined) p.notes.general = 'N/A';
           });
         } catch (e) {
           perfumeVault = [];
@@ -1140,7 +1206,16 @@
       document.getElementById('quickColorItemId').value = id;
       const colors = item.bottleColors || ['#AC885B'];
       document.getElementById('quickColor1').value = colors[0] || '#AC885B';
-      document.getElementById('quickColor2').value = colors[1] || colors[0] || '#AC885B';
+      
+      if (colors.length > 1) {
+        document.getElementById('quickColor2').value = colors[1];
+        document.getElementById('quickContainerColor2').classList.remove('hidden');
+        document.getElementById('quickAddSecondBtn').classList.add('hidden');
+      } else {
+        document.getElementById('quickColor2').value = '#D98880';
+        document.getElementById('quickContainerColor2').classList.add('hidden');
+        document.getElementById('quickAddSecondBtn').classList.remove('hidden');
+      }
 
       document.getElementById('quickColorModal').classList.remove('hidden');
     }
@@ -1154,8 +1229,13 @@
       const item = perfumeVault.find(p => p.id === id);
       if (item) {
         const c1 = document.getElementById('quickColor1').value;
-        const c2 = document.getElementById('quickColor2').value;
-        item.bottleColors = (c1 === c2) ? [c1] : [c1, c2];
+        const isSecHidden = document.getElementById('quickContainerColor2').classList.contains('hidden');
+        if (!isSecHidden) {
+          const c2 = document.getElementById('quickColor2').value;
+          item.bottleColors = (c1 === c2) ? [c1] : [c1, c2];
+        } else {
+          item.bottleColors = [c1];
+        }
         saveVaultToStorage();
         renderCollection();
         showToast("Decant bottle colours updated!");
@@ -1649,6 +1729,10 @@
         <div class="space-y-2 pt-1">
           <p class="text-xs font-bold text-brand-700 dark:text-brand-400 uppercase tracking-wider">Fragrance Notes Hierarchy</p>
           <div class="space-y-1.5 text-xs">
+            <div class="bg-brand-50 dark:bg-brand-950/30 p-2.5 rounded-xl border border-brand-100">
+              <span class="text-[10px] font-bold text-brand-700 uppercase">General Note (香調)</span>
+              <p class="text-stone-800 dark:text-stone-200 font-medium mt-0.5">${item.notes.general || 'N/A'}</p>
+            </div>
             <div class="bg-amber-50 dark:bg-amber-950/30 p-2.5 rounded-xl border border-amber-100">
               <span class="text-[10px] font-bold text-amber-700 uppercase">Top Notes (前調)</span>
               <p class="text-stone-800 dark:text-stone-200 font-medium mt-0.5">${item.notes.top}</p>
@@ -1745,8 +1829,17 @@
       
       const colors = item.bottleColors || ['#AC885B'];
       document.getElementById('editBottleColor1').value = colors[0] || '#AC885B';
-      document.getElementById('editBottleColor2').value = colors[1] || colors[0] || '#AC885B';
+      if (colors.length > 1) {
+        document.getElementById('editBottleColor2').value = colors[1];
+        document.getElementById('editContainerBottleColor2').classList.remove('hidden');
+        document.getElementById('editAddSecondColorBtn').classList.add('hidden');
+      } else {
+        document.getElementById('editBottleColor2').value = '#D98880';
+        document.getElementById('editContainerBottleColor2').classList.add('hidden');
+        document.getElementById('editAddSecondColorBtn').classList.remove('hidden');
+      }
 
+      document.getElementById('editGeneralNotes').value = item.notes.general === 'N/A' ? '' : (item.notes.general || '');
       document.getElementById('editTopNotes').value = item.notes.top === 'N/A' ? '' : item.notes.top;
       document.getElementById('editHeartNotes').value = item.notes.heart === 'N/A' ? '' : item.notes.heart;
       document.getElementById('editBaseNotes').value = item.notes.base === 'N/A' ? '' : item.notes.base;
@@ -1773,8 +1866,14 @@
       const remarks = document.getElementById('editRemarks').value.trim() || '';
 
       const c1 = document.getElementById('editBottleColor1').value;
-      const c2 = document.getElementById('editBottleColor2').value;
-      const bottleColors = (c1 === c2) ? [c1] : [c1, c2];
+      let bottleColors = [c1];
+      const isSecColorHidden = document.getElementById('editContainerBottleColor2').classList.contains('hidden');
+      if (!isSecColorHidden) {
+        const c2 = document.getElementById('editBottleColor2').value;
+        if (c2 && c2 !== c1) {
+          bottleColors = [c1, c2];
+        }
+      }
 
       const volSelect = document.getElementById('editVolumeSelect').value;
       let volume = (volSelect === 'Others') ? parseFloat(document.getElementById('editCustomVolume').value) : parseFloat(volSelect);
@@ -1785,6 +1884,7 @@
         ...perfumeVault[index],
         section, status, type, brand, name, volume, price, pricePerMl, merchant, purchaseDate, smellingLocation, remarks, bottleColors, photoUrl,
         notes: {
+          general: document.getElementById('editGeneralNotes').value.trim() || 'N/A',
           top: document.getElementById('editTopNotes').value.trim() || 'N/A',
           heart: document.getElementById('editHeartNotes').value.trim() || 'N/A',
           base: document.getElementById('editBaseNotes').value.trim() || 'N/A'
@@ -2011,6 +2111,10 @@
                       <i data-lucide="layers" class="w-3.5 h-3.5 text-brand-500"></i>
                       <span>Notes Hierarchy</span>
                     </p>
+                    <div class="bg-brand-50 dark:bg-brand-950/30 border border-brand-200/60 p-2.5 rounded-xl space-y-0.5">
+                      <span class="text-[10px] font-bold text-brand-800 dark:text-brand-300 uppercase">General Note (香調)</span>
+                      <p class="text-xs text-stone-800 dark:text-stone-200 font-medium">${item.notes.general || 'N/A'}</p>
+                    </div>
                     <div class="bg-amber-50 dark:bg-amber-950/30 border border-amber-200/60 p-2.5 rounded-xl space-y-0.5">
                       <span class="text-[10px] font-bold text-amber-800 dark:text-amber-300 uppercase">Top (前調)</span>
                       <p class="text-xs text-stone-800 dark:text-stone-200 font-medium">${item.notes.top}</p>
