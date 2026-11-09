@@ -742,25 +742,6 @@
             <input type="url" id="editPhotoUrl" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
           </div>
 
-          <!-- Decant Bottle Colour Picker Edit -->
-          <div class="space-y-2">
-            <label class="block text-[11px] font-semibold text-stone-700 dark:text-stone-300">Decant Bottle Colour</label>
-            <div class="flex items-center gap-3 flex-wrap">
-              <div class="flex items-center gap-1.5" id="editContainerBottleColor1">
-                <input type="color" id="editBottleColor1" value="#AC885B" class="w-9 h-9 rounded-xl cursor-pointer border border-stone-200 dark:border-stone-700 bg-transparent p-0.5" title="Primary Colour">
-              </div>
-              <div class="flex items-center gap-1.5 hidden" id="editContainerBottleColor2">
-                <input type="color" id="editBottleColor2" value="#D98880" class="w-9 h-9 rounded-xl cursor-pointer border border-stone-200 dark:border-stone-700 bg-transparent p-0.5" title="Secondary Colour">
-                <button type="button" onclick="editRemoveSecondColor()" class="text-xs text-rose-500 hover:underline p-1">Remove</button>
-              </div>
-              <button type="button" id="editAddSecondColorBtn" onclick="editAddSecondColor()" class="px-2.5 py-1.5 bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 text-xs font-medium rounded-xl border border-stone-200 dark:border-stone-700 transition-colors flex items-center gap-1">
-                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-                <span>Add Another Colour</span>
-              </button>
-            </div>
-            <span class="text-[11px] text-stone-400 block">Selected colours show in collection dot</span>
-          </div>
-
           <div class="space-y-2 pt-2 border-t border-stone-100 dark:border-stone-800">
             <label class="block text-xs font-semibold uppercase tracking-wider text-brand-700 dark:text-brand-400">Notes Breakdown</label>
             <div>
@@ -797,6 +778,14 @@
               </div>
             </div>
           </div>
+
+          <button type="submit" class="w-full py-3 bg-brand-500 hover:bg-brand-600 text-white font-medium text-xs rounded-xl shadow-md transition-colors">
+            Update Entry
+          </button>
+        </form>
+      </div>
+    </div>
+
     <!-- ========================================== -->
     <!-- SECTION 5: COMPARISON (TAB 5) -->
     <!-- ========================================== -->
@@ -2209,7 +2198,8 @@
       const type = document.getElementById('editType').value;
       const brand = document.getElementById('editBrand').value.trim();
       const name = document.getElementById('editName').value.trim();
-      const price = parseFloat(document.getElementById('editPrice').value);
+      const priceVal = document.getElementById('editPrice').value;
+      const price = priceVal ? parseFloat(priceVal) : 0;
       const merchant = document.getElementById('editMerchant').value.trim() || 'N/A';
       const purchaseDate = document.getElementById('editPurchaseDate').value;
       const smellingLocation = document.getElementById('editSmellingLocation').value.trim() || '';
@@ -2230,7 +2220,10 @@
       }
 
       const volSelect = document.getElementById('editVolumeSelect').value;
-      let volume = (volSelect === 'Others') ? parseFloat(document.getElementById('customVolume').value) : parseFloat(volSelect);
+      const customVolEl = document.getElementById('editCustomVolume');
+      let volume = (volSelect === 'Others' && customVolEl) ? parseFloat(customVolEl.value) : parseFloat(volSelect);
+      if (isNaN(volume) || volume <= 0) volume = perfumeVault[index].volume || 1;
+
       const photoUrl = document.getElementById('editPhotoUrl').value.trim() || perfumeVault[index].photoUrl || DEFAULT_PLACEHOLDER;
       const pricePerMl = parseFloat((price / volume).toFixed(2));
 
