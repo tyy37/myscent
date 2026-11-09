@@ -2055,8 +2055,8 @@
 
       const content = document.getElementById('modalContent');
       content.innerHTML = `
-        <!-- FIXED TOP SECTION (Image, Brand/Name Summary, Volume, Price, Merchant, Remarks) -->
-        <div class="space-y-3 flex-shrink-0">
+        <!-- FIXED TOP SECTION (Image, Brand/Name Summary, Type & Vol, Total Price, Price/mL, Status & Bottled) -->
+        <div class="space-y-3 flex-shrink-0 pb-1">
           <div class="flex gap-4 items-center">
             <div class="w-24 h-28 rounded-2xl overflow-hidden bg-stone-100 dark:bg-stone-800 flex-shrink-0 border border-stone-200 dark:border-stone-700">
               <img src="${item.photoUrl}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.src='${DEFAULT_PLACEHOLDER}'">
@@ -2107,8 +2107,12 @@
               </div>
             </div>
           </div>
+        </div>
 
-          <div class="space-y-1 text-xs bg-stone-50 dark:bg-stone-800/50 p-2.5 rounded-xl max-h-24 overflow-y-auto pr-1">
+        <!-- SCROLLING BOTTOM SECTION (Merchant/Store, Date, Remarks & Fragrance Notes Hierarchy) -->
+        <div class="space-y-3 pt-2 border-t border-stone-100 dark:border-stone-800 flex-1 overflow-y-auto pr-1 no-scrollbar">
+          <!-- Purchase & Location Info -->
+          <div class="space-y-1 text-xs bg-stone-50 dark:bg-stone-800/50 p-2.5 rounded-xl">
             <div class="flex justify-between">
               <span class="text-stone-400">Merchant / Store:</span>
               <span class="font-medium text-stone-700 dark:text-stone-300">${item.merchant}</span>
@@ -2130,38 +2134,38 @@
               </div>
             ` : ''}
           </div>
-        </div>
 
-        <!-- SCROLLING BOTTOM SECTION (Fragrance Notes Hierarchy Only) -->
-        <div class="space-y-2 pt-1 border-t border-stone-100 dark:border-stone-800 flex-1 overflow-y-auto pr-1">
-          <p class="text-xs font-bold text-brand-700 dark:text-brand-400 uppercase tracking-wider sticky top-0 bg-white dark:bg-stone-900 py-0.5 z-10">Fragrance Notes Hierarchy</p>
-          <div class="space-y-1.5 text-xs pb-1">
-            <div class="bg-brand-50 dark:bg-brand-950/30 p-2.5 rounded-xl border border-brand-100">
-              <span class="text-[10px] font-bold text-brand-700 uppercase">General Note (香調)</span>
-              <p class="text-stone-800 dark:text-stone-200 font-medium mt-0.5">${item.notes.general || '花香調'}</p>
-            </div>
-            
-            <div class="bg-amber-50 dark:bg-amber-950/30 p-2.5 rounded-xl border border-amber-100 space-y-1">
-              <span class="text-[10px] font-bold text-amber-700 uppercase">Top Notes (前調)</span>
-              <div class="grid grid-cols-2 gap-2 text-stone-800 dark:text-stone-200 font-medium">
-                <div><span class="text-[9px] text-stone-400 block">中文:</span>${item.notes.topZh || 'N/A'}</div>
-                <div><span class="text-[9px] text-stone-400 block">English:</span>${item.notes.topEn || 'N/A'}</div>
+          <!-- Fragrance Notes Breakdown -->
+          <div class="space-y-2">
+            <p class="text-xs font-bold text-brand-700 dark:text-brand-400 uppercase tracking-wider sticky top-0 bg-white dark:bg-stone-900 py-0.5 z-10">Fragrance Notes Hierarchy</p>
+            <div class="space-y-1.5 text-xs pb-1">
+              <div class="bg-brand-50 dark:bg-brand-950/30 p-2.5 rounded-xl border border-brand-100">
+                <span class="text-[10px] font-bold text-brand-700 uppercase">General Note (香調)</span>
+                <p class="text-stone-800 dark:text-stone-200 font-medium mt-0.5">${item.notes.general || '花香調'}</p>
               </div>
-            </div>
-
-            <div class="bg-rose-50 dark:bg-rose-950/30 p-2.5 rounded-xl border border-rose-100 space-y-1">
-              <span class="text-[10px] font-bold text-rose-700 uppercase">Heart Notes (中調)</span>
-              <div class="grid grid-cols-2 gap-2 text-stone-800 dark:text-stone-200 font-medium">
-                <div><span class="text-[9px] text-stone-400 block">中文:</span>${item.notes.heartZh || 'N/A'}</div>
-                <div><span class="text-[9px] text-stone-400 block">English:</span>${item.notes.heartEn || 'N/A'}</div>
+              
+              <div class="bg-amber-50 dark:bg-amber-950/30 p-2.5 rounded-xl border border-amber-100 space-y-1">
+                <span class="text-[10px] font-bold text-amber-700 uppercase">Top Notes (前調)</span>
+                <div class="grid grid-cols-2 gap-2 text-stone-800 dark:text-stone-200 font-medium">
+                  <div><span class="text-[9px] text-stone-400 block">中文:</span>${item.notes.topZh || 'N/A'}</div>
+                  <div><span class="text-[9px] text-stone-400 block">English:</span>${item.notes.topEn || 'N/A'}</div>
+                </div>
               </div>
-            </div>
 
-            <div class="bg-stone-100 dark:bg-stone-800 p-2.5 rounded-xl border border-stone-200 space-y-1">
-              <span class="text-[10px] font-bold text-stone-600 uppercase">Base Notes (後調)</span>
-              <div class="grid grid-cols-2 gap-2 text-stone-800 dark:text-stone-200 font-medium">
-                <div><span class="text-[9px] text-stone-400 block">中文:</span>${item.notes.baseZh || 'N/A'}</div>
-                <div><span class="text-[9px] text-stone-400 block">English:</span>${item.notes.baseEn || 'N/A'}</div>
+              <div class="bg-rose-50 dark:bg-rose-950/30 p-2.5 rounded-xl border border-rose-100 space-y-1">
+                <span class="text-[10px] font-bold text-rose-700 uppercase">Heart Notes (中調)</span>
+                <div class="grid grid-cols-2 gap-2 text-stone-800 dark:text-stone-200 font-medium">
+                  <div><span class="text-[9px] text-stone-400 block">中文:</span>${item.notes.heartZh || 'N/A'}</div>
+                  <div><span class="text-[9px] text-stone-400 block">English:</span>${item.notes.heartEn || 'N/A'}</div>
+                </div>
+              </div>
+
+              <div class="bg-stone-100 dark:bg-stone-800 p-2.5 rounded-xl border border-stone-200 space-y-1">
+                <span class="text-[10px] font-bold text-stone-600 uppercase">Base Notes (後調)</span>
+                <div class="grid grid-cols-2 gap-2 text-stone-800 dark:text-stone-200 font-medium">
+                  <div><span class="text-[9px] text-stone-400 block">中文:</span>${item.notes.baseZh || 'N/A'}</div>
+                  <div><span class="text-[9px] text-stone-400 block">English:</span>${item.notes.baseEn || 'N/A'}</div>
+                </div>
               </div>
             </div>
           </div>
