@@ -63,12 +63,12 @@
     }
 
     .glass-nav {
-      background: rgba(250, 246, 240, 0.9);
+      background: rgba(250, 246, 240, 0.98);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
     }
     .dark .glass-nav {
-      background: rgba(18, 18, 18, 0.9);
+      background: rgba(12, 10, 9, 0.98);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
     }
@@ -87,7 +87,7 @@
 <body class="bg-brand-50 text-stone-800 dark:bg-stone-950 dark:text-stone-100 min-h-screen pb-28 antialiased selection:bg-brand-300">
 
   <!-- APP HEADER -->
-  <header class="sticky top-0 z-30 glass-nav border-b border-brand-200/50 dark:border-stone-800 px-4 py-3">
+  <header class="sticky top-0 z-40 glass-nav border-b border-brand-200/50 dark:border-stone-800 px-4 py-3 shadow-sm">
     <div class="max-w-md mx-auto flex justify-between items-center">
       <div class="flex items-center gap-2">
         <div class="w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center text-white shadow-md">
@@ -396,13 +396,11 @@
     <!-- ========================================== -->
     <!-- SECTION 2: MY COLLECTION (TAB 2) -->
     <!-- ========================================== -->
-    <section id="tab-collection" class="tab-content active space-y-3">
-      <div class="flex justify-between items-start">
+    <section id="tab-collection" class="tab-content active space-y-4">
+      <div class="flex justify-between items-center pb-1">
         <div>
           <h2 class="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">My Collection</h2>
-          <div class="flex flex-col gap-0.5 mt-1">
-            <p class="text-base font-bold text-brand-700 dark:text-brand-400" id="collectionActivePerfumesText">0 Available Perfumes</p>
-          </div>
+          <p class="text-sm font-semibold text-brand-700 dark:text-brand-400 mt-0.5" id="collectionActivePerfumesText">0 Available Perfumes</p>
         </div>
 
         <!-- Notes Category Toggle Button -->
