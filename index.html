@@ -73,18 +73,33 @@
       -webkit-backdrop-filter: blur(16px);
     }
 
+    /* Fixed Viewports for Tab Sections & Scroll Containers */
+    .tab-view-container {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 4.5rem - 4.5rem);
+    }
+
+    .scrollable-content-area {
+      flex: 1;
+      overflow-y: auto;
+      padding-bottom: 1.5rem;
+    }
+
     .tab-content {
       display: none;
       opacity: 0;
       transition: opacity 0.2s ease-in-out;
     }
     .tab-content.active {
-      display: block;
+      display: flex;
+      flex-direction: column;
       opacity: 1;
+      height: 100%;
     }
   </style>
 </head>
-<body class="bg-brand-50 text-stone-800 dark:bg-stone-950 dark:text-stone-100 min-h-screen pb-28 antialiased selection:bg-brand-300">
+<body class="bg-brand-50 text-stone-800 dark:bg-stone-950 dark:text-stone-100 min-h-screen pb-20 antialiased selection:bg-brand-300 overflow-hidden">
 
   <!-- APP HEADER -->
   <header class="sticky top-0 z-40 glass-nav border-b border-brand-200/50 dark:border-stone-800 px-4 py-3 shadow-sm">
@@ -118,420 +133,504 @@
   </header>
 
   <!-- MAIN CONTAINER -->
-  <main class="max-w-md mx-auto px-4 pt-4 pb-8">
+  <main class="max-w-md mx-auto px-4 pt-4 tab-view-container">
 
     <!-- ========================================== -->
     <!-- SECTION 1: NEW ENTRY (TAB 1) -->
     <!-- ========================================== -->
-    <section id="tab-purchase" class="tab-content space-y-5">
-      <div class="space-y-1">
+    <section id="tab-purchase" class="tab-content space-y-4">
+      <div class="space-y-1 flex-shrink-0">
         <h2 class="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">Add New Entry</h2>
         <p class="text-xs text-stone-500 dark:text-stone-400">Log new fragrances into your vault or wish lists.</p>
       </div>
 
-      <form id="purchaseForm" class="space-y-5" onsubmit="handleFormSubmit(event)">
-        
-        <!-- TOP DESTINATION SELECTION CARD -->
-        <div class="bg-white dark:bg-stone-900 p-4 rounded-2xl shadow-sm border border-brand-200 dark:border-stone-800 space-y-3">
-          <label class="block text-xs font-semibold uppercase tracking-wider text-brand-700 dark:text-brand-400">
-            Save Target Destination *
-          </label>
-          <div class="grid grid-cols-2 gap-2">
-            <label class="cursor-pointer">
-              <input type="radio" name="targetDestination" value="Collection" class="peer sr-only" checked>
-              <div class="py-3 px-3 text-center rounded-xl border border-stone-200 dark:border-stone-700 peer-checked:border-brand-500 peer-checked:bg-brand-50 dark:peer-checked:bg-brand-900/30 peer-checked:text-brand-700 dark:peer-checked:text-brand-300 font-semibold text-xs transition-all flex items-center justify-center gap-2 shadow-xs">
-                <i data-lucide="bookmark-check" class="w-4 h-4 text-brand-500"></i>
-                <span>My Collection</span>
-              </div>
+      <div class="scrollable-content-area no-scrollbar pr-0.5">
+        <form id="purchaseForm" class="space-y-5" onsubmit="handleFormSubmit(event)">
+          
+          <!-- TOP DESTINATION SELECTION CARD -->
+          <div class="bg-white dark:bg-stone-900 p-4 rounded-2xl shadow-sm border border-brand-200 dark:border-stone-800 space-y-3">
+            <label class="block text-xs font-semibold uppercase tracking-wider text-brand-700 dark:text-brand-400">
+              Save Target Destination *
             </label>
-            <label class="cursor-pointer">
-              <input type="radio" name="targetDestination" value="SmellingList" class="peer sr-only">
-              <div class="py-3 px-3 text-center rounded-xl border border-stone-200 dark:border-stone-700 peer-checked:border-brand-500 peer-checked:bg-brand-50 dark:peer-checked:bg-brand-900/30 peer-checked:text-brand-700 dark:peer-checked:text-brand-300 font-semibold text-xs transition-all flex items-center justify-center gap-2 shadow-xs">
-                <i data-lucide="compass" class="w-4 h-4 text-brand-500"></i>
-                <span>To-smell List</span>
-              </div>
-            </label>
-          </div>
-        </div>
-
-        <!-- 1. Purchase Type Selection -->
-        <div class="bg-white dark:bg-stone-900 p-4 rounded-2xl shadow-sm border border-brand-100 dark:border-stone-800 space-y-3">
-          <label class="block text-xs font-semibold uppercase tracking-wider text-brand-700 dark:text-brand-400">
-            1. Purchase Type
-          </label>
-          <div class="grid grid-cols-3 gap-2">
-            <label class="cursor-pointer">
-              <input type="radio" name="type" value="Bottle" class="peer sr-only" checked onchange="updateVolumeOptions()">
-              <div class="py-2.5 px-2 text-center rounded-xl border border-stone-200 dark:border-stone-700 peer-checked:border-brand-500 peer-checked:bg-brand-50 dark:peer-checked:bg-brand-900/30 peer-checked:text-brand-700 dark:peer-checked:text-brand-300 font-medium text-xs transition-all flex flex-col items-center gap-1">
-                <i data-lucide="wine" class="w-4 h-4"></i>
-                <span>Bottle</span>
-              </div>
-            </label>
-            <label class="cursor-pointer">
-              <input type="radio" name="type" value="Decant" class="peer sr-only" onchange="updateVolumeOptions()">
-              <div class="py-2.5 px-2 text-center rounded-xl border border-stone-200 dark:border-stone-700 peer-checked:border-brand-500 peer-checked:bg-brand-50 dark:peer-checked:bg-brand-900/30 peer-checked:text-brand-700 dark:peer-checked:text-brand-300 font-medium text-xs transition-all flex flex-col items-center gap-1">
-                <i data-lucide="droplet" class="w-4 h-4"></i>
-                <span>Decant</span>
-              </div>
-            </label>
-            <label class="cursor-pointer">
-              <input type="radio" name="type" value="Sample" class="peer sr-only" onchange="updateVolumeOptions()">
-              <div class="py-2.5 px-2 text-center rounded-xl border border-stone-200 dark:border-stone-700 peer-checked:border-brand-500 peer-checked:bg-brand-50 dark:peer-checked:bg-brand-900/30 peer-checked:text-brand-700 dark:peer-checked:text-brand-300 font-medium text-xs transition-all flex flex-col items-center gap-1">
-                <i data-lucide="flask-conical" class="w-4 h-4"></i>
-                <span>Sample</span>
-              </div>
-            </label>
-          </div>
-        </div>
-
-        <!-- 2. Basic Info & Volume -->
-        <div class="bg-white dark:bg-stone-900 p-4 rounded-2xl shadow-sm border border-brand-100 dark:border-stone-800 space-y-3">
-          <label class="block text-xs font-semibold uppercase tracking-wider text-brand-700 dark:text-brand-400">
-            2. Basic Details
-          </label>
-
-          <div class="space-y-3">
-            <div>
-              <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Brand *</label>
-              <input type="text" id="brand" required placeholder="e.g., Le Labo, Diptyque, Creed" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+            <div class="grid grid-cols-2 gap-2">
+              <label class="cursor-pointer">
+                <input type="radio" name="targetDestination" value="Collection" class="peer sr-only" checked>
+                <div class="py-3 px-3 text-center rounded-xl border border-stone-200 dark:border-stone-700 peer-checked:border-brand-500 peer-checked:bg-brand-50 dark:peer-checked:bg-brand-900/30 peer-checked:text-brand-700 dark:peer-checked:text-brand-300 font-semibold text-xs transition-all flex items-center justify-center gap-2 shadow-xs">
+                  <i data-lucide="bookmark-check" class="w-4 h-4 text-brand-500"></i>
+                  <span>My Collection</span>
+                </div>
+              </label>
+              <label class="cursor-pointer">
+                <input type="radio" name="targetDestination" value="SmellingList" class="peer sr-only">
+                <div class="py-3 px-3 text-center rounded-xl border border-stone-200 dark:border-stone-700 peer-checked:border-brand-500 peer-checked:bg-brand-50 dark:peer-checked:bg-brand-900/30 peer-checked:text-brand-700 dark:peer-checked:text-brand-300 font-semibold text-xs transition-all flex items-center justify-center gap-2 shadow-xs">
+                  <i data-lucide="compass" class="w-4 h-4 text-brand-500"></i>
+                  <span>To-smell List</span>
+                </div>
+              </label>
             </div>
+          </div>
 
-            <div>
-              <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Fragrance Name *</label>
-              <input type="text" id="name" required placeholder="e.g., Santal 33, Tam Dao" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+          <!-- 1. Purchase Type Selection -->
+          <div class="bg-white dark:bg-stone-900 p-4 rounded-2xl shadow-sm border border-brand-100 dark:border-stone-800 space-y-3">
+            <label class="block text-xs font-semibold uppercase tracking-wider text-brand-700 dark:text-brand-400">
+              1. Purchase Type
+            </label>
+            <div class="grid grid-cols-3 gap-2">
+              <label class="cursor-pointer">
+                <input type="radio" name="type" value="Bottle" class="peer sr-only" checked onchange="updateVolumeOptions()">
+                <div class="py-2.5 px-2 text-center rounded-xl border border-stone-200 dark:border-stone-700 peer-checked:border-brand-500 peer-checked:bg-brand-50 dark:peer-checked:bg-brand-900/30 peer-checked:text-brand-700 dark:peer-checked:text-brand-300 font-medium text-xs transition-all flex flex-col items-center gap-1">
+                  <i data-lucide="wine" class="w-4 h-4"></i>
+                  <span>Bottle</span>
+                </div>
+              </label>
+              <label class="cursor-pointer">
+                <input type="radio" name="type" value="Decant" class="peer sr-only" onchange="updateVolumeOptions()">
+                <div class="py-2.5 px-2 text-center rounded-xl border border-stone-200 dark:border-stone-700 peer-checked:border-brand-500 peer-checked:bg-brand-50 dark:peer-checked:bg-brand-900/30 peer-checked:text-brand-700 dark:peer-checked:text-brand-300 font-medium text-xs transition-all flex flex-col items-center gap-1">
+                  <i data-lucide="droplet" class="w-4 h-4"></i>
+                  <span>Decant</span>
+                </div>
+              </label>
+              <label class="cursor-pointer">
+                <input type="radio" name="type" value="Sample" class="peer sr-only" onchange="updateVolumeOptions()">
+                <div class="py-2.5 px-2 text-center rounded-xl border border-stone-200 dark:border-stone-700 peer-checked:border-brand-500 peer-checked:bg-brand-50 dark:peer-checked:bg-brand-900/30 peer-checked:text-brand-700 dark:peer-checked:text-brand-300 font-medium text-xs transition-all flex flex-col items-center gap-1">
+                  <i data-lucide="flask-conical" class="w-4 h-4"></i>
+                  <span>Sample</span>
+                </div>
+              </label>
             </div>
+          </div>
 
-            <div class="grid grid-cols-2 gap-3">
+          <!-- 2. Basic Info & Volume -->
+          <div class="bg-white dark:bg-stone-900 p-4 rounded-2xl shadow-sm border border-brand-100 dark:border-stone-800 space-y-3">
+            <label class="block text-xs font-semibold uppercase tracking-wider text-brand-700 dark:text-brand-400">
+              2. Basic Details
+            </label>
+
+            <div class="space-y-3">
               <div>
-                <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Volume *</label>
-                <select id="volumeSelect" onchange="toggleCustomVolumeInput()" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Brand *</label>
+                <input type="text" id="brand" required placeholder="e.g., Le Labo, Diptyque, Creed" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+              </div>
+
+              <div>
+                <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Fragrance Name *</label>
+                <input type="text" id="name" required placeholder="e.g., Santal 33, Tam Dao" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Volume *</label>
+                  <select id="volumeSelect" onchange="toggleCustomVolumeInput()" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                  </select>
+                </div>
+
+                <div id="customVolumeContainer" class="hidden">
+                  <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Custom Vol (mL) *</label>
+                  <input type="number" id="customVolume" step="0.1" min="0.1" placeholder="mL" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+
+                <div>
+                  <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400" id="priceLabel">Total Price ($) *</label>
+                  <input type="number" id="price" required step="0.01" min="0" placeholder="0.00" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Merchant / Store</label>
+                  <input type="text" id="merchant" placeholder="e.g., Boutique, Selfridges" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+
+                <div>
+                  <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Purchase Date</label>
+                  <input type="date" id="purchaseDate" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+              </div>
+
+              <div>
+                <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">To-smell Location</label>
+                <input type="text" id="smellingLocation" placeholder="e.g., TST; CWB" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+              </div>
+
+              <div>
+                <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Remarks</label>
+                <textarea id="remarks" rows="2" placeholder="e.g., Blind buy, great longevity, batch code #..." class="w-full mt-1 px-3 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Photo Upload / URL -->
+          <div class="bg-white dark:bg-stone-900 p-4 rounded-2xl shadow-sm border border-brand-100 dark:border-stone-800 space-y-3">
+            <label class="block text-xs font-semibold uppercase tracking-wider text-brand-700 dark:text-brand-400">
+              3. Perfume Photo
+            </label>
+
+            <div class="space-y-3">
+              <div>
+                <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Image URL</label>
+                <input type="url" id="imageUrl" oninput="handleUrlImage(this.value)" placeholder="https://example.com/photo.jpg" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+              </div>
+
+              <div class="relative flex items-center justify-center">
+                <span class="bg-white dark:bg-stone-900 px-2 text-[10px] text-stone-400 uppercase tracking-widest z-10">OR</span>
+                <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-stone-200 dark:border-stone-800"></div></div>
+              </div>
+
+              <div>
+                <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Upload Photo File</label>
+                <input type="file" id="imageFile" accept="image/*" onchange="handleFileUpload(event)" class="w-full mt-1 text-xs text-stone-500 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-medium file:bg-brand-100 file:text-brand-800 dark:file:bg-stone-800 dark:file:text-stone-200 hover:file:cursor-pointer">
+              </div>
+
+              <div id="photoPreviewContainer" class="hidden relative mt-2 w-24 h-24 rounded-xl overflow-hidden border border-stone-200 dark:border-stone-700 group">
+                <img id="photoPreview" src="" alt="Preview" class="w-full h-full object-cover">
+                <button type="button" onclick="clearPhotoPreview()" class="absolute top-1 right-1 bg-stone-900/70 text-white p-1 rounded-full text-xs">
+                  <i data-lucide="x" class="w-3 h-3"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Notes Smart Parser -->
+          <div class="bg-white dark:bg-stone-900 p-4 rounded-2xl shadow-sm border border-brand-100 dark:border-stone-800 space-y-3">
+            <div class="flex justify-between items-center">
+              <label class="block text-xs font-semibold uppercase tracking-wider text-brand-700 dark:text-brand-400">
+                4. Fragrance Notes Identification
+              </label>
+              <span class="text-[10px] bg-brand-100 dark:bg-brand-900/40 text-brand-700 dark:text-brand-300 px-2 py-0.5 rounded-full font-medium">Smart Auto-Fill</span>
+            </div>
+
+            <p class="text-[11px] text-stone-500 dark:text-stone-400 leading-tight">
+              Paste a note description paragraph below, choose the language, and tap identify to extract Top, Heart, & Base notes.
+            </p>
+
+            <textarea id="notesParagraph" rows="3" placeholder="e.g. 前調：白松香精油、黑醋栗&#10;中調：鳶尾花奶油、岩玫瑰&#10;後調：馬達加斯加香草、麝香" class="w-full px-3 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
+
+            <!-- Language Selection Buttons -->
+            <div class="space-y-1">
+              <label class="block text-[10px] font-semibold uppercase text-stone-500 dark:text-stone-400">Select Input Note Language:</label>
+              <div class="grid grid-cols-2 gap-2">
+                <label class="cursor-pointer">
+                  <input type="radio" name="notesLanguage" value="Chinese" class="peer sr-only" checked>
+                  <div class="py-1.5 text-center rounded-xl border border-stone-200 dark:border-stone-700 peer-checked:border-brand-500 peer-checked:bg-brand-50 dark:peer-checked:bg-brand-900/30 peer-checked:text-brand-700 dark:peer-checked:text-brand-300 font-semibold text-xs transition-all flex items-center justify-center gap-1.5">
+                    <i data-lucide="languages" class="w-3.5 h-3.5"></i>
+                    <span>Chinese (繁體中文)</span>
+                  </div>
+                </label>
+                <label class="cursor-pointer">
+                  <input type="radio" name="notesLanguage" value="English" class="peer sr-only">
+                  <div class="py-1.5 text-center rounded-xl border border-stone-200 dark:border-stone-700 peer-checked:border-brand-500 peer-checked:bg-brand-50 dark:peer-checked:bg-brand-900/30 peer-checked:text-brand-700 dark:peer-checked:text-brand-300 font-semibold text-xs transition-all flex items-center justify-center gap-1.5">
+                    <i data-lucide="globe" class="w-3.5 h-3.5"></i>
+                    <span>English</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <button type="button" onclick="parseNotesParagraph()" class="w-full py-2 bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 text-xs font-semibold rounded-xl border border-stone-200 dark:border-stone-700 transition-colors flex items-center justify-center gap-1.5">
+              <i data-lucide="wand-2" class="w-3.5 h-3.5 text-brand-500"></i>
+              <span>Identify & Extract Notes</span>
+            </button>
+
+            <!-- Notes Rows with Dual Stacked Inputs (Chinese & English) -->
+            <div class="space-y-3 pt-2 border-t border-stone-100 dark:border-stone-800">
+              <div>
+                <label class="text-[10px] font-semibold text-brand-600 dark:text-brand-400 uppercase">General Note (香調 / 主調)</label>
+                <select id="generalNotes" class="w-full mt-0.5 px-3 py-1.5 rounded-lg text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-1 focus:ring-brand-500 font-medium">
+                  <option value="花香調">花香調</option>
+                  <option value="木質調">木質調</option>
+                  <option value="清新調">清新調</option>
+                  <option value="琥珀調">琥珀調</option>
                 </select>
               </div>
 
-              <div id="customVolumeContainer" class="hidden">
-                <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Custom Vol (mL) *</label>
-                <input type="number" id="customVolume" step="0.1" min="0.1" placeholder="mL" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
-              </div>
-
-              <div>
-                <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400" id="priceLabel">Total Price ($) *</label>
-                <input type="number" id="price" required step="0.01" min="0" placeholder="0.00" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
-              </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-3">
-              <div>
-                <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Merchant / Store</label>
-                <input type="text" id="merchant" placeholder="e.g., Boutique, Selfridges" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
-              </div>
-
-              <div>
-                <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Purchase Date</label>
-                <input type="date" id="purchaseDate" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
-              </div>
-            </div>
-
-            <div>
-              <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">To-smell Location</label>
-              <input type="text" id="smellingLocation" placeholder="e.g., TST; CWB" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
-            </div>
-
-            <div>
-              <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Remarks</label>
-              <textarea id="remarks" rows="2" placeholder="e.g., Blind buy, great longevity, batch code #..." class="w-full mt-1 px-3 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
-            </div>
-          </div>
-        </div>
-
-        <!-- 3. Photo Upload / URL -->
-        <div class="bg-white dark:bg-stone-900 p-4 rounded-2xl shadow-sm border border-brand-100 dark:border-stone-800 space-y-3">
-          <label class="block text-xs font-semibold uppercase tracking-wider text-brand-700 dark:text-brand-400">
-            3. Perfume Photo
-          </label>
-
-          <div class="space-y-3">
-            <div>
-              <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Image URL</label>
-              <input type="url" id="imageUrl" oninput="handleUrlImage(this.value)" placeholder="https://example.com/photo.jpg" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
-            </div>
-
-            <div class="relative flex items-center justify-center">
-              <span class="bg-white dark:bg-stone-900 px-2 text-[10px] text-stone-400 uppercase tracking-widest z-10">OR</span>
-              <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-stone-200 dark:border-stone-800"></div></div>
-            </div>
-
-            <div>
-              <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Upload Photo File</label>
-              <input type="file" id="imageFile" accept="image/*" onchange="handleFileUpload(event)" class="w-full mt-1 text-xs text-stone-500 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-medium file:bg-brand-100 file:text-brand-800 dark:file:bg-stone-800 dark:file:text-stone-200 hover:file:cursor-pointer">
-            </div>
-
-            <div id="photoPreviewContainer" class="hidden relative mt-2 w-24 h-24 rounded-xl overflow-hidden border border-stone-200 dark:border-stone-700 group">
-              <img id="photoPreview" src="" alt="Preview" class="w-full h-full object-cover">
-              <button type="button" onclick="clearPhotoPreview()" class="absolute top-1 right-1 bg-stone-900/70 text-white p-1 rounded-full text-xs">
-                <i data-lucide="x" class="w-3 h-3"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- 4. Notes Smart Parser -->
-        <div class="bg-white dark:bg-stone-900 p-4 rounded-2xl shadow-sm border border-brand-100 dark:border-stone-800 space-y-3">
-          <div class="flex justify-between items-center">
-            <label class="block text-xs font-semibold uppercase tracking-wider text-brand-700 dark:text-brand-400">
-              4. Fragrance Notes Identification
-            </label>
-            <span class="text-[10px] bg-brand-100 dark:bg-brand-900/40 text-brand-700 dark:text-brand-300 px-2 py-0.5 rounded-full font-medium">Smart Auto-Fill</span>
-          </div>
-
-          <p class="text-[11px] text-stone-500 dark:text-stone-400 leading-tight">
-            Paste a note description paragraph below, choose the language, and tap identify to extract Top, Heart, & Base notes.
-          </p>
-
-          <textarea id="notesParagraph" rows="3" placeholder="e.g. 前調：白松香精油、黑醋栗&#10;中調：鳶尾花奶油、岩玫瑰&#10;後調：馬達加斯加香草、麝香" class="w-full px-3 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
-
-          <!-- Language Selection Buttons -->
-          <div class="space-y-1">
-            <label class="block text-[10px] font-semibold uppercase text-stone-500 dark:text-stone-400">Select Input Note Language:</label>
-            <div class="grid grid-cols-2 gap-2">
-              <label class="cursor-pointer">
-                <input type="radio" name="notesLanguage" value="Chinese" class="peer sr-only" checked>
-                <div class="py-1.5 text-center rounded-xl border border-stone-200 dark:border-stone-700 peer-checked:border-brand-500 peer-checked:bg-brand-50 dark:peer-checked:bg-brand-900/30 peer-checked:text-brand-700 dark:peer-checked:text-brand-300 font-semibold text-xs transition-all flex items-center justify-center gap-1.5">
-                  <i data-lucide="languages" class="w-3.5 h-3.5"></i>
-                  <span>Chinese (繁體中文)</span>
-                </div>
-              </label>
-              <label class="cursor-pointer">
-                <input type="radio" name="notesLanguage" value="English" class="peer sr-only">
-                <div class="py-1.5 text-center rounded-xl border border-stone-200 dark:border-stone-700 peer-checked:border-brand-500 peer-checked:bg-brand-50 dark:peer-checked:bg-brand-900/30 peer-checked:text-brand-700 dark:peer-checked:text-brand-300 font-semibold text-xs transition-all flex items-center justify-center gap-1.5">
-                  <i data-lucide="globe" class="w-3.5 h-3.5"></i>
-                  <span>English</span>
-                </div>
-              </label>
-            </div>
-          </div>
-
-          <button type="button" onclick="parseNotesParagraph()" class="w-full py-2 bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 text-xs font-semibold rounded-xl border border-stone-200 dark:border-stone-700 transition-colors flex items-center justify-center gap-1.5">
-            <i data-lucide="wand-2" class="w-3.5 h-3.5 text-brand-500"></i>
-            <span>Identify & Extract Notes</span>
-          </button>
-
-          <!-- Notes Rows with Dual Stacked Inputs (Chinese & English) -->
-          <div class="space-y-3 pt-2 border-t border-stone-100 dark:border-stone-800">
-            <div>
-              <label class="text-[10px] font-semibold text-brand-600 dark:text-brand-400 uppercase">General Note (香調 / 主調)</label>
-              <select id="generalNotes" class="w-full mt-0.5 px-3 py-1.5 rounded-lg text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-1 focus:ring-brand-500 font-medium">
-                <option value="花香調">花香調</option>
-                <option value="木質調">木質調</option>
-                <option value="清新調">清新調</option>
-                <option value="琥珀調">琥珀調</option>
-              </select>
-            </div>
-
-            <!-- Top Notes Dual Row -->
-            <div class="space-y-1.5">
-              <label class="text-[10px] font-semibold text-brand-600 dark:text-brand-400 uppercase">Top Notes (前調)</label>
+              <!-- Top Notes Dual Row -->
               <div class="space-y-1.5">
-                <div>
-                  <label class="text-[9px] text-stone-400 font-medium block mb-0.5">Chinese (中文前調)</label>
-                  <input type="text" id="topNotesZh" placeholder="中文前調 (e.g. 佛手柑)" class="w-full px-2.5 py-1.5 rounded-lg text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-1 focus:ring-brand-500">
-                </div>
-                <div>
-                  <label class="text-[9px] text-stone-400 font-medium block mb-0.5">English (English Top)</label>
-                  <input type="text" id="topNotesEn" placeholder="English Top (e.g. Bergamot)" class="w-full px-2.5 py-1.5 rounded-lg text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-1 focus:ring-brand-500">
+                <label class="text-[10px] font-semibold text-brand-600 dark:text-brand-400 uppercase">Top Notes (前調)</label>
+                <div class="space-y-1.5">
+                  <div>
+                    <label class="text-[9px] text-stone-400 font-medium block mb-0.5">Chinese (中文前調)</label>
+                    <input type="text" id="topNotesZh" placeholder="中文前調 (e.g. 佛手柑)" class="w-full px-2.5 py-1.5 rounded-lg text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-1 focus:ring-brand-500">
+                  </div>
+                  <div>
+                    <label class="text-[9px] text-stone-400 font-medium block mb-0.5">English (English Top)</label>
+                    <input type="text" id="topNotesEn" placeholder="English Top (e.g. Bergamot)" class="w-full px-2.5 py-1.5 rounded-lg text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-1 focus:ring-brand-500">
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <!-- Heart Notes Dual Row -->
-            <div class="space-y-1.5">
-              <label class="text-[10px] font-semibold text-brand-600 dark:text-brand-400 uppercase">Heart Notes (中調)</label>
+              <!-- Heart Notes Dual Row -->
               <div class="space-y-1.5">
-                <div>
-                  <label class="text-[9px] text-stone-400 font-medium block mb-0.5">Chinese (中文中調)</label>
-                  <input type="text" id="heartNotesZh" placeholder="中文中調 (e.g. 玫瑰, 鳶尾)" class="w-full px-2.5 py-1.5 rounded-lg text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-1 focus:ring-brand-500">
-                </div>
-                <div>
-                  <label class="text-[9px] text-stone-400 font-medium block mb-0.5">English (English Heart)</label>
-                  <input type="text" id="heartNotesEn" placeholder="English Heart (e.g. Rose, Iris)" class="w-full px-2.5 py-1.5 rounded-lg text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-1 focus:ring-brand-500">
+                <label class="text-[10px] font-semibold text-brand-600 dark:text-brand-400 uppercase">Heart Notes (中調)</label>
+                <div class="space-y-1.5">
+                  <div>
+                    <label class="text-[9px] text-stone-400 font-medium block mb-0.5">Chinese (中文中調)</label>
+                    <input type="text" id="heartNotesZh" placeholder="中文中調 (e.g. 玫瑰, 鳶尾)" class="w-full px-2.5 py-1.5 rounded-lg text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-1 focus:ring-brand-500">
+                  </div>
+                  <div>
+                    <label class="text-[9px] text-stone-400 font-medium block mb-0.5">English (English Heart)</label>
+                    <input type="text" id="heartNotesEn" placeholder="English Heart (e.g. Rose, Iris)" class="w-full px-2.5 py-1.5 rounded-lg text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-1 focus:ring-brand-500">
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <!-- Base Notes Dual Row -->
-            <div class="space-y-1.5">
-              <label class="text-[10px] font-semibold text-brand-600 dark:text-brand-400 uppercase">Base Notes (後調)</label>
+              <!-- Base Notes Dual Row -->
               <div class="space-y-1.5">
-                <div>
-                  <label class="text-[9px] text-stone-400 font-medium block mb-0.5">Chinese (中文後調)</label>
-                  <input type="text" id="baseNotesZh" placeholder="中文後調 (e.g. 香草, 麝香)" class="w-full px-2.5 py-1.5 rounded-lg text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-1 focus:ring-brand-500">
-                </div>
-                <div>
-                  <label class="text-[9px] text-stone-400 font-medium block mb-0.5">English (English Base)</label>
-                  <input type="text" id="baseNotesEn" placeholder="English Base (e.g. Vanilla, Musk)" class="w-full px-2.5 py-1.5 rounded-lg text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-1 focus:ring-brand-500">
+                <label class="text-[10px] font-semibold text-brand-600 dark:text-brand-400 uppercase">Base Notes (後調)</label>
+                <div class="space-y-1.5">
+                  <div>
+                    <label class="text-[9px] text-stone-400 font-medium block mb-0.5">Chinese (中文後調)</label>
+                    <input type="text" id="baseNotesZh" placeholder="中文後調 (e.g. 香草, 麝香)" class="w-full px-2.5 py-1.5 rounded-lg text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-1 focus:ring-brand-500">
+                  </div>
+                  <div>
+                    <label class="text-[9px] text-stone-400 font-medium block mb-0.5">English (English Base)</label>
+                    <input type="text" id="baseNotesEn" placeholder="English Base (e.g. Vanilla, Musk)" class="w-full px-2.5 py-1.5 rounded-lg text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-1 focus:ring-brand-500">
+                  </div>
                 </div>
               </div>
-            </div>
 
+            </div>
           </div>
-        </div>
 
-        <!-- Main Save Button -->
-        <div>
-          <button type="submit" class="w-full py-4 bg-brand-500 hover:bg-brand-600 active:scale-[0.99] text-white font-semibold text-sm rounded-2xl shadow-lg shadow-brand-500/25 transition-all flex items-center justify-center gap-2">
-            <i data-lucide="check-circle" class="w-5 h-5"></i>
-            <span>Save Entry</span>
-          </button>
-        </div>
+          <!-- Main Save Button -->
+          <div>
+            <button type="submit" class="w-full py-4 bg-brand-500 hover:bg-brand-600 active:scale-[0.99] text-white font-semibold text-sm rounded-2xl shadow-lg shadow-brand-500/25 transition-all flex items-center justify-center gap-2">
+              <i data-lucide="check-circle" class="w-5 h-5"></i>
+              <span>Save Entry</span>
+            </button>
+          </div>
 
-        <div>
-          <button type="button" onclick="handleClearForm()" class="w-full py-3 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/60 active:scale-[0.99] text-rose-600 dark:text-rose-400 font-medium text-xs rounded-2xl border border-rose-200 dark:border-rose-900 transition-all flex items-center justify-center gap-1.5">
-            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
-            <span>Clear Entry Form</span>
-          </button>
-        </div>
+          <div>
+            <button type="button" onclick="handleClearForm()" class="w-full py-3 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/60 active:scale-[0.99] text-rose-600 dark:text-rose-400 font-medium text-xs rounded-2xl border border-rose-200 dark:border-rose-900 transition-all flex items-center justify-center gap-1.5">
+              <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+              <span>Clear Entry Form</span>
+            </button>
+          </div>
 
-      </form>
+        </form>
+      </div>
     </section>
 
     <!-- ========================================== -->
     <!-- SECTION 2: MY COLLECTION (TAB 2) -->
     <!-- ========================================== -->
-    <section id="tab-collection" class="tab-content active space-y-4">
-      <div class="flex justify-between items-center pb-1">
-        <div>
-          <h2 class="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">My Collection</h2>
-          <p class="text-sm font-semibold text-brand-700 dark:text-brand-400 mt-0.5" id="collectionActivePerfumesText">0 Available Perfumes</p>
+    <section id="tab-collection" class="tab-content active space-y-3">
+      <!-- Fixed Header & Filter Controls -->
+      <div class="flex-shrink-0 space-y-3 pb-1 bg-brand-50 dark:bg-stone-950">
+        <div class="flex justify-between items-center">
+          <div>
+            <h2 class="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">My Collection</h2>
+            <p class="text-sm font-semibold text-brand-700 dark:text-brand-400 mt-0.5" id="collectionActivePerfumesText">0 Available Perfumes</p>
+          </div>
+
+          <!-- Notes Category Toggle Button -->
+          <button id="notesCategoryBtn" onclick="toggleNotesCategoryView()" class="px-3 py-2 bg-stone-100 dark:bg-stone-800 hover:bg-brand-100 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 text-xs font-semibold rounded-xl border border-stone-200 dark:border-stone-700 transition-all flex items-center gap-1.5 shadow-sm flex-shrink-0">
+            <i data-lucide="layers" class="w-3.5 h-3.5 text-brand-500"></i>
+            <span>Notes Category</span>
+          </button>
         </div>
 
-        <!-- Notes Category Toggle Button -->
-        <button id="notesCategoryBtn" onclick="toggleNotesCategoryView()" class="px-3 py-2 bg-stone-100 dark:bg-stone-800 hover:bg-brand-100 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 text-xs font-semibold rounded-xl border border-stone-200 dark:border-stone-700 transition-all flex items-center gap-1.5 shadow-sm flex-shrink-0">
-          <i data-lucide="layers" class="w-3.5 h-3.5 text-brand-500"></i>
-          <span>Notes Category</span>
-        </button>
+        <!-- Controls -->
+        <div class="space-y-2">
+          <div class="relative w-full">
+            <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-stone-400"></i>
+            <input type="text" id="searchInput" oninput="renderCollection()" placeholder="Search brand or name..." class="w-full pl-9 pr-3 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <select id="filterType" onchange="renderCollection()" class="px-2 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
+              <option value="All">All Types</option>
+              <option value="Bottle">Bottle</option>
+              <option value="Decant">Decant</option>
+              <option value="Sample">Sample</option>
+            </select>
+
+            <select id="sortSelect" onchange="renderCollection()" class="px-2 py-2 rounded-xl text-xs font-medium border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
+              <option value="date-desc">Newest Date</option>
+              <option value="date-asc">Oldest Date</option>
+              <option value="price-asc">$/mL: Low to High</option>
+              <option value="price-desc">$/mL: High to Low</option>
+            </select>
+          </div>
+        </div>
       </div>
 
-      <!-- Controls -->
-      <div class="space-y-2">
-        <div class="relative w-full">
-          <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-stone-400"></i>
-          <input type="text" id="searchInput" oninput="renderCollection()" placeholder="Search brand or name..." class="w-full pl-9 pr-3 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
+      <!-- Scrollable Collection Grid (Only cards scroll below controls) -->
+      <div class="scrollable-content-area no-scrollbar pr-0.5">
+        <div id="collectionGrid" class="space-y-3">
         </div>
-
-        <div class="grid grid-cols-2 gap-2">
-          <select id="filterType" onchange="renderCollection()" class="px-2 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
-            <option value="All">All Types</option>
-            <option value="Bottle">Bottle</option>
-            <option value="Decant">Decant</option>
-            <option value="Sample">Sample</option>
-          </select>
-
-          <select id="sortSelect" onchange="renderCollection()" class="px-2 py-2 rounded-xl text-xs font-medium border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
-            <option value="date-desc">Newest Date</option>
-            <option value="date-asc">Oldest Date</option>
-            <option value="price-asc">$/mL: Low to High</option>
-            <option value="price-desc">$/mL: High to Low</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Collection Grid -->
-      <div id="collectionGrid" class="space-y-3">
       </div>
     </section>
 
     <!-- ========================================== -->
     <!-- SECTION 3: TO-SMELL LIST (TAB 3) -->
     <!-- ========================================== -->
-    <section id="tab-smelling" class="tab-content space-y-4">
-      <div class="flex justify-between items-end">
-        <div>
-          <h2 class="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">To-smell List</h2>
-          <div class="flex flex-col gap-0.5 mt-1">
-            <p class="text-xs text-stone-500 dark:text-stone-400" id="smellingCountText">0 Fragrances stored</p>
-            <p class="text-xs text-stone-500 dark:text-stone-400" id="smellingToBuyCountText">0 Items in To-buy List</p>
+    <section id="tab-smelling" class="tab-content space-y-3">
+      <!-- Fixed Header & Filter Controls -->
+      <div class="flex-shrink-0 space-y-3 pb-1 bg-brand-50 dark:bg-stone-950">
+        <div class="flex justify-between items-end">
+          <div>
+            <h2 class="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">To-smell List</h2>
+            <div class="flex flex-col gap-0.5 mt-1">
+              <p class="text-xs text-stone-500 dark:text-stone-400" id="smellingCountText">0 Fragrances stored</p>
+              <p class="text-xs text-stone-500 dark:text-stone-400" id="smellingToBuyCountText">0 Items in To-buy List</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <div class="relative w-full">
+            <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-stone-400"></i>
+            <input type="text" id="smellingSearchInput" oninput="renderSmellingList()" placeholder="Search to-smell brand or name..." class="w-full pl-9 pr-3 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <select id="smellingFilterType" onchange="renderSmellingList()" class="px-2 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
+              <option value="All">All Types</option>
+              <option value="Bottle">Bottle</option>
+              <option value="Decant">Decant</option>
+              <option value="Sample">Sample</option>
+            </select>
+
+            <select id="smellingSortSelect" onchange="renderSmellingList()" class="px-2 py-2 rounded-xl text-xs font-medium border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
+              <option value="date-desc">Newest Date</option>
+              <option value="date-asc">Oldest Date</option>
+              <option value="price-asc">$/mL: Low to High</option>
+              <option value="price-desc">$/mL: High to Low</option>
+            </select>
           </div>
         </div>
       </div>
 
-      <div class="space-y-2">
-        <div class="relative w-full">
-          <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-stone-400"></i>
-          <input type="text" id="smellingSearchInput" oninput="renderSmellingList()" placeholder="Search to-smell brand or name..." class="w-full pl-9 pr-3 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
+      <!-- Scrollable Smelling Cards Area -->
+      <div class="scrollable-content-area no-scrollbar pr-0.5">
+        <div id="smellingGrid" class="space-y-5">
         </div>
-
-        <div class="grid grid-cols-2 gap-2">
-          <select id="smellingFilterType" onchange="renderSmellingList()" class="px-2 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
-            <option value="All">All Types</option>
-            <option value="Bottle">Bottle</option>
-            <option value="Decant">Decant</option>
-            <option value="Sample">Sample</option>
-          </select>
-
-          <select id="smellingSortSelect" onchange="renderSmellingList()" class="px-2 py-2 rounded-xl text-xs font-medium border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
-            <option value="date-desc">Newest Date</option>
-            <option value="date-asc">Oldest Date</option>
-            <option value="price-asc">$/mL: Low to High</option>
-            <option value="price-desc">$/mL: High to Low</option>
-          </select>
-        </div>
-      </div>
-
-      <div id="smellingGrid" class="space-y-5">
       </div>
     </section>
 
     <!-- ========================================== -->
     <!-- SECTION 4: SCENT CALENDAR (TAB 4) -->
     <!-- ========================================== -->
-    <section id="tab-calendar" class="tab-content space-y-4">
-      <div class="flex justify-between items-end">
-        <div>
-          <h2 class="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">Scent Calendar</h2>
-          <p class="text-xs text-stone-500 dark:text-stone-400">Log and track what you wore each day.</p>
-        </div>
+    <section id="tab-calendar" class="tab-content space-y-3">
+      <!-- Fixed Title -->
+      <div class="flex-shrink-0 bg-brand-50 dark:bg-stone-950 pb-1">
+        <h2 class="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">Scent Calendar</h2>
+        <p class="text-xs text-stone-500 dark:text-stone-400">Log and track what you wore each day.</p>
       </div>
 
-      <div class="bg-white dark:bg-stone-900 p-4 rounded-2xl shadow-sm border border-brand-100 dark:border-stone-800 space-y-4">
-        <div class="flex justify-between items-center">
-          <button onclick="changeCalendarMonth(-1)" class="p-2 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 transition-colors">
-            <i data-lucide="chevron-left" class="w-4 h-4"></i>
-          </button>
-          <h3 id="calMonthYearTitle" class="font-serif font-bold text-base text-stone-900 dark:text-stone-100"></h3>
-          <button onclick="changeCalendarMonth(1)" class="p-2 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 transition-colors">
-            <i data-lucide="chevron-right" class="w-4 h-4"></i>
-          </button>
-        </div>
-
-        <div class="grid grid-cols-7 text-center text-[10px] font-bold text-stone-400 uppercase tracking-wider">
-          <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
-        </div>
-
-        <div id="calDaysGrid" class="grid grid-cols-7 gap-1">
-        </div>
-      </div>
-
-      <div class="bg-white dark:bg-stone-900 p-4 rounded-2xl shadow-sm border border-brand-100 dark:border-stone-800 space-y-3">
-        <div class="flex justify-between items-center pb-2 border-b border-stone-100 dark:border-stone-800">
-          <div>
-            <span class="text-[10px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider">Selected Date</span>
-            <h4 id="selectedDateTitle" class="font-serif font-bold text-base text-stone-900 dark:text-stone-100"></h4>
+      <!-- Scrollable Calendar Body & Log -->
+      <div class="scrollable-content-area no-scrollbar space-y-4 pr-0.5">
+        <div class="bg-white dark:bg-stone-900 p-4 rounded-2xl shadow-sm border border-brand-100 dark:border-stone-800 space-y-4">
+          <div class="flex justify-between items-center">
+            <button onclick="changeCalendarMonth(-1)" class="p-2 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 transition-colors">
+              <i data-lucide="chevron-left" class="w-4 h-4"></i>
+            </button>
+            <h3 id="calMonthYearTitle" class="font-serif font-bold text-base text-stone-900 dark:text-stone-100"></h3>
+            <button onclick="changeCalendarMonth(1)" class="p-2 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 transition-colors">
+              <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            </button>
           </div>
-          <button onclick="setCalendarToToday()" class="px-2.5 py-1 rounded-xl bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300 text-[10px] font-semibold border border-brand-200 dark:border-brand-900">
-            Today
-          </button>
-        </div>
 
-        <div class="space-y-2">
-          <label class="block text-xs font-semibold text-stone-700 dark:text-stone-300">Perfumes Worn on This Day:</label>
-          <div id="selectedDateWornList" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+          <div class="grid grid-cols-7 text-center text-[10px] font-bold text-stone-400 uppercase tracking-wider">
+            <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+          </div>
+
+          <div id="calDaysGrid" class="grid grid-cols-7 gap-1">
           </div>
         </div>
 
-        <div class="pt-2 border-t border-stone-100 dark:border-stone-800">
-          <button onclick="openWearPickerModal()" class="w-full py-2.5 bg-brand-500 hover:bg-brand-600 active:scale-[0.99] text-white font-medium text-xs rounded-xl shadow-md transition-colors flex items-center justify-center gap-1.5">
-            <i data-lucide="plus" class="w-4 h-4"></i>
-            <span>Choose Perfume Worn</span>
-          </button>
+        <div class="bg-white dark:bg-stone-900 p-4 rounded-2xl shadow-sm border border-brand-100 dark:border-stone-800 space-y-3">
+          <div class="flex justify-between items-center pb-2 border-b border-stone-100 dark:border-stone-800">
+            <div>
+              <span class="text-[10px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider">Selected Date</span>
+              <h4 id="selectedDateTitle" class="font-serif font-bold text-base text-stone-900 dark:text-stone-100"></h4>
+            </div>
+            <button onclick="setCalendarToToday()" class="px-2.5 py-1 rounded-xl bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300 text-[10px] font-semibold border border-brand-200 dark:border-brand-900">
+              Today
+            </button>
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-xs font-semibold text-stone-700 dark:text-stone-300">Perfumes Worn on This Day:</label>
+            <div id="selectedDateWornList" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+            </div>
+          </div>
+
+          <div class="pt-2 border-t border-stone-100 dark:border-stone-800">
+            <button onclick="openWearPickerModal()" class="w-full py-2.5 bg-brand-500 hover:bg-brand-600 active:scale-[0.99] text-white font-medium text-xs rounded-xl shadow-md transition-colors flex items-center justify-center gap-1.5">
+              <i data-lucide="plus" class="w-4 h-4"></i>
+              <span>Choose Perfume Worn</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SECTION 5: COMPARISON (TAB 5) -->
+    <!-- ========================================== -->
+    <section id="tab-compare" class="tab-content space-y-3">
+      <!-- Fixed Title & Description -->
+      <div class="flex-shrink-0 bg-brand-50 dark:bg-stone-950 pb-1 space-y-1">
+        <h2 class="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">Compare Vault & Lists</h2>
+        <p class="text-xs text-stone-500 dark:text-stone-400">Select perfumes from your collection and lists to compare side-by-side.</p>
+      </div>
+
+      <!-- Scrollable Checklists & Output Cards -->
+      <div class="scrollable-content-area no-scrollbar space-y-4 pr-0.5">
+        <!-- Language Filter Selector for Compare -->
+        <div class="bg-white dark:bg-stone-900 p-3 rounded-2xl border border-brand-100 dark:border-stone-800 space-y-2">
+          <label class="block text-xs font-semibold text-brand-700 dark:text-brand-400 uppercase tracking-wider">Compare Notes Language Display</label>
+          <div class="grid grid-cols-3 gap-2">
+            <label class="cursor-pointer">
+              <input type="radio" name="compareNotesLang" value="Both" class="peer sr-only" checked onchange="renderComparisonOutput()">
+              <div class="py-1.5 text-center rounded-xl border border-stone-200 dark:border-stone-700 peer-checked:border-brand-500 peer-checked:bg-brand-50 dark:peer-checked:bg-brand-900/30 peer-checked:text-brand-700 dark:peer-checked:text-brand-300 font-semibold text-xs transition-all">
+                Both (中 & EN)
+              </div>
+            </label>
+            <label class="cursor-pointer">
+              <input type="radio" name="compareNotesLang" value="Chinese" class="peer sr-only" onchange="renderComparisonOutput()">
+              <div class="py-1.5 text-center rounded-xl border border-stone-200 dark:border-stone-700 peer-checked:border-brand-500 peer-checked:bg-brand-50 dark:peer-checked:bg-brand-900/30 peer-checked:text-brand-700 dark:peer-checked:text-brand-300 font-semibold text-xs transition-all">
+                Chinese (中文)
+              </div>
+            </label>
+            <label class="cursor-pointer">
+              <input type="radio" name="compareNotesLang" value="English" class="peer sr-only" onchange="renderComparisonOutput()">
+              <div class="py-1.5 text-center rounded-xl border border-stone-200 dark:border-stone-700 peer-checked:border-brand-500 peer-checked:bg-brand-50 dark:peer-checked:bg-brand-900/30 peer-checked:text-brand-700 dark:peer-checked:text-brand-300 font-semibold text-xs transition-all">
+                English
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-stone-900 p-3 rounded-2xl border border-brand-100 dark:border-stone-800 space-y-2">
+          <div class="flex justify-between items-center px-1">
+            <span class="text-xs font-semibold text-stone-700 dark:text-stone-300">My Collection Items</span>
+            <button onclick="selectAllCollectionForCompare()" class="text-[11px] text-brand-600 dark:text-brand-400 font-medium hover:underline">Select All Collection</button>
+          </div>
+          <div id="compareCollectionChecklist" class="max-h-36 overflow-y-auto space-y-1.5 pr-1 divide-y divide-stone-100 dark:divide-stone-800">
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-stone-900 p-3 rounded-2xl border border-brand-100 dark:border-stone-800 space-y-2">
+          <div class="flex justify-between items-center px-1">
+            <span class="text-xs font-semibold text-stone-700 dark:text-stone-300">To-buy List Items</span>
+            <button onclick="selectAllToBuyForCompare()" class="text-[11px] text-brand-600 dark:text-brand-400 font-medium hover:underline">Select All To-buy</button>
+          </div>
+          <div id="compareToBuyChecklist" class="max-h-36 overflow-y-auto space-y-1.5 pr-1 divide-y divide-stone-100 dark:divide-stone-800">
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-stone-900 p-3 rounded-2xl border border-brand-100 dark:border-stone-800 space-y-2">
+          <div class="flex justify-between items-center px-1">
+            <span class="text-xs font-semibold text-stone-700 dark:text-stone-300">To-smell List Items (General)</span>
+            <button onclick="selectAllSmellingForCompare()" class="text-[11px] text-brand-600 dark:text-brand-400 font-medium hover:underline">Select All To-smell</button>
+          </div>
+          <div id="compareSmellingChecklist" class="max-h-36 overflow-y-auto space-y-1.5 pr-1 divide-y divide-stone-100 dark:divide-stone-800">
+          </div>
+        </div>
+
+        <div id="comparisonOutput">
         </div>
       </div>
     </section>
@@ -603,8 +702,8 @@
 
     <!-- Detail Modal -->
     <div id="detailModal" class="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 hidden transition-opacity">
-      <div class="bg-white dark:bg-stone-900 w-full max-w-md rounded-t-3xl sm:rounded-2xl max-h-[90vh] overflow-y-auto p-5 space-y-4 shadow-2xl border border-stone-200 dark:border-stone-800">
-        <div class="flex justify-between items-start sticky top-0 bg-white dark:bg-stone-900 pt-1 pb-2 z-10 border-b border-stone-100 dark:border-stone-800">
+      <div class="bg-white dark:bg-stone-900 w-full max-w-md rounded-t-3xl sm:rounded-2xl max-h-[90vh] flex flex-col p-5 space-y-4 shadow-2xl border border-stone-200 dark:border-stone-800">
+        <div class="flex justify-between items-start pb-2 border-b border-stone-100 dark:border-stone-800 flex-shrink-0">
           <div>
             <p id="modalBrand" class="text-xs font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider"></p>
             <h3 id="modalName" class="font-serif font-bold text-xl text-stone-900 dark:text-stone-100"></h3>
@@ -614,10 +713,10 @@
           </button>
         </div>
 
-        <div id="modalContent" class="space-y-4">
+        <div id="modalContent" class="flex-1 min-h-0 flex flex-col gap-3 overflow-hidden">
         </div>
 
-        <div class="flex gap-2 pt-2 border-t border-stone-100 dark:border-stone-800">
+        <div class="flex gap-2 pt-2 border-t border-stone-100 dark:border-stone-800 flex-shrink-0">
           <button id="modalEditBtn" onclick="handleModalEdit()" class="flex-1 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-medium text-xs rounded-xl transition-colors flex items-center justify-center gap-1.5">
             <i data-lucide="edit-3" class="w-4 h-4"></i>
             <span>Edit Perfume</span>
@@ -1956,83 +2055,87 @@
 
       const content = document.getElementById('modalContent');
       content.innerHTML = `
-        <div class="flex gap-4 items-center">
-          <div class="w-24 h-28 rounded-2xl overflow-hidden bg-stone-100 dark:bg-stone-800 flex-shrink-0 border border-stone-200 dark:border-stone-700">
-            <img src="${item.photoUrl}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.src='${DEFAULT_PLACEHOLDER}'">
-          </div>
-          <div class="space-y-1.5 text-xs flex-1">
-            <div class="flex justify-between items-center">
-              <span class="text-stone-400">Section:</span>
-              <span class="font-semibold text-brand-600 dark:text-brand-400">${item.section === 'SmellingList' ? 'To-smell List' : 'Collection'}</span>
+        <!-- FIXED TOP SECTION (Image, Brand/Name Summary, Volume, Price, Merchant, Remarks) -->
+        <div class="space-y-3 flex-shrink-0">
+          <div class="flex gap-4 items-center">
+            <div class="w-24 h-28 rounded-2xl overflow-hidden bg-stone-100 dark:bg-stone-800 flex-shrink-0 border border-stone-200 dark:border-stone-700">
+              <img src="${item.photoUrl}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.src='${DEFAULT_PLACEHOLDER}'">
             </div>
-            ${isCollectionSec ? `
+            <div class="space-y-1.5 text-xs flex-1 min-w-0">
               <div class="flex justify-between items-center">
-                <span class="text-stone-400">Empty?</span>
-                <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold ${
-                  isEmpty ? 'bg-stone-200 text-stone-600 dark:bg-stone-800 dark:text-stone-400 border border-stone-300 dark:border-stone-700' : 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 border border-emerald-300'
-                }">
-                  ${isEmpty ? 'Yes (Empty)' : 'No (Available)'}
-                </span>
+                <span class="text-stone-400">Section:</span>
+                <span class="font-semibold text-brand-600 dark:text-brand-400">${item.section === 'SmellingList' ? 'To-smell List' : 'Collection'}</span>
               </div>
-            ` : `
-              <div class="flex justify-between items-center">
-                <span class="text-stone-400">To-buy List:</span>
-                <span class="font-semibold text-stone-700 dark:text-stone-300">${item.isToBuy ? 'Yes' : 'No'}</span>
-              </div>
-            `}
-            <div class="flex justify-between items-center">
-              <span class="text-stone-400">Bottled:</span>
-              <span class="font-semibold text-stone-700 dark:text-stone-300">${item.isBottled ? 'Yes' : 'No'}</span>
-            </div>
-            ${item.isBottled ? `
-              <div class="flex justify-between items-center">
-                <span class="text-stone-400">Decant Colours:</span>
-                <div class="flex items-center gap-1">
-                  ${colors.map(c => `<span class="w-3.5 h-3.5 rounded-full border border-stone-300" style="background-color: ${c};"></span>`).join('')}
+              ${isCollectionSec ? `
+                <div class="flex justify-between items-center">
+                  <span class="text-stone-400">Empty?</span>
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold ${
+                    isEmpty ? 'bg-stone-200 text-stone-600 dark:bg-stone-800 dark:text-stone-400 border border-stone-300 dark:border-stone-700' : 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 border border-emerald-300'
+                  }">
+                    ${isEmpty ? 'Yes (Empty)' : 'No (Available)'}
+                  </span>
                 </div>
+              ` : `
+                <div class="flex justify-between items-center">
+                  <span class="text-stone-400">To-buy List:</span>
+                  <span class="font-semibold text-stone-700 dark:text-stone-300">${item.isToBuy ? 'Yes' : 'No'}</span>
+                </div>
+              `}
+              <div class="flex justify-between items-center">
+                <span class="text-stone-400">Bottled:</span>
+                <span class="font-semibold text-stone-700 dark:text-stone-300">${item.isBottled ? 'Yes' : 'No'}</span>
+              </div>
+              ${item.isBottled ? `
+                <div class="flex justify-between items-center">
+                  <span class="text-stone-400">Decant Colours:</span>
+                  <div class="flex items-center gap-1">
+                    ${colors.map(c => `<span class="w-3.5 h-3.5 rounded-full border border-stone-300" style="background-color: ${c};"></span>`).join('')}
+                  </div>
+                </div>
+              ` : ''}
+              <div class="flex justify-between">
+                <span class="text-stone-400">Type & Vol:</span>
+                <span class="font-semibold text-stone-800 dark:text-stone-200">${item.type} • ${item.volume} mL</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-stone-400">Total Price:</span>
+                <span class="font-semibold text-stone-800 dark:text-stone-200">$${item.price.toFixed(2)}</span>
+              </div>
+              <div class="flex justify-between bg-brand-50 dark:bg-brand-900/30 p-1.5 rounded-lg">
+                <span class="text-brand-700 dark:text-brand-300 font-medium">Price / mL:</span>
+                <span class="font-bold text-brand-700 dark:text-brand-300">$${item.pricePerMl.toFixed(2)} / mL</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-1 text-xs bg-stone-50 dark:bg-stone-800/50 p-2.5 rounded-xl max-h-24 overflow-y-auto pr-1">
+            <div class="flex justify-between">
+              <span class="text-stone-400">Merchant / Store:</span>
+              <span class="font-medium text-stone-700 dark:text-stone-300">${item.merchant}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-stone-400">Date:</span>
+              <span class="font-medium text-stone-700 dark:text-stone-300">${item.purchaseDate}</span>
+            </div>
+            ${item.smellingLocation ? `
+              <div class="flex justify-between">
+                <span class="text-stone-400">To-smell Location:</span>
+                <span class="font-medium text-brand-600 dark:text-brand-400">${item.smellingLocation}</span>
               </div>
             ` : ''}
-            <div class="flex justify-between">
-              <span class="text-stone-400">Type & Vol:</span>
-              <span class="font-semibold text-stone-800 dark:text-stone-200">${item.type} • ${item.volume} mL</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-stone-400">Total Price:</span>
-              <span class="font-semibold text-stone-800 dark:text-stone-200">$${item.price.toFixed(2)}</span>
-            </div>
-            <div class="flex justify-between bg-brand-50 dark:bg-brand-900/30 p-1.5 rounded-lg">
-              <span class="text-brand-700 dark:text-brand-300 font-medium">Price / mL:</span>
-              <span class="font-bold text-brand-700 dark:text-brand-300">$${item.pricePerMl.toFixed(2)} / mL</span>
-            </div>
+            ${item.remarks ? `
+              <div class="pt-1 border-t border-stone-200 dark:border-stone-700">
+                <span class="text-stone-400 block mb-0.5">Remarks:</span>
+                <p class="text-stone-700 dark:text-stone-300 whitespace-pre-wrap">${item.remarks}</p>
+              </div>
+            ` : ''}
           </div>
         </div>
 
-        <div class="space-y-1.5 text-xs bg-stone-50 dark:bg-stone-800/50 p-3 rounded-xl">
-          <div class="flex justify-between">
-            <span class="text-stone-400">Merchant / Store:</span>
-            <span class="font-medium text-stone-700 dark:text-stone-300">${item.merchant}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-stone-400">Date:</span>
-            <span class="font-medium text-stone-700 dark:text-stone-300">${item.purchaseDate}</span>
-          </div>
-          ${item.smellingLocation ? `
-            <div class="flex justify-between">
-              <span class="text-stone-400">To-smell Location:</span>
-              <span class="font-medium text-brand-600 dark:text-brand-400">${item.smellingLocation}</span>
-            </div>
-          ` : ''}
-          ${item.remarks ? `
-            <div class="pt-1.5 border-t border-stone-200 dark:border-stone-700">
-              <span class="text-stone-400 block mb-0.5">Remarks:</span>
-              <p class="text-stone-700 dark:text-stone-300 whitespace-pre-wrap">${item.remarks}</p>
-            </div>
-          ` : ''}
-        </div>
-
-        <div class="space-y-2 pt-1">
-          <p class="text-xs font-bold text-brand-700 dark:text-brand-400 uppercase tracking-wider">Fragrance Notes Hierarchy</p>
-          <div class="space-y-1.5 text-xs">
+        <!-- SCROLLING BOTTOM SECTION (Fragrance Notes Hierarchy Only) -->
+        <div class="space-y-2 pt-1 border-t border-stone-100 dark:border-stone-800 flex-1 overflow-y-auto pr-1">
+          <p class="text-xs font-bold text-brand-700 dark:text-brand-400 uppercase tracking-wider sticky top-0 bg-white dark:bg-stone-900 py-0.5 z-10">Fragrance Notes Hierarchy</p>
+          <div class="space-y-1.5 text-xs pb-1">
             <div class="bg-brand-50 dark:bg-brand-950/30 p-2.5 rounded-xl border border-brand-100">
               <span class="text-[10px] font-bold text-brand-700 uppercase">General Note (香調)</span>
               <p class="text-stone-800 dark:text-stone-200 font-medium mt-0.5">${item.notes.general || '花香調'}</p>
