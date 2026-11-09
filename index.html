@@ -86,7 +86,8 @@
     .scrollable-content-area {
       flex: 1;
       overflow-y: auto;
-      padding-bottom: 2rem;
+      padding-bottom: 8rem;
+      scroll-padding-bottom: 200px;
       -webkit-overflow-scrolling: touch;
     }
 
@@ -1742,12 +1743,26 @@
 
     window.onload = function() {
       
-    // Auto scroll focused input into view to prevent keyboard shadow/obscuring
+    // Robust mobile virtual keyboard handling & viewport adjustment
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', () => {
+        const container = document.querySelector('.tab-view-container');
+        if (container) {
+          container.style.height = `${window.visualViewport.height - 80}px`;
+        }
+      });
+    }
+
     window.addEventListener('focusin', (e) => {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
         setTimeout(() => {
-          e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 300);
+          e.target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          // Ensure parent scrollable container scrolls down slightly more to clear keyboard
+          const scrollArea = e.target.closest('.scrollable-content-area');
+          if (scrollArea) {
+            scrollArea.scrollTop += 60;
+          }
+        }, 350);
       }
     });
 
