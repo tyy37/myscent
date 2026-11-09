@@ -1351,10 +1351,10 @@
 
       return `
         <div onclick="openDetailModal('${item.id}')" class="bg-white dark:bg-stone-900 rounded-2xl p-3.5 shadow-sm border border-stone-200 dark:border-stone-800 flex items-center gap-3.5 cursor-pointer hover:border-brand-300 dark:hover:border-stone-700 transition-all active:scale-[0.99] ${!isActive ? 'opacity-60 bg-stone-100/60 dark:bg-stone-900/60' : ''}">
-          <div class="w-16 h-16 rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-800 flex-shrink-0 relative">
+          <div class="w-16 h-16 rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-800 flex-shrink-0 relative pointer-events-none">
             <img src="${item.photoUrl}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.src='${DEFAULT_PLACEHOLDER}'">
           </div>
-          <div class="flex-1 min-w-0">
+          <div class="flex-1 min-w-0 pointer-events-none">
             <div class="flex items-center gap-2">
               ${dotHtml}
               <p class="text-[10px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider truncate">${item.brand}</p>
@@ -1362,7 +1362,7 @@
             <h3 class="font-serif font-bold text-base text-stone-900 dark:text-stone-100 truncate">${item.name}</h3>
             <p class="text-xs font-medium text-stone-500 dark:text-stone-400 mt-0.5">${item.volume} mL • ${item.type}${item.purchaseDate ? ' • ' + formatMonthYear(item.purchaseDate) : ''}</p>
           </div>
-          <i data-lucide="chevron-right" class="w-4 h-4 text-stone-300 dark:text-stone-600 flex-shrink-0"></i>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-stone-300 dark:text-stone-600 flex-shrink-0 pointer-events-none"></i>
         </div>
       `;
     }
@@ -1663,121 +1663,221 @@
       titleEl.innerText = dateObj.toLocaleDateString(undefined, options);
 
       const wornIds = scentWornRecords[selectedCalDateStr] || [];
-      const wornItems = perfumeVault.filter(p => wornIds.includes(p.id));
+    function openDetailModal(id) {
+      const item = perfumeVault.find(p => p.id === id);
+      if (!item) return;
 
-      if (wornItems.length === 0) {
-        listEl.innerHTML = `
-          <div class="text-center py-6 bg-stone-50 dark:bg-stone-800/50 rounded-xl border border-dashed border-stone-200 dark:border-stone-700">
-            <p class="text-xs text-stone-400">No perfume logged for this day.</p>
-          </div>
-        `;
-        return;
-      }
+      currentActiveDetailId = id;
+      const isCollectionSec = (item.section || 'Collection') === 'Collection';
+      const statusVal = item.status || 'Active';
+      const isPositive = statusVal === 'Active';
+      const colors = item.bottleColors || [];
 
-      listEl.innerHTML = wornItems.map(item => `
-        <div class="bg-stone-50 dark:bg-stone-800/70 p-2.5 rounded-xl border border-stone-200 dark:border-stone-700 flex items-center justify-between gap-3">
-          <div class="flex items-center gap-3 min-w-0">
-            <div class="w-10 h-10 rounded-lg overflow-hidden bg-stone-200 dark:bg-stone-700 flex-shrink-0">
-              <img src="${item.photoUrl}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.src='${DEFAULT_PLACEHOLDER}'">
+      document.getElementById('modalBrand').innerText = item.brand;
+      document.getElementById('modalName').innerText = item.name;
+
+      const content = document.getElementById('modalContent');
+      content.innerHTML = `
+        <div class="flex gap-4 items-center">
+          <div class="w-24 h-28 rounded-2xl overflow-hidden bg-stone-100 dark:bg-stone-800 flex-shrink-0 border border-stone-200 dark:border-stone-700">
+            <img src="${item.photoUrl}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.src='${DEFAULT_PLACEHOLDER}'">
+          </div>
+          <div class="space-y-1.5 text-xs flex-1">
+            <div class="flex justify-between items-center">
+              <span class="text-stone-400">Section:</span>
+              <span class="font-semibold text-brand-600 dark:text-brand-400">${item.section === 'SmellingList' ? 'To-smell List' : 'Collection'}</span>
             </div>
-            <div class="min-w-0">
-              <p class="text-[9px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider truncate">${item.brand}</p>
-              <h4 class="font-serif font-bold text-xs text-stone-900 dark:text-stone-100 truncate">${item.name}</h4>
+            ${isCollectionSec ? `
+              <div class="flex justify-between items-center">
+                <span class="text-stone-400">Status:</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold ${
+                  isPositive ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 border border-emerald-300' : 'bg-stone-200 text-stone-600'
+                }">
+                  ${statusVal}
+                </span>
+              </div>
+            ` : `
+              <div class="flex justify-between items-center">
+                <span class="text-stone-400">To-buy List:</span>
+                <span class="font-semibold text-stone-700 dark:text-stone-300">${item.isToBuy ? 'Yes' : 'No'}</span>
+              </div>
+            `}
+            <div class="flex justify-between items-center">
+              <span class="text-stone-400">Bottled:</span>
+              <span class="font-semibold text-stone-800 dark:text-stone-200">${item.isBottled ? 'Yes' : 'No'}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-stone-400">Type & Vol:</span>
+              <span class="font-semibold text-stone-800 dark:text-stone-200">${item.type} • ${item.volume} mL</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-stone-400">Total Price:</span>
+              <span class="font-semibold text-stone-800 dark:text-stone-200">$${item.price.toFixed(2)}</span>
+            </div>
+            <div class="flex justify-between bg-brand-50 dark:bg-brand-900/30 p-1.5 rounded-lg">
+              <span class="text-brand-700 dark:text-brand-300 font-medium">Price / mL:</span>
+              <span class="font-bold text-brand-700 dark:text-brand-300">$${item.pricePerMl.toFixed(2)} / mL</span>
             </div>
           </div>
-          <button onclick="removeWornPerfume('${item.id}')" class="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors" title="Remove record">
-            <i data-lucide="trash-2" class="w-4 h-4"></i>
-          </button>
         </div>
-      `).join('');
-      lucide.createIcons();
-    }
 
-    function openWearPickerModal() {
-      renderWearPickerList();
-      const modal = document.getElementById('wearPickerModal');
-      if (modal) modal.classList.remove('hidden');
-      lucide.createIcons();
-    }
-
-    function closeWearPickerModal() {
-      const modal = document.getElementById('wearPickerModal');
-      if (modal) modal.classList.add('hidden');
-    }
-
-    function renderWearPickerList() {
-      const grid = document.getElementById('wearPickerGrid');
-      const searchInput = document.getElementById('wearSearchInput');
-      if (!grid || !searchInput) return;
-
-      const search = searchInput.value.toLowerCase();
-      const collectionItems = perfumeVault.filter(item => (item.section || 'Collection') === 'Collection');
-      const filtered = collectionItems.filter(item => item.brand.toLowerCase().includes(search) || item.name.toLowerCase().includes(search));
-
-      if (filtered.length === 0) {
-        grid.innerHTML = `<p class="text-xs text-stone-400 text-center py-4">No collection perfumes found.</p>`;
-        return;
-      }
-
-      const wornIds = scentWornRecords[selectedCalDateStr] || [];
-
-      grid.innerHTML = filtered.map(item => {
-        const isAlreadyWorn = wornIds.includes(item.id);
-        const colors = item.bottleColors || ['#AC885B'];
-        return `
-          <div onclick="toggleWornPerfume('${item.id}')" class="p-2.5 rounded-xl border ${isAlreadyWorn ? 'bg-brand-50 border-brand-500 dark:bg-brand-950/40' : 'border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800'} flex items-center justify-between cursor-pointer hover:border-brand-300 transition-all">
-            <div class="flex items-center gap-3 min-w-0">
-              <div class="w-10 h-10 rounded-lg overflow-hidden bg-stone-100 dark:bg-stone-700 flex-shrink-0">
-                <img src="${item.photoUrl}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.src='${DEFAULT_PLACEHOLDER}'">
-              </div>
-              <div class="min-w-0">
-                <div class="flex items-center gap-1.5">
-                  <span class="w-2.5 h-2.5 rounded-full inline-block flex-shrink-0" style="background-color: ${colors[0]};"></span>
-                  <p class="text-[9px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider truncate">${item.brand}</p>
-                </div>
-                <h4 class="font-serif font-bold text-xs text-stone-900 dark:text-stone-100 truncate">${item.name}</h4>
-              </div>
+        <div class="space-y-1.5 text-xs bg-stone-50 dark:bg-stone-800/50 p-3 rounded-xl">
+          <div class="flex justify-between">
+            <span class="text-stone-400">Merchant / Store:</span>
+            <span class="font-medium text-stone-700 dark:text-stone-300">${item.merchant}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-stone-400">Date:</span>
+            <span class="font-medium text-stone-700 dark:text-stone-300">${item.purchaseDate || 'N/A'}</span>
+          </div>
+          ${item.smellingLocation ? `
+            <div class="flex justify-between">
+              <span class="text-stone-400">To-smell Location:</span>
+              <span class="font-medium text-brand-600 dark:text-brand-400">${item.smellingLocation}</span>
             </div>
-            <div class="w-5 h-5 rounded-full border ${isAlreadyWorn ? 'bg-brand-500 border-brand-500 text-white' : 'border-stone-300'} flex items-center justify-center text-xs">
-              ${isAlreadyWorn ? '<i data-lucide="check" class="w-3 h-3"></i>' : ''}
+          ` : ''}
+          ${item.remarks ? `
+            <div class="pt-1.5 border-t border-stone-200 dark:border-stone-700">
+              <span class="text-stone-400 block mb-0.5">Remarks:</span>
+              <p class="text-stone-700 dark:text-stone-300 whitespace-pre-wrap">${item.remarks}</p>
+            </div>
+          ` : ''}
+        </div>
+
+        <div class="space-y-2 pt-1">
+          <p class="text-xs font-bold text-brand-700 dark:text-brand-400 uppercase tracking-wider">Fragrance Notes Hierarchy</p>
+          <div class="space-y-1.5 text-xs">
+            <div class="bg-brand-50 dark:bg-brand-950/30 p-2.5 rounded-xl border border-brand-100">
+              <span class="text-[10px] font-bold text-brand-700 uppercase">General Note (香調)</span>
+              <p class="text-stone-800 dark:text-stone-200 font-medium mt-0.5">${item.notes.general || '花香調'}</p>
+            </div>
+            <div class="bg-amber-50 dark:bg-amber-950/30 p-2.5 rounded-xl border border-amber-100 space-y-0.5">
+              <span class="text-[10px] font-bold text-amber-700 uppercase">Top Notes (前調)</span>
+              <p class="text-[11px] text-stone-800 dark:text-stone-200"><span class="text-stone-400">中:</span> ${item.notes.topZh || 'N/A'}</p>
+              <p class="text-[11px] text-stone-800 dark:text-stone-200"><span class="text-stone-400">EN:</span> ${item.notes.topEn || 'N/A'}</p>
+            </div>
+            <div class="bg-rose-50 dark:bg-rose-950/30 p-2.5 rounded-xl border border-rose-100 space-y-0.5">
+              <span class="text-[10px] font-bold text-rose-700 uppercase">Heart Notes (中調)</span>
+              <p class="text-[11px] text-stone-800 dark:text-stone-200"><span class="text-stone-400">中:</span> ${item.notes.heartZh || 'N/A'}</p>
+              <p class="text-[11px] text-stone-800 dark:text-stone-200"><span class="text-stone-400">EN:</span> ${item.notes.heartEn || 'N/A'}</p>
+            </div>
+            <div class="bg-stone-100 dark:bg-stone-800 p-2.5 rounded-xl border border-stone-200 space-y-0.5">
+              <span class="text-[10px] font-bold text-stone-600 uppercase">Base Notes (後調)</span>
+              <p class="text-[11px] text-stone-800 dark:text-stone-200"><span class="text-stone-400">中:</span> ${item.notes.baseZh || 'N/A'}</p>
+              <p class="text-[11px] text-stone-800 dark:text-stone-200"><span class="text-stone-400">EN:</span> ${item.notes.baseEn || 'N/A'}</p>
             </div>
           </div>
-        `;
-      }).join('');
+        </div>
+      `;
+
+      document.getElementById('detailModal').classList.remove('hidden');
       lucide.createIcons();
-    }
-
-    function toggleWornPerfume(id) {
-      if (!scentWornRecords[selectedCalDateStr]) {
-        scentWornRecords[selectedCalDateStr] = [];
-      }
-      const idx = scentWornRecords[selectedCalDateStr].indexOf(id);
-      if (idx > -1) {
-        scentWornRecords[selectedCalDateStr].splice(idx, 1);
-        showToast("Removed from worn log.");
-      } else {
-        scentWornRecords[selectedCalDateStr].push(id);
-        showToast("Logged perfume for today!");
-      }
-      saveCalendarToStorage();
-      renderCalendar();
-      renderSelectedDateLog();
-      renderWearPickerList();
-    }
-
-    function removeWornPerfume(id) {
-      if (!scentWornRecords[selectedCalDateStr]) return;
-      scentWornRecords[selectedCalDateStr] = scentWornRecords[selectedCalDateStr].filter(i => i !== id);
-      saveCalendarToStorage();
-      renderCalendar();
-      renderSelectedDateLog();
-      showToast("Record removed.");
     }
 
     function closeDetailModal() {
-      const modal = document.getElementById('detailModal');
-      if (modal) modal.classList.add('hidden');
-      currentActiveDetailId = null;
+    function openEditModal(id) {
+      const item = perfumeVault.find(p => p.id === id);
+      if (!item) return;
+
+      document.getElementById('editId').value = item.id;
+      document.getElementById('editSection').value = item.section || 'Collection';
+      document.getElementById('editIsEmpty').checked = (item.status === 'Inactive');
+      document.getElementById('editType').value = item.type;
+      document.getElementById('editBrand').value = item.brand;
+      document.getElementById('editName').value = item.name;
+      document.getElementById('editPrice').value = item.price;
+      document.getElementById('editMerchant').value = item.merchant === 'N/A' ? '' : item.merchant;
+      document.getElementById('editPurchaseDate').value = item.purchaseDate;
+      document.getElementById('editSmellingLocation').value = item.smellingLocation || '';
+      document.getElementById('editRemarks').value = item.remarks || '';
+      document.getElementById('editPhotoUrl').value = item.photoUrl === DEFAULT_PLACEHOLDER ? '' : item.photoUrl;
+      
+      const isBottled = item.isBottled || (item.bottleColors && item.bottleColors.length > 0);
+      document.getElementById('editIsBottled').checked = isBottled;
+      toggleEditBottledOption();
+
+      const colors = item.bottleColors || ['#AC885B'];
+      document.getElementById('editBottleColor1').value = colors[0] || '#AC885B';
+      if (colors.length > 1) {
+        document.getElementById('editBottleColor2').value = colors[1];
+        document.getElementById('editContainerBottleColor2').classList.remove('hidden');
+        document.getElementById('editAddSecondColorBtn').classList.add('hidden');
+      } else {
+        document.getElementById('editBottleColor2').value = '#D98880';
+        document.getElementById('editContainerBottleColor2').classList.add('hidden');
+        document.getElementById('editAddSecondColorBtn').classList.remove('hidden');
+      }
+
+      document.getElementById('editGeneralNotes').value = item.notes.general || '花香調';
+      document.getElementById('editTopNotesZh').value = item.notes.topZh === 'N/A' ? '' : (item.notes.topZh || '');
+      document.getElementById('editTopNotesEn').value = item.notes.topEn === 'N/A' ? '' : (item.notes.topEn || '');
+      document.getElementById('editHeartNotesZh').value = item.notes.heartZh === 'N/A' ? '' : (item.notes.heartZh || '');
+      document.getElementById('editHeartNotesEn').value = item.notes.heartEn === 'N/A' ? '' : (item.notes.heartEn || '');
+      document.getElementById('editBaseNotesZh').value = item.notes.baseZh === 'N/A' ? '' : (item.notes.baseZh || '');
+      document.getElementById('editBaseNotesEn').value = item.notes.baseEn === 'N/A' ? '' : (item.notes.baseEn || '');
+
+      updateEditVolumeOptions(item.volume);
+      document.getElementById('editModal').classList.remove('hidden');
+    }
+
+    function handleUpdateEntry(e) {
+      e.preventDefault();
+      const id = document.getElementById('editId').value;
+      const index = perfumeVault.findIndex(p => p.id === id);
+      if (index === -1) return;
+
+      const section = document.getElementById('editSection').value;
+      const isEmpty = document.getElementById('editIsEmpty').checked;
+      const status = isEmpty ? 'Inactive' : 'Active';
+      const type = document.getElementById('editType').value;
+      const brand = document.getElementById('editBrand').value.trim();
+      const name = document.getElementById('editName').value.trim();
+      const priceStr = document.getElementById('editPrice').value;
+      const price = priceStr ? parseFloat(priceStr) : 0;
+      const merchant = document.getElementById('editMerchant').value.trim() || 'N/A';
+      const purchaseDate = document.getElementById('editPurchaseDate').value;
+      const smellingLocation = document.getElementById('editSmellingLocation').value.trim() || '';
+      const remarks = document.getElementById('editRemarks').value.trim() || '';
+
+      const isBottled = document.getElementById('editIsBottled').checked;
+      let bottleColors = [];
+      if (isBottled) {
+        const c1 = document.getElementById('editBottleColor1').value;
+        bottleColors = [c1];
+        const isSecColorHidden = document.getElementById('editContainerBottleColor2').classList.contains('hidden');
+        if (!isSecColorHidden) {
+          const c2 = document.getElementById('editBottleColor2').value;
+          if (c2 && c2 !== c1) {
+            bottleColors = [c1, c2];
+          }
+        }
+      }
+
+      const volSelect = document.getElementById('editVolumeSelect').value;
+      const customVolInput = document.getElementById('editCustomVolume');
+      let volume = (volSelect === 'Others' && customVolInput) ? parseFloat(customVolInput.value) : parseFloat(volSelect);
+      const photoUrl = document.getElementById('editPhotoUrl').value.trim() || perfumeVault[index].photoUrl || DEFAULT_PLACEHOLDER;
+      const pricePerMl = volume > 0 ? parseFloat((price / volume).toFixed(2)) : 0;
+
+      perfumeVault[index] = {
+        ...perfumeVault[index],
+        section, status, isBottled, type, brand, name, volume, price, pricePerMl, merchant, purchaseDate, smellingLocation, remarks, bottleColors, photoUrl,
+        notes: {
+          general: document.getElementById('editGeneralNotes').value || '花香調',
+          topZh: document.getElementById('editTopNotesZh').value.trim() || 'N/A',
+          topEn: document.getElementById('editTopNotesEn').value.trim() || 'N/A',
+          heartZh: document.getElementById('editHeartNotesZh').value.trim() || 'N/A',
+          heartEn: document.getElementById('editHeartNotesEn').value.trim() || 'N/A',
+          baseZh: document.getElementById('editBaseNotesZh').value.trim() || 'N/A',
+          baseEn: document.getElementById('editBaseNotesEn').value.trim() || 'N/A'
+        }
+      };
+
+      saveVaultToStorage();
+      closeEditModal();
+      renderCollection();
+      renderSmellingList();
+      showToast("Perfume entry updated!");
     }
 
     function handleModalEdit() {
