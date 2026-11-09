@@ -915,35 +915,35 @@
       document.getElementById('purchaseDate').valueAsDate = new Date();
       showToast("Entry form cleared.");
     }
-<!-- ... existing's code ... -->
-    window.onload = function() {
-      lucide.createIcons();
-      const pDate = document.getElementById('purchaseDate');
-      if (pDate) pDate.valueAsDate = new Date();
-      loadVaultFromStorage();
-      loadCalendarFromStorage();
-      updateVolumeOptions();
-      toggleFormFieldsByDestination();
-      switchTab('collection');
-    };
 
-    function switchTab(tabKey) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-      const targetTab = document.getElementById(`tab-${tabKey}`);
-      if (targetTab) targetTab.classList.add('active');
+    function saveVaultToStorage() {
+      try {
+        localStorage.setItem('scent_vault_data', JSON.stringify(perfumeVault));
+      } catch (e) {
+        showToast("Storage error: Image file might be too large.");
+      }
+    }
 
-      const tabs = ['purchase', 'collection', 'smelling', 'calendar', 'compare'];
-      tabs.forEach(t => {
-        const btn = document.getElementById(`nav-${t}`);
-        if (!btn) return;
-        if (t === tabKey) {
-          btn.className = "flex flex-col items-center py-1 rounded-xl text-brand-600 dark:text-brand-400 font-semibold transition-colors";
-        } else {
-          btn.className = "flex flex-col items-center py-1 rounded-xl text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-colors";
+    function saveCalendarToStorage() {
+      try {
+        localStorage.setItem('scent_calendar_data', JSON.stringify(scentWornRecords));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function loadCalendarFromStorage() {
+      const data = localStorage.getItem('scent_calendar_data');
+      if (data) {
+        try {
+          scentWornRecords = JSON.parse(data);
+        } catch (e) {
+          scentWornRecords = {};
         }
-      });
+      }
+    }
 
-      const purchaseBtn = document.getElementById('nav-purchase');
+    function exportBackupData() {
       const purchaseLabel = document.getElementById('nav-purchase-label');
       if (tabKey === 'purchase') {
         purchaseBtn.className = "w-13 h-13 rounded-full bg-brand-600 text-white ring-4 ring-brand-500/30 shadow-lg flex items-center justify-center transition-all active:scale-95";
