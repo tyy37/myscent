@@ -689,6 +689,42 @@
             </div>
           </div>
 
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Type *</label>
+              <select id="editType" onchange="updateEditVolumeOptions()" class="w-full mt-1 px-2 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
+                <option value="Bottle">Bottle</option>
+                <option value="Decant">Decant</option>
+                <option value="Sample">Sample</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Brand *</label>
+              <input type="text" id="editBrand" required class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
+            </div>
+          </div>
+
+          <div>
+            <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Fragrance Name *</label>
+            <input type="text" id="editName" required class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Volume *</label>
+              <select id="editVolumeSelect" onchange="toggleEditCustomVolume()" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
+              </select>
+            </div>
+            <div id="editCustomVolContainer" class="hidden">
+              <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Custom Vol (mL) *</label>
+              <input type="number" id="editCustomVolume" step="0.1" min="0.1" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
+            </div>
+            <div>
+              <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Total Price ($)</label>
+              <input type="number" id="editPrice" step="0.01" min="0" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
+            </div>
+          </div>
+
           <!-- Bottled Checkbox Option -->
           <div class="p-3 bg-stone-50 dark:bg-stone-800/60 rounded-xl border border-stone-200 dark:border-stone-700 space-y-2">
             <label class="flex items-center gap-2 cursor-pointer">
@@ -718,13 +754,50 @@
 
           <div class="grid grid-cols-2 gap-3">
             <div>
+              <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Brand *</label>
+              <input type="text" id="editBrand" required class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
+            </div>
+            <div>
+              <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Fragrance Name *</label>
+              <input type="text" id="editName" required class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Type</label>
+              <select id="editType" onchange="updateEditVolumeOptions()" class="w-full mt-1 px-2 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
+                <option value="Bottle">Bottle</option>
+                <option value="Decant">Decant</option>
+                <option value="Sample">Sample</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Volume *</label>
+              <select id="editVolumeSelect" onchange="toggleEditCustomVolume()" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
+              </select>
+            </div>
+          </div>
+
+          <div id="editCustomVolContainer" class="hidden">
+            <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Custom Vol (mL) *</label>
+            <input type="number" id="editCustomVolume" step="0.1" min="0.1" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Total Price ($)</label>
+              <input type="number" id="editPrice" step="0.01" min="0" placeholder="0.00" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
+            </div>
+            <div>
               <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Merchant</label>
               <input type="text" id="editMerchant" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
             </div>
-            <div>
-              <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Purchase Date</label>
-              <input type="date" id="editPurchaseDate" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
-            </div>
+          </div>
+
+          <div>
+            <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Purchase Date</label>
+            <input type="date" id="editPurchaseDate" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
           </div>
 
           <div>
@@ -2148,15 +2221,15 @@
       document.getElementById('editId').value = item.id;
       document.getElementById('editSection').value = item.section || 'Collection';
       document.getElementById('editIsEmpty').checked = (item.status === 'Inactive');
-      document.getElementById('editType').value = item.type;
-      document.getElementById('editBrand').value = item.brand;
-      document.getElementById('editName').value = item.name;
-      document.getElementById('editPrice').value = item.price;
-      document.getElementById('editMerchant').value = item.merchant === 'N/A' ? '' : item.merchant;
-      document.getElementById('editPurchaseDate').value = item.purchaseDate;
+      document.getElementById('editType').value = item.type || 'Bottle';
+      document.getElementById('editBrand').value = item.brand || '';
+      document.getElementById('editName').value = item.name || '';
+      document.getElementById('editPrice').value = (item.price !== undefined && item.price !== null) ? item.price : '';
+      document.getElementById('editMerchant').value = (item.merchant && item.merchant !== 'N/A') ? item.merchant : '';
+      document.getElementById('editPurchaseDate').value = item.purchaseDate || '';
       document.getElementById('editSmellingLocation').value = item.smellingLocation || '';
       document.getElementById('editRemarks').value = item.remarks || '';
-      document.getElementById('editPhotoUrl').value = item.photoUrl === DEFAULT_PLACEHOLDER ? '' : item.photoUrl;
+      document.getElementById('editPhotoUrl').value = (item.photoUrl === DEFAULT_PLACEHOLDER) ? '' : (item.photoUrl || '');
       
       const isBottled = item.isBottled || false;
       document.getElementById('editIsBottled').checked = isBottled;
@@ -2174,13 +2247,13 @@
         document.getElementById('editAddSecondColorBtn').classList.remove('hidden');
       }
 
-      document.getElementById('editGeneralNotes').value = item.notes.general || '花香調';
-      document.getElementById('editTopNotesZh').value = (item.notes.topZh === 'N/A' ? '' : item.notes.topZh) || (item.notes.top === 'N/A' ? '' : item.notes.top) || '';
-      document.getElementById('editTopNotesEn').value = item.notes.topEn === 'N/A' ? '' : (item.notes.topEn || '');
-      document.getElementById('editHeartNotesZh').value = (item.notes.heartZh === 'N/A' ? '' : item.notes.heartZh) || (item.notes.heart === 'N/A' ? '' : item.notes.heart) || '';
-      document.getElementById('editHeartNotesEn').value = item.notes.heartEn === 'N/A' ? '' : (item.notes.heartEn || '');
-      document.getElementById('editBaseNotesZh').value = (item.notes.baseZh === 'N/A' ? '' : item.notes.baseZh) || (item.notes.base === 'N/A' ? '' : item.notes.base) || '';
-      document.getElementById('editBaseNotesEn').value = item.notes.baseEn === 'N/A' ? '' : (item.notes.baseEn || '');
+      document.getElementById('editGeneralNotes').value = (item.notes && item.notes.general) ? item.notes.general : '花香調';
+      document.getElementById('editTopNotesZh').value = (item.notes && item.notes.topZh && item.notes.topZh !== 'N/A') ? item.notes.topZh : ((item.notes && item.notes.top && item.notes.top !== 'N/A') ? item.notes.top : '');
+      document.getElementById('editTopNotesEn').value = (item.notes && item.notes.topEn && item.notes.topEn !== 'N/A') ? item.notes.topEn : '';
+      document.getElementById('editHeartNotesZh').value = (item.notes && item.notes.heartZh && item.notes.heartZh !== 'N/A') ? item.notes.heartZh : ((item.notes && item.notes.heart && item.notes.heart !== 'N/A') ? item.notes.heart : '');
+      document.getElementById('editHeartNotesEn').value = (item.notes && item.notes.heartEn && item.notes.heartEn !== 'N/A') ? item.notes.heartEn : '';
+      document.getElementById('editBaseNotesZh').value = (item.notes && item.notes.baseZh && item.notes.baseZh !== 'N/A') ? item.notes.baseZh : ((item.notes && item.notes.base && item.notes.base !== 'N/A') ? item.notes.base : '');
+      document.getElementById('editBaseNotesEn').value = (item.notes && item.notes.baseEn && item.notes.baseEn !== 'N/A') ? item.notes.baseEn : '';
 
       updateEditVolumeOptions(item.volume);
       document.getElementById('editModal').classList.remove('hidden');
