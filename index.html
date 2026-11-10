@@ -150,7 +150,7 @@
                 <input type="radio" name="targetDestination" value="SmellingList" class="peer sr-only" onchange="toggleFormFieldsByDestination()">
                 <div class="py-3 px-3 text-center rounded-xl border border-stone-200 dark:border-stone-700 peer-checked:border-brand-500 peer-checked:bg-brand-50 dark:peer-checked:bg-brand-900/30 peer-checked:text-brand-700 dark:peer-checked:text-brand-300 font-semibold text-xs transition-all flex items-center justify-center gap-2 shadow-xs">
                   <i data-lucide="compass" class="w-4 h-4 text-brand-500"></i>
-                  <span>To-smell List</span>
+                  <span>Wish List</span>
                 </div>
               </label>
             </div>
@@ -234,7 +234,7 @@
               </div>
 
               <div id="smellingLocationContainer" class="hidden">
-                <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">To-smell Location</label>
+                <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Wish Location</label>
                 <input type="text" id="smellingLocation" placeholder="e.g., TST; CWB" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
               </div>
 
@@ -405,7 +405,7 @@
           <div>
             <h2 class="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">My Collection</h2>
             <div class="flex flex-col gap-0.5 mt-1">
-              <p class="text-base font-bold text-brand-700 dark:text-brand-400" id="collectionActivePerfumesText">0 Available Perfumes</p>
+              <p class="text-sm font-normal text-stone-600 dark:text-stone-400" id="collectionActivePerfumesText">0 Available Perfumes</p>
             </div>
           </div>
 
@@ -447,16 +447,15 @@
     </section>
 
     <!-- ========================================== -->
-    <!-- SECTION 3: TO-SMELL LIST (TAB 3) -->
+    <!-- SECTION 3: WISH LIST (TAB 3) -->
     <!-- ========================================== -->
     <section id="tab-smelling" class="tab-content flex-col h-full">
       <div class="flex-shrink-0 space-y-3 pb-3">
         <div class="flex justify-between items-end">
           <div>
-            <h2 class="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">To-smell List</h2>
+            <h2 class="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">Wish List</h2>
             <div class="flex flex-col gap-0.5 mt-1">
               <p class="text-xs text-stone-500 dark:text-stone-400" id="smellingCountText">0 Fragrances stored</p>
-              <p class="text-xs text-stone-500 dark:text-stone-400" id="smellingToBuyCountText">0 Items in To-buy List</p>
             </div>
           </div>
         </div>
@@ -464,7 +463,7 @@
         <div class="space-y-2">
           <div class="relative w-full">
             <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-stone-400"></i>
-            <input type="text" id="smellingSearchInput" oninput="renderSmellingList()" placeholder="Search to-smell brand or name..." class="w-full pl-9 pr-3 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
+            <input type="text" id="smellingSearchInput" oninput="renderSmellingList()" placeholder="Search wish brand or name..." class="w-full pl-9 pr-3 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
           </div>
 
           <div class="grid grid-cols-2 gap-2">
@@ -553,60 +552,49 @@
       <!-- FIXED COMPARISON TITLE HEADER -->
       <div class="flex-shrink-0 space-y-1 pb-3">
         <h2 class="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">Compare Vault & Lists</h2>
-        <p class="text-xs text-stone-500 dark:text-stone-400">Select perfumes from your collection and lists to compare side-by-side.</p>
+        <p class="text-xs text-stone-500 dark:text-stone-400">Select perfumes from your collection and wish list to compare side-by-side.</p>
       </div>
 
       <!-- SCROLLABLE CHECKLISTS & SIDE-BY-SIDE CARDS -->
       <div class="flex-1 overflow-y-auto pr-1 no-scrollbar space-y-4 pb-6">
-        <!-- Language Filter Selector -->
+        
+        <!-- Collection Bottle Checklist -->
         <div class="bg-white dark:bg-stone-900 p-3 rounded-2xl border border-brand-100 dark:border-stone-800 space-y-2">
-          <label class="block text-xs font-semibold text-brand-700 dark:text-brand-400 uppercase tracking-wider">Compare Notes Language Display</label>
-          <div class="grid grid-cols-3 gap-2">
-            <label class="cursor-pointer">
-              <input type="radio" name="compareNotesLang" value="Both" class="peer sr-only" checked onchange="renderComparisonOutput()">
-              <div class="py-1.5 text-center rounded-xl border border-stone-200 dark:border-stone-700 peer-checked:border-brand-500 peer-checked:bg-brand-50 dark:peer-checked:bg-brand-900/30 peer-checked:text-brand-700 dark:peer-checked:text-brand-300 font-semibold text-xs transition-all">
-                Both (中 & EN)
-              </div>
-            </label>
-            <label class="cursor-pointer">
-              <input type="radio" name="compareNotesLang" value="Chinese" class="peer sr-only" onchange="renderComparisonOutput()">
-              <div class="py-1.5 text-center rounded-xl border border-stone-200 dark:border-stone-700 peer-checked:border-brand-500 peer-checked:bg-brand-50 dark:peer-checked:bg-brand-900/30 peer-checked:text-brand-700 dark:peer-checked:text-brand-300 font-semibold text-xs transition-all">
-                Chinese (中文)
-              </div>
-            </label>
-            <label class="cursor-pointer">
-              <input type="radio" name="compareNotesLang" value="English" class="peer sr-only" onchange="renderComparisonOutput()">
-              <div class="py-1.5 text-center rounded-xl border border-stone-200 dark:border-stone-700 peer-checked:border-brand-500 peer-checked:bg-brand-50 dark:peer-checked:bg-brand-900/30 peer-checked:text-brand-700 dark:peer-checked:text-brand-300 font-semibold text-xs transition-all">
-                English
-              </div>
-            </label>
+          <div class="flex justify-between items-center px-1">
+            <span class="text-xs font-semibold text-stone-700 dark:text-stone-300">Collection - Bottles</span>
+            <button onclick="selectAllTypeForCompare('Bottle')" class="text-[11px] text-brand-600 dark:text-brand-400 font-medium hover:underline">Select All Bottles</button>
+          </div>
+          <div id="compareBottleChecklist" class="max-h-36 overflow-y-auto space-y-1.5 pr-1 divide-y divide-stone-100 dark:divide-stone-800">
           </div>
         </div>
 
+        <!-- Collection Decant Checklist -->
         <div class="bg-white dark:bg-stone-900 p-3 rounded-2xl border border-brand-100 dark:border-stone-800 space-y-2">
           <div class="flex justify-between items-center px-1">
-            <span class="text-xs font-semibold text-stone-700 dark:text-stone-300">My Collection Items</span>
-            <button onclick="selectAllCollectionForCompare()" class="text-[11px] text-brand-600 dark:text-brand-400 font-medium hover:underline">Select All Collection</button>
+            <span class="text-xs font-semibold text-stone-700 dark:text-stone-300">Collection - Decants</span>
+            <button onclick="selectAllTypeForCompare('Decant')" class="text-[11px] text-brand-600 dark:text-brand-400 font-medium hover:underline">Select All Decants</button>
           </div>
-          <div id="compareCollectionChecklist" class="max-h-36 overflow-y-auto space-y-1.5 pr-1 divide-y divide-stone-100 dark:divide-stone-800">
+          <div id="compareDecantChecklist" class="max-h-36 overflow-y-auto space-y-1.5 pr-1 divide-y divide-stone-100 dark:divide-stone-800">
           </div>
         </div>
 
+        <!-- Collection Sample Checklist -->
         <div class="bg-white dark:bg-stone-900 p-3 rounded-2xl border border-brand-100 dark:border-stone-800 space-y-2">
           <div class="flex justify-between items-center px-1">
-            <span class="text-xs font-semibold text-stone-700 dark:text-stone-300">To-buy List Items</span>
-            <button onclick="selectAllToBuyForCompare()" class="text-[11px] text-brand-600 dark:text-brand-400 font-medium hover:underline">Select All To-buy</button>
+            <span class="text-xs font-semibold text-stone-700 dark:text-stone-300">Collection - Samples</span>
+            <button onclick="selectAllTypeForCompare('Sample')" class="text-[11px] text-brand-600 dark:text-brand-400 font-medium hover:underline">Select All Samples</button>
           </div>
-          <div id="compareToBuyChecklist" class="max-h-36 overflow-y-auto space-y-1.5 pr-1 divide-y divide-stone-100 dark:divide-stone-800">
+          <div id="compareSampleChecklist" class="max-h-36 overflow-y-auto space-y-1.5 pr-1 divide-y divide-stone-100 dark:divide-stone-800">
           </div>
         </div>
 
+        <!-- Wish List Items Checklist -->
         <div class="bg-white dark:bg-stone-900 p-3 rounded-2xl border border-brand-100 dark:border-stone-800 space-y-2">
           <div class="flex justify-between items-center px-1">
-            <span class="text-xs font-semibold text-stone-700 dark:text-stone-300">To-smell List Items (General)</span>
-            <button onclick="selectAllSmellingForCompare()" class="text-[11px] text-brand-600 dark:text-brand-400 font-medium hover:underline">Select All To-smell</button>
+            <span class="text-xs font-semibold text-stone-700 dark:text-stone-300">Wish List Items</span>
+            <button onclick="selectAllWishForCompare()" class="text-[11px] text-brand-600 dark:text-brand-400 font-medium hover:underline">Select All Wish List</button>
           </div>
-          <div id="compareSmellingChecklist" class="max-h-36 overflow-y-auto space-y-1.5 pr-1 divide-y divide-stone-100 dark:divide-stone-800">
+          <div id="compareWishChecklist" class="max-h-36 overflow-y-auto space-y-1.5 pr-1 divide-y divide-stone-100 dark:divide-stone-800">
           </div>
         </div>
 
@@ -721,7 +709,7 @@
             <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Section</label>
             <select id="editSection" class="w-full mt-1 px-2 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 font-medium">
               <option value="Collection">Collection</option>
-              <option value="SmellingList">To-smell List</option>
+              <option value="SmellingList">Wish List</option>
             </select>
           </div>
           <div class="flex items-end pb-1">
@@ -768,7 +756,7 @@
 
           <div id="editCustomVolContainer" class="hidden">
             <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Custom Volume (mL) *</label>
-            <input type="number" id="editCustomVolume" step="0.1" min="0.1" class="w-full mt-1 px-3 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900">
+            <input type="number" id="editCustomVolume" step="0.1" min="0.1" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900">
           </div>
         </div>
 
@@ -810,7 +798,7 @@
         </div>
 
         <div>
-          <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">To-smell Location</label>
+          <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Wish Location</label>
           <input type="text" id="editSmellingLocation" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
         </div>
 
@@ -878,7 +866,7 @@
 
       <button onclick="switchTab('smelling')" id="nav-smelling" class="flex flex-col items-center py-1 rounded-xl text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-colors">
         <i data-lucide="compass" class="w-5 h-5"></i>
-        <span class="text-[10px] font-medium mt-1">To-smell List</span>
+        <span class="text-[10px] font-medium mt-1">Wish List</span>
       </button>
 
       <div class="flex flex-col items-center justify-center -mt-4">
@@ -1238,12 +1226,12 @@
       reader.readAsText(file);
     }
 
-    function toggleHeartToBuy(id, event) {
+    function toggleWishHeart(id, event) {
       if (event) event.stopPropagation();
       const item = perfumeVault.find(p => p.id === id);
       if (item) {
         item.isToBuy = !item.isToBuy;
-        showToast(item.isToBuy ? "Added to To-buy List!" : "Removed from To-buy List");
+        showToast(item.isToBuy ? "Pinned to top of Wish List!" : "Unpinned from top");
         saveVaultToStorage();
         renderSmellingList();
       }
@@ -1378,6 +1366,10 @@
       });
 
       smellingItems.sort((a, b) => {
+        // Pinned items first
+        if (a.isToBuy && !b.isToBuy) return -1;
+        if (!a.isToBuy && b.isToBuy) return 1;
+
         if (sortBy === 'date-desc') return new Date(b.purchaseDate || 0) - new Date(a.purchaseDate || 0);
         if (sortBy === 'date-asc') return new Date(a.purchaseDate || 0) - new Date(b.purchaseDate || 0);
         if (sortBy === 'price-asc') return (a.pricePerMl || 0) - (b.pricePerMl || 0);
@@ -1386,30 +1378,24 @@
       });
 
       const totalStored = smellingItems.length;
-      const totalToBuy = smellingItems.filter(item => item.isToBuy).length;
-
       const cntEl = document.getElementById('smellingCountText');
-      const buyEl = document.getElementById('smellingToBuyCountText');
       if (cntEl) cntEl.innerText = `${totalStored} Fragrance${totalStored === 1 ? '' : 's'} stored`;
-      if (buyEl) buyEl.innerText = `${totalToBuy} Item${totalToBuy === 1 ? '' : 's'} in To-buy List`;
 
       if (smellingItems.length === 0) {
         grid.innerHTML = `
           <div class="text-center py-12 bg-white dark:bg-stone-900 rounded-2xl border border-dashed border-stone-200 dark:border-stone-800 p-6">
             <i data-lucide="compass" class="w-8 h-8 mx-auto text-stone-300 dark:text-stone-600 mb-2"></i>
-            <p class="text-sm font-medium text-stone-600 dark:text-stone-300">No fragrances in to-smell list</p>
-            <p class="text-xs text-stone-400 mt-1">Tap 'Add New' in the center and select 'Save to To-smell List'.</p>
+            <p class="text-sm font-medium text-stone-600 dark:text-stone-300">No fragrances in Wish List</p>
+            <p class="text-xs text-stone-400 mt-1">Tap 'Add New' in the center and select 'Save to Wish List'.</p>
           </div>
         `;
         lucide.createIcons();
         return;
       }
 
-      const toBuyItems = smellingItems.filter(item => item.isToBuy);
-      const remainingItems = smellingItems.filter(item => !item.isToBuy);
-
+      // Group items by Location, with pinned items at the very top or in their location groups but pinned
       const locationMap = {};
-      remainingItems.forEach(item => {
+      smellingItems.forEach(item => {
         let locs = [];
         if (item.smellingLocation && item.smellingLocation.trim()) {
           locs = item.smellingLocation.split(';').map(l => l.trim()).filter(l => l.length > 0);
@@ -1426,38 +1412,6 @@
 
       let htmlOutput = '';
 
-      if (toBuyItems.length > 0) {
-        htmlOutput += `
-          <div class="space-y-2">
-            <div class="flex items-center gap-2 px-1 border-b border-rose-200 dark:border-rose-900/50 pb-1.5">
-              <i data-lucide="heart" class="w-4 h-4 text-rose-500 fill-rose-500"></i>
-              <h3 class="font-serif font-bold text-sm text-stone-900 dark:text-stone-100 uppercase tracking-wide">To-buy List</h3>
-              <span class="text-[10px] bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 px-2 py-0.5 rounded-full font-medium">${toBuyItems.length}</span>
-            </div>
-            <div class="space-y-2">
-              ${toBuyItems.map(item => `
-                <div onclick="openDetailModal('${item.id}')" class="bg-white dark:bg-stone-900 rounded-2xl p-3.5 shadow-sm border border-stone-100 dark:border-stone-800 flex items-center gap-3.5 cursor-pointer hover:border-brand-300 dark:hover:border-stone-700 transition-all active:scale-[0.99]">
-                  <div class="w-16 h-16 rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-800 flex-shrink-0 relative">
-                    <img src="${item.photoUrl}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.src='${DEFAULT_PLACEHOLDER}'">
-                  </div>
-                  <div class="flex-1 min-w-0">
-                    <p class="text-[10px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider truncate">${item.brand}</p>
-                    <h3 class="font-serif font-bold text-base text-stone-900 dark:text-stone-100 truncate">${item.name}</h3>
-                    <p class="text-xs font-medium text-stone-500 dark:text-stone-400 mt-0.5">${item.volume} mL • ${item.type} ${item.smellingLocation ? '• ' + item.smellingLocation : ''}</p>
-                  </div>
-                  
-                  <div class="flex items-center gap-1.5 flex-shrink-0">
-                    <button onclick="toggleHeartToBuy('${item.id}', event)" title="Remove from To-buy List" class="w-9 h-9 rounded-xl flex items-center justify-center bg-rose-50 hover:bg-rose-100 dark:bg-stone-800 dark:hover:bg-stone-700 text-rose-500 transition-colors border border-rose-200 dark:border-stone-700">
-                      <i data-lucide="heart" class="w-4 h-4 fill-rose-500 text-rose-500"></i>
-                    </button>
-                  </div>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-        `;
-      }
-
       for (const [loc, items] of Object.entries(locationMap)) {
         htmlOutput += `
           <div class="space-y-2 pt-2">
@@ -1468,7 +1422,7 @@
             </div>
             <div class="space-y-2">
               ${items.map(item => `
-                <div onclick="openDetailModal('${item.id}')" class="bg-white dark:bg-stone-900 rounded-2xl p-3.5 shadow-sm border border-stone-100 dark:border-stone-800 flex items-center gap-3.5 cursor-pointer hover:border-brand-300 dark:hover:border-stone-700 transition-all active:scale-[0.99]">
+                <div onclick="openDetailModal('${item.id}')" class="bg-white dark:bg-stone-900 rounded-2xl p-3.5 shadow-sm border ${item.isToBuy ? 'border-rose-300 dark:border-rose-900 bg-rose-50/20' : 'border-stone-100 dark:border-stone-800'} flex items-center gap-3.5 cursor-pointer hover:border-brand-300 dark:hover:border-stone-700 transition-all active:scale-[0.99]">
                   <div class="w-16 h-16 rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-800 flex-shrink-0 relative">
                     <img src="${item.photoUrl}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.src='${DEFAULT_PLACEHOLDER}'">
                   </div>
@@ -1479,8 +1433,8 @@
                   </div>
                   
                   <div class="flex items-center gap-2 flex-shrink-0">
-                    <button onclick="toggleHeartToBuy('${item.id}', event)" title="Add to To-buy List" class="w-9 h-9 rounded-xl flex items-center justify-center bg-brand-50 hover:bg-brand-100 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-400 hover:text-rose-500 transition-colors border border-brand-200 dark:border-stone-700">
-                      <i data-lucide="heart" class="w-4 h-4"></i>
+                    <button onclick="toggleWishHeart('${item.id}', event)" title="${item.isToBuy ? 'Unpin' : 'Pin to top'}" class="w-9 h-9 rounded-xl flex items-center justify-center ${item.isToBuy ? 'bg-rose-100 dark:bg-rose-950/60 text-rose-500 border border-rose-200' : 'bg-brand-50 hover:bg-brand-100 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-400 hover:text-rose-500'} transition-colors border border-brand-200 dark:border-stone-700">
+                      <i data-lucide="heart" class="w-4 h-4 ${item.isToBuy ? 'fill-rose-500 text-rose-500' : ''}"></i>
                     </button>
                   </div>
                 </div>
@@ -1678,10 +1632,11 @@
     }
 
     function renderCompareChecklists() {
-      const collectionContainer = document.getElementById('compareCollectionChecklist');
-      const toBuyContainer = document.getElementById('compareToBuyChecklist');
-      const smellingContainer = document.getElementById('compareSmellingChecklist');
-      if (!collectionContainer || !toBuyContainer || !smellingContainer) return;
+      const bottleContainer = document.getElementById('compareBottleChecklist');
+      const decantContainer = document.getElementById('compareDecantChecklist');
+      const sampleContainer = document.getElementById('compareSampleChecklist');
+      const wishContainer = document.getElementById('compareWishChecklist');
+      if (!bottleContainer || !decantContainer || !sampleContainer || !wishContainer) return;
 
       const rawCollectionItems = perfumeVault.filter(item => (item.section || 'Collection') === 'Collection');
       const collMap = new Map();
@@ -1696,14 +1651,16 @@
           }
         }
       });
-      const collectionItems = Array.from(collMap.values());
-      const toBuyItems = perfumeVault.filter(item => (item.section || '') === 'SmellingList' && item.isToBuy);
-      const smellingItems = perfumeVault.filter(item => (item.section || '') === 'SmellingList' && !item.isToBuy);
+      const uniqueCollection = Array.from(collMap.values());
 
-      if (collectionItems.length === 0) {
-        collectionContainer.innerHTML = `<p class="text-xs text-stone-400 py-1">No items in collection.</p>`;
-      } else {
-        collectionContainer.innerHTML = collectionItems.map(item => `
+      const bottles = uniqueCollection.filter(i => i.type === 'Bottle');
+      const decants = uniqueCollection.filter(i => i.type === 'Decant');
+      const samples = uniqueCollection.filter(i => i.type === 'Sample');
+      const wishItems = perfumeVault.filter(item => (item.section || '') === 'SmellingList');
+
+      function renderChecklistHtml(items) {
+        if (items.length === 0) return `<p class="text-xs text-stone-400 py-1">No items.</p>`;
+        return items.map(item => `
           <label class="flex items-start justify-between py-1.5 cursor-pointer text-xs gap-2">
             <div class="flex items-start gap-2 flex-1 min-w-0">
               <input type="checkbox" value="${item.id}" ${selectedCompareIds.has(item.id) ? 'checked' : ''} onchange="toggleCompareSelection('${item.id}')" class="rounded border-stone-300 text-brand-600 focus:ring-brand-500 mt-0.5 flex-shrink-0">
@@ -1714,33 +1671,10 @@
         `).join('');
       }
 
-      if (toBuyItems.length === 0) {
-        toBuyContainer.innerHTML = `<p class="text-xs text-stone-400 py-1">No items in to-buy list.</p>`;
-      } else {
-        toBuyContainer.innerHTML = toBuyItems.map(item => `
-          <label class="flex items-start justify-between py-1.5 cursor-pointer text-xs gap-2">
-            <div class="flex items-start gap-2 flex-1 min-w-0">
-              <input type="checkbox" value="${item.id}" ${selectedCompareIds.has(item.id) ? 'checked' : ''} onchange="toggleCompareSelection('${item.id}')" class="rounded border-stone-300 text-brand-600 focus:ring-brand-500 mt-0.5 flex-shrink-0">
-              <span class="font-medium text-stone-800 dark:text-stone-200 leading-snug break-words">${item.brand} - ${item.name}</span>
-            </div>
-            <span class="text-[10px] text-stone-400 font-mono flex-shrink-0 pt-0.5">${item.volume}mL • $${item.pricePerMl}/mL</span>
-          </label>
-        `).join('');
-      }
-
-      if (smellingItems.length === 0) {
-        smellingContainer.innerHTML = `<p class="text-xs text-stone-400 py-1">No other items in to-smell list.</p>`;
-      } else {
-        smellingContainer.innerHTML = smellingItems.map(item => `
-          <label class="flex items-start justify-between py-1.5 cursor-pointer text-xs gap-2">
-            <div class="flex items-start gap-2 flex-1 min-w-0">
-              <input type="checkbox" value="${item.id}" ${selectedCompareIds.has(item.id) ? 'checked' : ''} onchange="toggleCompareSelection('${item.id}')" class="rounded border-stone-300 text-brand-600 focus:ring-brand-500 mt-0.5 flex-shrink-0">
-              <span class="font-medium text-stone-800 dark:text-stone-200 leading-snug break-words">${item.brand} - ${item.name}</span>
-            </div>
-            <span class="text-[10px] text-stone-400 font-mono flex-shrink-0 pt-0.5">${item.volume}mL • $${item.pricePerMl}/mL</span>
-          </label>
-        `).join('');
-      }
+      bottleContainer.innerHTML = renderChecklistHtml(bottles);
+      decantContainer.innerHTML = renderChecklistHtml(decants);
+      sampleContainer.innerHTML = renderChecklistHtml(samples);
+      wishContainer.innerHTML = renderChecklistHtml(wishItems);
     }
 
     function toggleCompareSelection(id) {
@@ -1749,21 +1683,9 @@
       renderComparisonOutput();
     }
 
-    function selectAllCollectionForCompare() {
-      const rawCollectionItems = perfumeVault.filter(item => (item.section || 'Collection') === 'Collection');
-      const collMap = new Map();
-      rawCollectionItems.forEach(item => {
-        const key = `${item.brand.toLowerCase().trim()}|${item.name.toLowerCase().trim()}`;
-        if (!collMap.has(key)) {
-          collMap.set(key, item);
-        } else {
-          const existing = collMap.get(key);
-          if (new Date(item.purchaseDate || 0) > new Date(existing.purchaseDate || 0)) {
-            collMap.set(key, item);
-          }
-        }
-      });
-      const items = Array.from(collMap.values());
+    function selectAllTypeForCompare(type) {
+      const rawCollectionItems = perfumeVault.filter(item => (item.section || 'Collection') === 'Collection' && item.type === type);
+      const items = rawCollectionItems;
       const allSelected = items.every(item => selectedCompareIds.has(item.id));
       items.forEach(item => {
         if (allSelected) selectedCompareIds.delete(item.id);
@@ -1773,19 +1695,8 @@
       renderComparisonOutput();
     }
 
-    function selectAllToBuyForCompare() {
-      const items = perfumeVault.filter(item => (item.section || '') === 'SmellingList' && item.isToBuy);
-      const allSelected = items.every(item => selectedCompareIds.has(item.id));
-      items.forEach(item => {
-        if (allSelected) selectedCompareIds.delete(item.id);
-        else selectedCompareIds.add(item.id);
-      });
-      renderCompareChecklists();
-      renderComparisonOutput();
-    }
-
-    function selectAllSmellingForCompare() {
-      const items = perfumeVault.filter(item => (item.section || '') === 'SmellingList' && !item.isToBuy);
+    function selectAllWishForCompare() {
+      const items = perfumeVault.filter(item => (item.section || '') === 'SmellingList');
       const allSelected = items.every(item => selectedCompareIds.has(item.id));
       items.forEach(item => {
         if (allSelected) selectedCompareIds.delete(item.id);
@@ -2040,7 +1951,7 @@
       document.getElementById('purchaseDate').valueAsDate = new Date();
 
       if (destination === 'SmellingList') {
-        showToast("Saved to your To-smell List!");
+        showToast("Saved to your Wish List!");
         switchTab('smelling');
       } else {
         showToast("Saved to your Collection!");
@@ -2057,7 +1968,6 @@
             if (!p.section) p.section = 'Collection';
             if (p.section === 'Wishlist') {
               p.section = 'SmellingList';
-              p.isToBuy = true;
             }
             if (p.isToBuy === undefined) p.isToBuy = false;
             if (p.isBottled === undefined) p.isBottled = (p.bottleColors && p.bottleColors.length > 0);
@@ -2114,7 +2024,7 @@
             <div class="space-y-1 text-xs flex-1 min-w-0">
               <div class="flex justify-between items-center">
                 <span class="text-stone-400">Section:</span>
-                <span class="font-semibold text-brand-600 dark:text-brand-400">${item.section === 'SmellingList' ? 'To-smell List' : 'Collection'}</span>
+                <span class="font-semibold text-brand-600 dark:text-brand-400">${item.section === 'SmellingList' ? 'Wish List' : 'Collection'}</span>
               </div>
               ${isCollectionSec ? `
                 <div class="flex justify-between items-center">
@@ -2125,12 +2035,7 @@
                     ${isEmpty ? 'Yes (Empty)' : 'No (Available)'}
                   </span>
                 </div>
-              ` : `
-                <div class="flex justify-between items-center">
-                  <span class="text-stone-400">To-buy List:</span>
-                  <span class="font-semibold text-stone-700 dark:text-stone-300">${item.isToBuy ? 'Yes' : 'No'}</span>
-                </div>
-              `}
+              ` : ''}
               <div class="flex justify-between items-center">
                 <span class="text-stone-400">Bottled:</span>
                 <span class="font-semibold text-stone-700 dark:text-stone-300">${item.isBottled ? 'Yes' : 'No'}</span>
@@ -2172,7 +2077,7 @@
             </div>
             ${item.smellingLocation ? `
               <div class="flex justify-between">
-                <span class="text-stone-400">To-smell Location:</span>
+                <span class="text-stone-400">Wish Location:</span>
                 <span class="font-medium text-brand-600 dark:text-brand-400">${item.smellingLocation}</span>
               </div>
             ` : ''}
@@ -2346,8 +2251,9 @@
         return;
       }
 
-      const langFilterEl = document.querySelector('input[name="compareNotesLang"]:checked');
-      const langOption = langFilterEl ? langFilterEl.value : 'Both';
+      // Default to show both languages as requested
+      const showZh = true;
+      const showEn = true;
 
       output.innerHTML = `
         <div class="overflow-x-auto no-scrollbar pb-2">
@@ -2371,99 +2277,7 @@
                 ).length;
               }
 
-              const showZh = langOption === 'Both' || langOption === 'Chinese';
-              const showEn = langOption === 'Both' || langOption === 'English';
-
               return `
                 <div class="w-64 bg-white dark:bg-stone-900 rounded-2xl p-4 border border-stone-200 dark:border-stone-800 space-y-4 relative flex-shrink-0 shadow-sm">
                   <div class="flex gap-3 items-start">
-                    <div class="w-16 h-20 rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-800 flex-shrink-0 relative">
-                      <img src="${item.photoUrl}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.src='${DEFAULT_PLACEHOLDER}'">
-                      <div class="absolute bottom-1 left-1 ${badgeBg} w-6 h-6 rounded-lg flex items-center justify-center shadow">
-                        <i data-lucide="${iconName}" class="w-3.5 h-3.5"></i>
-                      </div>
-                    </div>
-                    <div class="min-w-0 flex-1">
-                      <p class="text-[10px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider">${item.brand}</p>
-                      <h4 class="font-serif font-bold text-sm text-stone-900 dark:text-stone-100 leading-snug break-words">${item.name}</h4>
-                      <p class="text-xs text-stone-500 mt-0.5">${item.volume} mL</p>
-                    </div>
-                  </div>
-
-                  <div class="bg-brand-50 dark:bg-brand-950/40 border border-brand-200 dark:border-brand-900/50 p-2.5 rounded-xl flex justify-between items-center text-xs">
-                    <span class="text-brand-800 dark:text-brand-300 font-semibold">Unit Price ($/mL)</span>
-                    <span class="text-sm font-bold text-brand-700 dark:text-brand-300">$${item.pricePerMl.toFixed(2)}</span>
-                  </div>
-
-                  ${purchaseCount > 0 ? `
-                    <div class="bg-stone-50 dark:bg-stone-800/60 p-2 rounded-xl border border-stone-200 dark:border-stone-700 text-xs flex justify-between items-center">
-                      <span class="text-stone-400">Purchases:</span>
-                      <span class="font-bold text-brand-600 dark:text-brand-400">${purchaseCount}</span>
-                    </div>
-                  ` : ''}
-
-                  ${item.smellingLocation ? `
-                    <div class="bg-stone-50 dark:bg-stone-800/60 p-2 rounded-xl border border-stone-200 dark:border-stone-700 text-xs flex justify-between">
-                      <span class="text-stone-400">Location:</span>
-                      <span class="font-medium text-stone-700 dark:text-stone-300">${item.smellingLocation}</span>
-                    </div>
-                  ` : ''}
-
-                  ${item.remarks ? `
-                    <div class="bg-stone-50 dark:bg-stone-800/60 p-2.5 rounded-xl border border-stone-200 dark:border-stone-700 text-xs space-y-0.5">
-                      <span class="text-[10px] font-bold text-stone-400 uppercase">Remarks</span>
-                      <p class="text-stone-700 dark:text-stone-300">${item.remarks}</p>
-                    </div>
-                  ` : ''}
-
-                  <div class="space-y-2">
-                    <p class="text-xs font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider flex items-center gap-1">
-                      <i data-lucide="layers" class="w-3.5 h-3.5 text-brand-500"></i>
-                      <span>Notes Hierarchy</span>
-                    </p>
-                    <div class="bg-brand-50 dark:bg-brand-950/30 border border-brand-200/60 p-2.5 rounded-xl space-y-0.5">
-                      <span class="text-[10px] font-bold text-brand-800 dark:text-brand-300 uppercase">General Note (香調)</span>
-                      <p class="text-xs text-stone-800 dark:text-stone-200 font-medium">${item.notes.general || '花香調'}</p>
-                    </div>
-                    
-                    <div class="bg-amber-50 dark:bg-amber-950/30 border border-amber-200/60 p-2.5 rounded-xl space-y-1">
-                      <span class="text-[10px] font-bold text-amber-800 dark:text-amber-300 uppercase">Top (前調)</span>
-                      ${showZh ? `<p class="text-[11px] text-stone-800 dark:text-stone-200"><span class="text-stone-400">中:</span> ${item.notes.topZh || 'N/A'}</p>` : ''}
-                      ${showEn ? `<p class="text-[11px] text-stone-800 dark:text-stone-200"><span class="text-stone-400">EN:</span> ${item.notes.topEn || 'N/A'}</p>` : ''}
-                    </div>
-
-                    <div class="bg-rose-50 dark:bg-rose-950/30 border border-rose-200/60 p-2.5 rounded-xl space-y-1">
-                      <span class="text-[10px] font-bold text-rose-800 dark:text-rose-300 uppercase">Heart (中調)</span>
-                      ${showZh ? `<p class="text-[11px] text-stone-800 dark:text-stone-200"><span class="text-stone-400">中:</span> ${item.notes.heartZh || 'N/A'}</p>` : ''}
-                      ${showEn ? `<p class="text-[11px] text-stone-800 dark:text-stone-200"><span class="text-stone-400">EN:</span> ${item.notes.heartEn || 'N/A'}</p>` : ''}
-                    </div>
-
-                    <div class="bg-stone-100 dark:bg-stone-800/80 border border-stone-200 p-2.5 rounded-xl space-y-1">
-                      <span class="text-[10px] font-bold text-stone-700 dark:text-stone-300 uppercase">Base (後調)</span>
-                      ${showZh ? `<p class="text-[11px] text-stone-800 dark:text-stone-200"><span class="text-stone-400">中:</span> ${item.notes.baseZh || 'N/A'}</p>` : ''}
-                      ${showEn ? `<p class="text-[11px] text-stone-800 dark:text-stone-200"><span class="text-stone-400">EN:</span> ${item.notes.baseEn || 'N/A'}</p>` : ''}
-                    </div>
-                  </div>
-                </div>
-              `;
-            }).join('')}
-          </div>
-        </div>
-      `;
-      lucide.createIcons();
-    }
-
-    function showToast(message) {
-      const toast = document.getElementById('toast');
-      const msg = document.getElementById('toastMessage');
-      msg.innerText = message;
-      toast.classList.remove('opacity-0', 'pointer-events-none');
-      toast.classList.add('opacity-100');
-      setTimeout(() => {
-        toast.classList.remove('opacity-100');
-        toast.classList.add('opacity-0', 'pointer-events-none');
-      }, 2500);
-    }
-  </script>
-</body>
-</html>
+                    <div class="w-16 h-20 rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-800
