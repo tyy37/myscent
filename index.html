@@ -405,7 +405,7 @@
           <div>
             <h2 class="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">My Collection</h2>
             <div class="flex flex-col gap-0.5 mt-1">
-              <p class="text-sm font-normal text-stone-500 dark:text-stone-400" id="collectionActivePerfumesText">0 Available Perfumes</p>
+              <p class="text-xs font-normal text-stone-500 dark:text-stone-400" id="collectionActivePerfumesText">0 Available Perfumes</p>
             </div>
           </div>
 
@@ -2268,15 +2268,6 @@
                 badgeBg = 'bg-stone-900/80 text-white';
               }
 
-              let purchaseCount = 0;
-              if (sec === 'Collection') {
-                purchaseCount = perfumeVault.filter(p => 
-                  (p.section || 'Collection') === 'Collection' &&
-                  p.brand.toLowerCase().trim() === item.brand.toLowerCase().trim() &&
-                  p.name.toLowerCase().trim() === item.name.toLowerCase().trim()
-                ).length;
-              }
-
               return `
                 <div class="w-64 bg-white dark:bg-stone-900 rounded-2xl p-4 border border-stone-200 dark:border-stone-800 space-y-4 relative flex-shrink-0 shadow-sm">
                   <div class="flex gap-3 items-start">
@@ -2297,13 +2288,6 @@
                     <span class="text-brand-800 dark:text-brand-300 font-semibold">Unit Price ($/mL)</span>
                     <span class="text-sm font-bold text-brand-700 dark:text-brand-300">$${item.pricePerMl.toFixed(2)}</span>
                   </div>
-
-                  ${purchaseCount > 0 ? `
-                    <div class="bg-stone-50 dark:bg-stone-800/60 p-2 rounded-xl border border-stone-200 dark:border-stone-700 text-xs flex justify-between items-center">
-                      <span class="text-stone-400">Purchases:</span>
-                      <span class="font-bold text-brand-600 dark:text-brand-400">${purchaseCount}</span>
-                    </div>
-                  ` : ''}
 
                   ${item.smellingLocation ? `
                     <div class="bg-stone-50 dark:bg-stone-800/60 p-2 rounded-xl border border-stone-200 dark:border-stone-700 text-xs flex justify-between">
