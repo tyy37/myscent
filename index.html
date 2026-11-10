@@ -49,7 +49,9 @@
   </script>
 
   <style>
-    body {
+    html, body {
+      height: 100%;
+      overflow: hidden;
       -webkit-tap-highlight-color: transparent;
       font-family: 'Inter', sans-serif;
     }
@@ -63,64 +65,42 @@
     }
 
     .glass-nav {
-      background: rgba(250, 246, 240, 0.98);
+      background: rgba(250, 246, 240, 0.95);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
     }
     .dark .glass-nav {
-      background: rgba(12, 10, 9, 0.98);
+      background: rgba(18, 18, 18, 0.95);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
     }
 
-    /* Fixed Viewports for Tab Sections & Scroll Containers */
-    .tab-view-container {
-      display: flex;
-      flex-direction: column;
-      height: calc(100vh - 5.5rem);
-      padding-top: 0.5rem;
-      padding-bottom: 4.5rem;
-      overflow: hidden;
-    }
-
-    .scrollable-content-area {
-      flex: 1;
-      overflow-y: auto;
-      padding-bottom: 8rem;
-      scroll-padding-bottom: 200px;
-      -webkit-overflow-scrolling: touch;
-    }
-
     .tab-content {
       display: none;
-      opacity: 0;
-      transition: opacity 0.2s ease-in-out;
+      height: 100%;
     }
     .tab-content.active {
       display: flex;
       flex-direction: column;
-      opacity: 1;
-      height: 100%;
-      overflow: hidden;
     }
   </style>
 </head>
-<body class="bg-brand-50 text-stone-800 dark:bg-stone-950 dark:text-stone-100 h-screen overflow-hidden antialiased selection:bg-brand-300">
+<body class="bg-brand-50 text-stone-800 dark:bg-stone-950 dark:text-stone-100 antialiased selection:bg-brand-300 flex flex-col h-screen">
 
   <!-- APP HEADER -->
-  <header class="sticky top-0 z-40 glass-nav border-b border-brand-200/50 dark:border-stone-800 px-4 py-3 shadow-sm">
-    <div class="max-w-md mx-auto flex justify-between items-center">
-      <div class="flex items-center gap-2">
-        <div class="w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center text-white shadow-md">
+  <header class="sticky top-0 z-40 glass-nav border-b border-brand-200/50 dark:border-stone-800 px-4 py-3 flex-shrink-0">
+    <div class="max-w-md mx-auto flex justify-between items-center gap-2">
+      <div class="flex items-center gap-2 min-w-0 flex-1">
+        <div class="w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center text-white shadow-md flex-shrink-0">
           <i data-lucide="sparkles" class="w-4 h-4"></i>
         </div>
-        <div>
-          <h1 class="font-serif font-bold text-lg leading-tight tracking-tight text-stone-900 dark:text-stone-50">World of Scent</h1>
+        <div class="min-w-0 flex-1">
+          <h1 class="font-serif font-bold text-base sm:text-lg leading-tight tracking-tight text-stone-900 dark:text-stone-50 break-words">World of Scent</h1>
           <p class="text-[10px] text-brand-600 dark:text-brand-400 font-medium tracking-wider uppercase">Yuenying's</p>
         </div>
       </div>
       
-      <div class="flex items-center gap-1">
+      <div class="flex items-center gap-1 flex-shrink-0">
         <input type="file" id="importBackupInput" accept=".json" onchange="importBackupData(event)" class="hidden">
         
         <button onclick="exportBackupData()" title="Backup Data (Export JSON)" class="p-2 rounded-full hover:bg-brand-100 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-300 transition-colors">
@@ -138,19 +118,19 @@
     </div>
   </header>
 
-  <!-- MAIN CONTAINER -->
-  <main class="max-w-md mx-auto px-4 pt-4 tab-view-container">
+  <!-- MAIN CONTAINER WITH FIXED & SCROLLABLE SECTIONS -->
+  <main class="max-w-md mx-auto w-full flex-1 overflow-hidden flex flex-col px-4 pt-3 pb-20">
 
     <!-- ========================================== -->
     <!-- SECTION 1: NEW ENTRY (TAB 1) -->
     <!-- ========================================== -->
-    <section id="tab-purchase" class="tab-content space-y-4">
-      <div class="space-y-1 flex-shrink-0">
+    <section id="tab-purchase" class="tab-content flex-col h-full">
+      <div class="flex-shrink-0 space-y-1 pb-3">
         <h2 class="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">Add New Entry</h2>
         <p class="text-xs text-stone-500 dark:text-stone-400">Log new fragrances into your vault or wish lists.</p>
       </div>
 
-      <div class="scrollable-content-area no-scrollbar pr-0.5">
+      <div class="flex-1 overflow-y-auto pr-1 no-scrollbar space-y-5 pb-6">
         <form id="purchaseForm" class="space-y-5" onsubmit="handleFormSubmit(event)">
           
           <!-- TOP DESTINATION SELECTION CARD -->
@@ -160,14 +140,14 @@
             </label>
             <div class="grid grid-cols-2 gap-2">
               <label class="cursor-pointer">
-                <input type="radio" name="targetDestination" value="Collection" class="peer sr-only" checked>
+                <input type="radio" name="targetDestination" value="Collection" class="peer sr-only" checked onchange="toggleFormFieldsByDestination()">
                 <div class="py-3 px-3 text-center rounded-xl border border-stone-200 dark:border-stone-700 peer-checked:border-brand-500 peer-checked:bg-brand-50 dark:peer-checked:bg-brand-900/30 peer-checked:text-brand-700 dark:peer-checked:text-brand-300 font-semibold text-xs transition-all flex items-center justify-center gap-2 shadow-xs">
                   <i data-lucide="bookmark-check" class="w-4 h-4 text-brand-500"></i>
                   <span>My Collection</span>
                 </div>
               </label>
               <label class="cursor-pointer">
-                <input type="radio" name="targetDestination" value="SmellingList" class="peer sr-only">
+                <input type="radio" name="targetDestination" value="SmellingList" class="peer sr-only" onchange="toggleFormFieldsByDestination()">
                 <div class="py-3 px-3 text-center rounded-xl border border-stone-200 dark:border-stone-700 peer-checked:border-brand-500 peer-checked:bg-brand-50 dark:peer-checked:bg-brand-900/30 peer-checked:text-brand-700 dark:peer-checked:text-brand-300 font-semibold text-xs transition-all flex items-center justify-center gap-2 shadow-xs">
                   <i data-lucide="compass" class="w-4 h-4 text-brand-500"></i>
                   <span>To-smell List</span>
@@ -241,7 +221,7 @@
                 </div>
               </div>
 
-              <div class="grid grid-cols-2 gap-3">
+              <div class="grid grid-cols-2 gap-3" id="collectionFieldsContainer">
                 <div>
                   <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Merchant / Store</label>
                   <input type="text" id="merchant" placeholder="e.g., Boutique, Selfridges" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
@@ -253,7 +233,7 @@
                 </div>
               </div>
 
-              <div>
+              <div id="smellingLocationContainer" class="hidden">
                 <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">To-smell Location</label>
                 <input type="text" id="smellingLocation" placeholder="e.g., TST; CWB" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
               </div>
@@ -337,7 +317,7 @@
               <span>Identify & Extract Notes</span>
             </button>
 
-            <!-- Notes Rows with Dual Stacked Inputs (Chinese & English) -->
+            <!-- Notes Rows with Dual Columns (Chinese & English) -->
             <div class="space-y-3 pt-2 border-t border-stone-100 dark:border-stone-800">
               <div>
                 <label class="text-[10px] font-semibold text-brand-600 dark:text-brand-400 uppercase">General Note (香調 / 主調)</label>
@@ -419,13 +399,14 @@
     <!-- ========================================== -->
     <!-- SECTION 2: MY COLLECTION (TAB 2) -->
     <!-- ========================================== -->
-    <section id="tab-collection" class="tab-content active space-y-3">
-      <!-- Fixed Header & Filter Controls -->
-      <div class="flex-shrink-0 space-y-3 pb-1 bg-brand-50 dark:bg-stone-950">
-        <div class="flex justify-between items-center">
+    <section id="tab-collection" class="tab-content flex-col h-full">
+      <div class="flex-shrink-0 space-y-3 pb-3">
+        <div class="flex justify-between items-start">
           <div>
             <h2 class="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">My Collection</h2>
-            <p class="text-sm font-semibold text-brand-700 dark:text-brand-400 mt-0.5" id="collectionActivePerfumesText">0 Available Perfumes</p>
+            <div class="flex flex-col gap-0.5 mt-1">
+              <p class="text-base font-bold text-brand-700 dark:text-brand-400" id="collectionActivePerfumesText">0 Available Perfumes</p>
+            </div>
           </div>
 
           <!-- Notes Category Toggle Button -->
@@ -460,19 +441,16 @@
         </div>
       </div>
 
-      <!-- Scrollable Collection Grid (Only cards scroll below controls) -->
-      <div class="scrollable-content-area no-scrollbar pr-0.5">
-        <div id="collectionGrid" class="space-y-3">
-        </div>
+      <!-- Collection Grid -->
+      <div id="collectionGrid" class="flex-1 overflow-y-auto pr-1 no-scrollbar space-y-3 pb-6">
       </div>
     </section>
 
     <!-- ========================================== -->
     <!-- SECTION 3: TO-SMELL LIST (TAB 3) -->
     <!-- ========================================== -->
-    <section id="tab-smelling" class="tab-content space-y-3">
-      <!-- Fixed Header & Filter Controls -->
-      <div class="flex-shrink-0 space-y-3 pb-1 bg-brand-50 dark:bg-stone-950">
+    <section id="tab-smelling" class="tab-content flex-col h-full">
+      <div class="flex-shrink-0 space-y-3 pb-3">
         <div class="flex justify-between items-end">
           <div>
             <h2 class="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">To-smell List</h2>
@@ -507,25 +485,21 @@
         </div>
       </div>
 
-      <!-- Scrollable Smelling Cards Area -->
-      <div class="scrollable-content-area no-scrollbar pr-0.5">
-        <div id="smellingGrid" class="space-y-5">
-        </div>
+      <!-- SCROLLABLE LIST CONTENT -->
+      <div id="smellingGrid" class="flex-1 overflow-y-auto pr-1 no-scrollbar space-y-5 pb-6">
       </div>
     </section>
 
     <!-- ========================================== -->
     <!-- SECTION 4: SCENT CALENDAR (TAB 4) -->
     <!-- ========================================== -->
-    <section id="tab-calendar" class="tab-content space-y-3">
-      <!-- Fixed Title -->
-      <div class="flex-shrink-0 bg-brand-50 dark:bg-stone-950 pb-1">
+    <section id="tab-calendar" class="tab-content flex-col h-full">
+      <div class="flex-shrink-0 space-y-1 pb-3">
         <h2 class="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">Scent Calendar</h2>
         <p class="text-xs text-stone-500 dark:text-stone-400">Log and track what you wore each day.</p>
       </div>
 
-      <!-- Scrollable Calendar Body & Log -->
-      <div class="scrollable-content-area no-scrollbar space-y-4 pr-0.5">
+      <div class="flex-1 overflow-y-auto pr-1 no-scrollbar space-y-4 pb-6">
         <div class="bg-white dark:bg-stone-900 p-4 rounded-2xl shadow-sm border border-brand-100 dark:border-stone-800 space-y-4">
           <div class="flex justify-between items-center">
             <button onclick="changeCalendarMonth(-1)" class="p-2 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 transition-colors">
@@ -575,16 +549,16 @@
     <!-- ========================================== -->
     <!-- SECTION 5: COMPARISON (TAB 5) -->
     <!-- ========================================== -->
-    <section id="tab-compare" class="tab-content space-y-3">
-      <!-- Fixed Title & Description -->
-      <div class="flex-shrink-0 bg-brand-50 dark:bg-stone-950 pb-1 space-y-1">
+    <section id="tab-compare" class="tab-content flex-col h-full">
+      <!-- FIXED COMPARISON TITLE HEADER -->
+      <div class="flex-shrink-0 space-y-1 pb-3">
         <h2 class="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">Compare Vault & Lists</h2>
         <p class="text-xs text-stone-500 dark:text-stone-400">Select perfumes from your collection and lists to compare side-by-side.</p>
       </div>
 
-      <!-- Scrollable Checklists & Output Cards -->
-      <div class="scrollable-content-area no-scrollbar space-y-4 pr-0.5">
-        <!-- Language Filter Selector for Compare -->
+      <!-- SCROLLABLE CHECKLISTS & SIDE-BY-SIDE CARDS -->
+      <div class="flex-1 overflow-y-auto pr-1 no-scrollbar space-y-4 pb-6">
+        <!-- Language Filter Selector -->
         <div class="bg-white dark:bg-stone-900 p-3 rounded-2xl border border-brand-100 dark:border-stone-800 space-y-2">
           <label class="block text-xs font-semibold text-brand-700 dark:text-brand-400 uppercase tracking-wider">Compare Notes Language Display</label>
           <div class="grid grid-cols-3 gap-2">
@@ -641,218 +615,258 @@
       </div>
     </section>
 
-    <!-- Detail Modal -->
-    <div id="detailModal" class="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 hidden transition-opacity">
-      <div class="bg-white dark:bg-stone-900 w-full max-w-md rounded-t-3xl sm:rounded-2xl max-h-[90vh] flex flex-col p-5 space-y-4 shadow-2xl border border-stone-200 dark:border-stone-800">
-        <div class="flex justify-between items-start pb-2 border-b border-stone-100 dark:border-stone-800 flex-shrink-0">
+  </main>
+
+  <!-- QUICK COLOUR PICKER POPOVER MODAL -->
+  <div id="quickColorModal" class="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden transition-opacity">
+    <div class="bg-white dark:bg-stone-900 w-full max-w-xs rounded-2xl p-4 space-y-3 shadow-2xl border border-stone-200 dark:border-stone-800">
+      <div class="flex justify-between items-center pb-2 border-b border-stone-100 dark:border-stone-800">
+        <h3 class="font-serif font-bold text-sm text-stone-900 dark:text-stone-100">Select Bottle Colours</h3>
+        <button onclick="closeQuickColorModal()" class="text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 p-1">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <input type="hidden" id="quickColorItemId">
+      <div class="space-y-3">
+        <div class="flex justify-around items-center pt-2">
+          <div class="text-center space-y-1">
+            <span class="text-[10px] text-stone-500 font-semibold block">Colour 1</span>
+            <input type="color" id="quickColor1" class="w-10 h-10 rounded-xl cursor-pointer border border-stone-200 dark:border-stone-700 bg-transparent p-0.5">
+          </div>
+          <div class="text-center space-y-1" id="quickContainerColor2">
+            <span class="text-[10px] text-stone-500 font-semibold block">Colour 2</span>
+            <input type="color" id="quickColor2" class="w-10 h-10 rounded-xl cursor-pointer border border-stone-200 dark:border-stone-700 bg-transparent p-0.5">
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <button type="button" id="quickAddSecondBtn" onclick="quickAddSecondColor()" class="w-full py-2 bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 font-medium text-xs rounded-xl transition-colors">
+            Add 2nd Colour
+          </button>
+          <button type="button" onclick="saveQuickColor()" class="w-full py-2 bg-brand-500 hover:bg-brand-600 text-white font-medium text-xs rounded-xl shadow-md transition-colors">
+            Apply
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DETAIL MODAL (FIXED SUMMARY TOP + SCROLLABLE NOTES BODY + SMALL ACTION BUTTONS) -->
+  <div id="detailModal" class="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 hidden transition-opacity">
+    <div class="bg-white dark:bg-stone-900 w-full max-w-md rounded-t-3xl sm:rounded-2xl max-h-[85vh] flex flex-col p-4 space-y-3 shadow-2xl border border-stone-200 dark:border-stone-800">
+      
+      <!-- FIXED MODAL HEADER -->
+      <div class="flex justify-between items-start pt-1 pb-2 border-b border-stone-100 dark:border-stone-800 flex-shrink-0">
+        <div>
+          <p id="modalBrand" class="text-xs font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider"></p>
+          <h3 id="modalName" class="font-serif font-bold text-lg text-stone-900 dark:text-stone-100"></h3>
+        </div>
+        <button onclick="closeDetailModal()" class="text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 p-1">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- DYNAMIC DETAIL CONTENT -->
+      <div id="modalContent" class="flex-1 overflow-hidden flex flex-col min-h-0 space-y-3">
+      </div>
+
+      <!-- SMALLER FOOTER BUTTONS -->
+      <div class="flex gap-2 pt-2 border-t border-stone-100 dark:border-stone-800 flex-shrink-0 justify-end">
+        <button id="modalEditBtn" onclick="handleModalEdit()" class="py-1.5 px-3 bg-brand-500 hover:bg-brand-600 text-white font-medium text-xs rounded-xl transition-colors flex items-center justify-center gap-1">
+          <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+          <span>Edit Perfume</span>
+        </button>
+        <button id="modalDeleteBtn" onclick="handleModalDelete()" class="py-1.5 px-3 bg-rose-100 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 font-medium text-xs rounded-xl hover:bg-rose-200 dark:hover:bg-rose-900/60 transition-colors flex items-center justify-center gap-1">
+          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+          <span>Delete</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- WEAR PICKER MODAL (CALENDAR) -->
+  <div id="wearPickerModal" class="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 hidden transition-opacity">
+    <div class="bg-white dark:bg-stone-900 w-full max-w-md rounded-t-3xl sm:rounded-2xl max-h-[85vh] overflow-y-auto p-5 space-y-4 shadow-2xl border border-stone-200 dark:border-stone-800">
+      <div class="flex justify-between items-center pb-2 border-b border-stone-100 dark:border-stone-800">
+        <h3 class="font-serif font-bold text-lg text-stone-900 dark:text-stone-100">Select Collection Perfume</h3>
+        <button onclick="closeWearPickerModal()" class="text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 p-1">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="relative w-full">
+        <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-stone-400"></i>
+        <input type="text" id="wearSearchInput" oninput="renderWearPickerList()" placeholder="Search collection..." class="w-full pl-9 pr-3 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+      </div>
+
+      <div id="wearPickerGrid" class="space-y-2 max-h-64 overflow-y-auto pr-1">
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT MODAL -->
+  <div id="editModal" class="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 hidden transition-opacity">
+    <div class="bg-white dark:bg-stone-900 w-full max-w-md rounded-t-3xl sm:rounded-2xl max-h-[90vh] overflow-y-auto p-5 space-y-4 shadow-2xl border border-stone-200 dark:border-stone-800">
+      <div class="flex justify-between items-center pb-2 border-b border-stone-100 dark:border-stone-800">
+        <h3 class="font-serif font-bold text-lg text-stone-900 dark:text-stone-100">Edit Perfume Entry</h3>
+        <button onclick="closeEditModal()" class="text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 p-1">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="editForm" onsubmit="handleUpdateEntry(event)" class="space-y-4">
+        <input type="hidden" id="editId">
+
+        <div class="grid grid-cols-2 gap-2">
           <div>
-            <p id="modalBrand" class="text-xs font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider"></p>
-            <h3 id="modalName" class="font-serif font-bold text-xl text-stone-900 dark:text-stone-100"></h3>
+            <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Section</label>
+            <select id="editSection" class="w-full mt-1 px-2 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 font-medium">
+              <option value="Collection">Collection</option>
+              <option value="SmellingList">To-smell List</option>
+            </select>
           </div>
-          <button onclick="closeDetailModal()" class="text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 p-1">
-            <i data-lucide="x" class="w-6 h-6"></i>
-          </button>
+          <div class="flex items-end pb-1">
+            <label class="flex items-center gap-2 cursor-pointer bg-stone-50 dark:bg-stone-800 px-3 py-2.5 rounded-xl border border-stone-200 dark:border-stone-700 w-full">
+              <input type="checkbox" id="editIsEmpty" class="w-4 h-4 rounded border-stone-300 text-brand-600 focus:ring-brand-500">
+              <span class="text-xs font-semibold text-stone-800 dark:text-stone-200">Empty?</span>
+            </label>
+          </div>
         </div>
 
-        <div id="modalContent" class="flex-1 min-h-0 flex flex-col gap-3 overflow-hidden">
-        </div>
-
-        <div class="flex gap-2 pt-2 border-t border-stone-100 dark:border-stone-800 flex-shrink-0 justify-end">
-          <button id="modalEditBtn" onclick="handleModalEdit()" class="px-3 py-1.5 bg-brand-500 hover:bg-brand-600 text-white font-medium text-xs rounded-lg transition-colors flex items-center justify-center gap-1 shadow-sm">
-            <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
-            <span>Edit</span>
-          </button>
-          <button id="modalDeleteBtn" onclick="handleModalDelete()" class="px-3 py-1.5 bg-rose-100 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 font-medium text-xs rounded-lg hover:bg-rose-200 dark:hover:bg-rose-900/60 transition-colors flex items-center justify-center gap-1">
-            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-            <span>Delete</span>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Wear Picker Modal (Calendar) -->
-    <div id="wearPickerModal" class="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 hidden transition-opacity">
-      <div class="bg-white dark:bg-stone-900 w-full max-w-md rounded-t-3xl sm:rounded-2xl max-h-[85vh] overflow-y-auto p-5 space-y-4 shadow-2xl border border-stone-200 dark:border-stone-800">
-        <div class="flex justify-between items-center pb-2 border-b border-stone-100 dark:border-stone-800">
-          <h3 class="font-serif font-bold text-lg text-stone-900 dark:text-stone-100">Select Collection Perfume</h3>
-          <button onclick="closeWearPickerModal()" class="text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 p-1">
-            <i data-lucide="x" class="w-5 h-5"></i>
-          </button>
-        </div>
-
-        <div class="relative w-full">
-          <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-stone-400"></i>
-          <input type="text" id="wearSearchInput" oninput="renderWearPickerList()" placeholder="Search collection..." class="w-full pl-9 pr-3 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
-        </div>
-
-        <div id="wearPickerGrid" class="space-y-2 max-h-64 overflow-y-auto pr-1">
-        </div>
-      </div>
-    </div>
-
-    <!-- Edit Modal -->
-    <div id="editModal" class="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 hidden transition-opacity">
-      <div class="bg-white dark:bg-stone-900 w-full max-w-md rounded-t-3xl sm:rounded-2xl max-h-[90vh] overflow-y-auto p-5 space-y-4 shadow-2xl border border-stone-200 dark:border-stone-800">
-        <div class="flex justify-between items-center pb-2 border-b border-stone-100 dark:border-stone-800">
-          <h3 class="font-serif font-bold text-lg text-stone-900 dark:text-stone-100">Edit Perfume Entry</h3>
-          <button onclick="closeEditModal()" class="text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 p-1">
-            <i data-lucide="x" class="w-5 h-5"></i>
-          </button>
-        </div>
-
-        <form id="editForm" onsubmit="handleUpdateEntry(event)" class="space-y-4">
-          <input type="hidden" id="editId">
-
-          <div class="grid grid-cols-2 gap-2">
-            <div>
-              <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Section</label>
-              <select id="editSection" class="w-full mt-1 px-2 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 font-medium">
-                <option value="Collection">Collection</option>
-                <option value="SmellingList">To-smell List</option>
-              </select>
-            </div>
-            <div class="flex items-end pb-1">
-              <label class="flex items-center gap-2 cursor-pointer bg-stone-50 dark:bg-stone-800 px-3 py-2.5 rounded-xl border border-stone-200 dark:border-stone-700 w-full">
-                <input type="checkbox" id="editIsEmpty" class="w-4 h-4 rounded border-stone-300 text-brand-600 focus:ring-brand-500">
-                <span class="text-xs font-semibold text-stone-800 dark:text-stone-200">Empty?</span>
-              </label>
-            </div>
+        <!-- Single Core Entry Fields for Brand, Name, Type, Volume, Price -->
+        <div class="p-3 bg-stone-50 dark:bg-stone-800/60 rounded-xl border border-stone-200 dark:border-stone-700 space-y-3">
+          <div>
+            <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Brand *</label>
+            <input type="text" id="editBrand" required class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900">
           </div>
 
-          <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Fragrance Name *</label>
+            <input type="text" id="editName" required class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900">
+          </div>
+
+          <div class="grid grid-cols-3 gap-2">
             <div>
               <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Type *</label>
-              <select id="editType" onchange="updateEditVolumeOptions()" class="w-full mt-1 px-2 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
+              <select id="editType" onchange="updateEditVolumeOptions()" class="w-full mt-1 px-2 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900">
                 <option value="Bottle">Bottle</option>
                 <option value="Decant">Decant</option>
                 <option value="Sample">Sample</option>
               </select>
             </div>
-            <div>
-              <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Brand *</label>
-              <input type="text" id="editBrand" required class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
-            </div>
-          </div>
 
-          <div>
-            <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Fragrance Name *</label>
-            <input type="text" id="editName" required class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
-          </div>
-
-          <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Volume *</label>
-              <select id="editVolumeSelect" onchange="toggleEditCustomVolume()" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
+              <select id="editVolumeSelect" onchange="toggleEditCustomVolume()" class="w-full mt-1 px-2 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900">
               </select>
             </div>
-            <div id="editCustomVolContainer" class="hidden">
-              <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Custom Vol (mL) *</label>
-              <input type="number" id="editCustomVolume" step="0.1" min="0.1" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
-            </div>
+
             <div>
-              <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Total Price ($)</label>
-              <input type="number" id="editPrice" step="0.01" min="0" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
+              <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Price ($)</label>
+              <input type="number" id="editPrice" step="0.01" min="0" class="w-full mt-1 px-2 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900">
             </div>
           </div>
 
-          <!-- Bottled Checkbox Option -->
-          <div class="p-3 bg-stone-50 dark:bg-stone-800/60 rounded-xl border border-stone-200 dark:border-stone-700 space-y-2">
-            <label class="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" id="editIsBottled" onchange="toggleEditBottledOption()" class="w-4 h-4 rounded border-stone-300 text-brand-600 focus:ring-brand-500">
-              <span class="text-xs font-semibold text-stone-800 dark:text-stone-200">Bottled?</span>
-            </label>
+          <div id="editCustomVolContainer" class="hidden">
+            <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Custom Volume (mL) *</label>
+            <input type="number" id="editCustomVolume" step="0.1" min="0.1" class="w-full mt-1 px-3 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900">
+          </div>
+        </div>
 
-            <!-- Decant Bottle Colour Picker Edit (Hidden unless Bottled is checked) -->
-            <div id="editBottleColorSection" class="space-y-2 pt-2 border-t border-stone-200 dark:border-stone-700 hidden">
-              <label class="block text-[11px] font-semibold text-stone-700 dark:text-stone-300">Decant Bottle Colour</label>
-              <div class="flex items-center gap-3 flex-wrap">
-                <div class="flex items-center gap-1.5" id="editContainerBottleColor1">
-                  <input type="color" id="editBottleColor1" value="#AC885B" class="w-9 h-9 rounded-xl cursor-pointer border border-stone-200 dark:border-stone-700 bg-transparent p-0.5" title="Primary Colour">
-                </div>
-                <div class="flex items-center gap-1.5 hidden" id="editContainerBottleColor2">
-                  <input type="color" id="editBottleColor2" value="#D98880" class="w-9 h-9 rounded-xl cursor-pointer border border-stone-200 dark:border-stone-700 bg-transparent p-0.5" title="Secondary Colour">
-                  <button type="button" onclick="editRemoveSecondColor()" class="text-xs text-rose-500 hover:underline p-1">Remove</button>
-                </div>
-                <button type="button" id="editAddSecondColorBtn" onclick="editAddSecondColor()" class="px-2.5 py-1.5 bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 text-xs font-medium rounded-xl border border-stone-200 dark:border-stone-700 transition-colors flex items-center gap-1">
-                  <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-                  <span>Add Another Colour</span>
-                </button>
+        <!-- Bottled Checkbox Option -->
+        <div class="p-3 bg-stone-50 dark:bg-stone-800/60 rounded-xl border border-stone-200 dark:border-stone-700 space-y-2">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" id="editIsBottled" onchange="toggleEditBottledOption()" class="w-4 h-4 rounded border-stone-300 text-brand-600 focus:ring-brand-500">
+            <span class="text-xs font-semibold text-stone-800 dark:text-stone-200">Bottled?</span>
+          </label>
+
+          <div id="editBottleColorSection" class="space-y-2 pt-2 border-t border-stone-200 dark:border-stone-700 hidden">
+            <label class="block text-[11px] font-semibold text-stone-700 dark:text-stone-300">Decant Bottle Colour</label>
+            <div class="flex items-center gap-3 flex-wrap">
+              <div class="flex items-center gap-1.5" id="editContainerBottleColor1">
+                <input type="color" id="editBottleColor1" value="#AC885B" class="w-9 h-9 rounded-xl cursor-pointer border border-stone-200 dark:border-stone-700 bg-transparent p-0.5" title="Primary Colour">
               </div>
-              <span class="text-[11px] text-stone-400 block">Selected colours show on the card dot (2 colours will split with a slash /)</span>
+              <div class="flex items-center gap-1.5 hidden" id="editContainerBottleColor2">
+                <input type="color" id="editBottleColor2" value="#D98880" class="w-9 h-9 rounded-xl cursor-pointer border border-stone-200 dark:border-stone-700 bg-transparent p-0.5" title="Secondary Colour">
+                <button type="button" onclick="editRemoveSecondColor()" class="text-xs text-rose-500 hover:underline p-1">Remove</button>
+              </div>
+              <button type="button" id="editAddSecondColorBtn" onclick="editAddSecondColor()" class="px-2.5 py-1.5 bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 text-xs font-medium rounded-xl border border-stone-200 dark:border-stone-700 transition-colors flex items-center gap-1">
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                <span>Add Another Colour</span>
+              </button>
             </div>
+            <span class="text-[11px] text-stone-400 block">Selected colours show on the card dot</span>
           </div>
+        </div>
 
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Merchant</label>
-              <input type="text" id="editMerchant" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
-            </div>
-            <div>
-              <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Purchase Date</label>
-              <input type="date" id="editPurchaseDate" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
-            </div>
-          </div>
-
+        <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">To-smell Location</label>
-            <input type="text" id="editSmellingLocation" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
+            <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Merchant</label>
+            <input type="text" id="editMerchant" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
           </div>
-
           <div>
-            <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Remarks</label>
-            <textarea id="editRemarks" rows="2" class="w-full mt-1 px-3 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800"></textarea>
+            <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Purchase Date</label>
+            <input type="date" id="editPurchaseDate" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
           </div>
+        </div>
 
+        <div>
+          <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">To-smell Location</label>
+          <input type="text" id="editSmellingLocation" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
+        </div>
+
+        <div>
+          <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Remarks</label>
+          <textarea id="editRemarks" rows="2" class="w-full mt-1 px-3 py-2 rounded-xl text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800"></textarea>
+        </div>
+
+        <div>
+          <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Photo URL</label>
+          <input type="url" id="editPhotoUrl" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
+        </div>
+
+        <div class="space-y-2 pt-2 border-t border-stone-100 dark:border-stone-800">
+          <label class="block text-xs font-semibold uppercase tracking-wider text-brand-700 dark:text-brand-400">Notes Breakdown</label>
           <div>
-            <label class="text-[11px] font-medium text-stone-600 dark:text-stone-400">Photo URL</label>
-            <input type="url" id="editPhotoUrl" class="w-full mt-1 px-3 py-2 rounded-xl text-sm border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
+            <label class="text-[10px] font-semibold text-stone-500 uppercase">General Note (香調 / 主調)</label>
+            <select id="editGeneralNotes" class="w-full mt-0.5 px-3 py-1.5 rounded-lg text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 font-medium">
+              <option value="花香調">花香調</option>
+              <option value="木質調">木質調</option>
+              <option value="清新調">清新調</option>
+              <option value="琥珀調">琥珀調</option>
+            </select>
           </div>
-
-          <div class="space-y-2 pt-2 border-t border-stone-100 dark:border-stone-800">
-            <label class="block text-xs font-semibold uppercase tracking-wider text-brand-700 dark:text-brand-400">Notes Breakdown</label>
-            <div>
-              <label class="text-[10px] font-semibold text-stone-500 uppercase">General Note (香調 / 主調)</label>
-              <select id="editGeneralNotes" class="w-full mt-0.5 px-3 py-1.5 rounded-lg text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 font-medium">
-                <option value="花香調">花香調</option>
-                <option value="木質調">木質調</option>
-                <option value="清新調">清新調</option>
-                <option value="琥珀調">琥珀調</option>
-              </select>
-            </div>
-            
-            <div class="space-y-1.5">
-              <label class="text-[10px] font-semibold text-stone-500 uppercase">Top Notes (前調)</label>
-              <div class="space-y-1">
-                <input type="text" id="editTopNotesZh" placeholder="中文前調" class="w-full px-2.5 py-1.5 rounded-lg text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
-                <input type="text" id="editTopNotesEn" placeholder="English Top" class="w-full px-2.5 py-1.5 rounded-lg text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
-              </div>
-            </div>
-
-            <div class="space-y-1.5">
-              <label class="text-[10px] font-semibold text-stone-500 uppercase">Heart Notes (中調)</label>
-              <div class="space-y-1">
-                <input type="text" id="editHeartNotesZh" placeholder="中文中調" class="w-full px-2.5 py-1.5 rounded-lg text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
-                <input type="text" id="editHeartNotesEn" placeholder="English Heart" class="w-full px-2.5 py-1.5 rounded-lg text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
-              </div>
-            </div>
-
-            <div class="space-y-1.5">
-              <label class="text-[10px] font-semibold text-stone-500 uppercase">Base Notes (後調)</label>
-              <div class="space-y-1">
-                <input type="text" id="editBaseNotesZh" placeholder="中文後調" class="w-full px-2.5 py-1.5 rounded-lg text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
-                <input type="text" id="editBaseNotesEn" placeholder="English Base" class="w-full px-2.5 py-1.5 rounded-lg text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
-              </div>
+          
+          <div class="space-y-1.5">
+            <label class="text-[10px] font-semibold text-stone-500 uppercase">Top Notes (前調)</label>
+            <div class="space-y-1">
+              <input type="text" id="editTopNotesZh" placeholder="中文前調" class="w-full px-2.5 py-1.5 rounded-lg text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
+              <input type="text" id="editTopNotesEn" placeholder="English Top" class="w-full px-2.5 py-1.5 rounded-lg text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
             </div>
           </div>
 
-          <button type="submit" class="w-full py-3 bg-brand-500 hover:bg-brand-600 text-white font-medium text-xs rounded-xl shadow-md transition-colors">
-            Update Entry
-          </button>
-        </form>
-      </div>
+          <div class="space-y-1.5">
+            <label class="text-[10px] font-semibold text-stone-500 uppercase">Heart Notes (中調)</label>
+            <div class="space-y-1">
+              <input type="text" id="editHeartNotesZh" placeholder="中文中調" class="w-full px-2.5 py-1.5 rounded-lg text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
+              <input type="text" id="editHeartNotesEn" placeholder="English Heart" class="w-full px-2.5 py-1.5 rounded-lg text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
+            </div>
+          </div>
+
+          <div class="space-y-1.5">
+            <label class="text-[10px] font-semibold text-stone-500 uppercase">Base Notes (後調)</label>
+            <div class="space-y-1">
+              <input type="text" id="editBaseNotesZh" placeholder="中文後調" class="w-full px-2.5 py-1.5 rounded-lg text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
+              <input type="text" id="editBaseNotesEn" placeholder="English Base" class="w-full px-2.5 py-1.5 rounded-lg text-xs border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="w-full py-3 bg-brand-500 hover:bg-brand-600 text-white font-medium text-xs rounded-xl shadow-md transition-colors">
+          Update Entry
+        </button>
+      </form>
     </div>
-
-  </main>
+  </div>
 
   <!-- BOTTOM NAVIGATION BAR -->
   <nav class="fixed bottom-0 left-0 right-0 z-40 glass-nav border-t border-brand-200/50 dark:border-stone-800 px-2 py-2">
@@ -902,6 +916,23 @@
     let isNotesCategoryActive = false;
 
     let currentCalDate = new Date();
+
+    function toggleFormFieldsByDestination() {
+      const destEl = document.querySelector('input[name="targetDestination"]:checked');
+      if (!destEl) return;
+      const destination = destEl.value;
+
+      const collectionFields = document.getElementById('collectionFieldsContainer');
+      const smellingLocationContainer = document.getElementById('smellingLocationContainer');
+
+      if (destination === 'SmellingList') {
+        if (collectionFields) collectionFields.classList.add('hidden');
+        if (smellingLocationContainer) smellingLocationContainer.classList.remove('hidden');
+      } else {
+        if (collectionFields) collectionFields.classList.remove('hidden');
+        if (smellingLocationContainer) smellingLocationContainer.classList.add('hidden');
+      }
+    }
 
     const volumePresets = {
       Bottle: ['15', '50', '60', '100', 'Others'],
@@ -961,9 +992,9 @@
 
     function updateEditVolumeOptions(selectedVolume) {
       const typeEl = document.getElementById('editType');
-      const select = document.getElementById('editVolumeSelect');
-      if (!typeEl || !select) return;
+      if (!typeEl) return;
       const type = typeEl.value;
+      const select = document.getElementById('editVolumeSelect');
       const presets = volumePresets[type] || volumePresets['Bottle'];
 
       select.innerHTML = presets.map(val => {
@@ -1046,6 +1077,57 @@
       document.getElementById('editBottleColor2').value = '#D98880';
     }
 
+    function quickAddSecondColor() {
+      document.getElementById('quickContainerColor2').classList.remove('hidden');
+      document.getElementById('quickAddSecondBtn').classList.add('hidden');
+    }
+
+    function openQuickColorPicker(id, event) {
+      if (event) event.stopPropagation();
+      const item = perfumeVault.find(p => p.id === id);
+      if (!item) return;
+
+      document.getElementById('quickColorItemId').value = id;
+      const colors = item.bottleColors || ['#AC885B'];
+      document.getElementById('quickColor1').value = colors[0] || '#AC885B';
+      
+      if (colors.length > 1) {
+        document.getElementById('quickColor2').value = colors[1];
+        document.getElementById('quickContainerColor2').classList.remove('hidden');
+        document.getElementById('quickAddSecondBtn').classList.add('hidden');
+      } else {
+        document.getElementById('quickColor2').value = '#D98880';
+        document.getElementById('quickContainerColor2').classList.add('hidden');
+        document.getElementById('quickAddSecondBtn').classList.remove('hidden');
+      }
+
+      document.getElementById('quickColorModal').classList.remove('hidden');
+    }
+
+    function closeQuickColorModal() {
+      document.getElementById('quickColorModal').classList.add('hidden');
+    }
+
+    function saveQuickColor() {
+      const id = document.getElementById('quickColorItemId').value;
+      const item = perfumeVault.find(p => p.id === id);
+      if (item) {
+        const c1 = document.getElementById('quickColor1').value;
+        const isSecHidden = document.getElementById('quickContainerColor2').classList.contains('hidden');
+        if (!isSecHidden) {
+          const c2 = document.getElementById('quickColor2').value;
+          item.bottleColors = (c1 === c2) ? [c1] : [c1, c2];
+        } else {
+          item.bottleColors = [c1];
+        }
+        item.isBottled = true;
+        saveVaultToStorage();
+        renderCollection();
+        showToast("Decant bottle colours updated!");
+      }
+      closeQuickColorModal();
+    }
+
     function toggleDarkMode() {
       const isDark = document.documentElement.classList.toggle('dark');
       const themeIcon = document.getElementById('themeIcon');
@@ -1067,6 +1149,7 @@
       document.getElementById('purchaseForm').reset();
       clearPhotoPreview();
       updateVolumeOptions();
+      toggleFormFieldsByDestination();
       document.getElementById('purchaseDate').valueAsDate = new Date();
       showToast("Entry form cleared.");
     }
@@ -1189,7 +1272,11 @@
           </div>
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2">
-              ${dotHtml ? `<div class="flex items-center">${dotHtml}</div>` : ''}
+              ${dotHtml ? `
+                <button onclick="openQuickColorPicker('${item.id}', event)" title="Tap to change decant bottle colours" class="flex items-center hover:scale-110 transition-transform">
+                  ${dotHtml}
+                </button>
+              ` : ''}
               <p class="text-[10px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider truncate">${item.brand}</p>
             </div>
             <h3 class="font-serif font-bold text-base text-stone-900 dark:text-stone-100 truncate">${item.name}</h3>
@@ -1742,43 +1829,20 @@
     }
 
     window.onload = function() {
-      
-    // Robust mobile virtual keyboard handling & viewport adjustment
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', () => {
-        const container = document.querySelector('.tab-view-container');
-        if (container) {
-          container.style.height = `${window.visualViewport.height - 80}px`;
-        }
-      });
-    }
-
-    window.addEventListener('focusin', (e) => {
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
-        setTimeout(() => {
-          e.target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-          // Ensure parent scrollable container scrolls down slightly more to clear keyboard
-          const scrollArea = e.target.closest('.scrollable-content-area');
-          if (scrollArea) {
-            scrollArea.scrollTop += 60;
-          }
-        }, 350);
-      }
-    });
-
       lucide.createIcons();
       const pDate = document.getElementById('purchaseDate');
       if (pDate) pDate.valueAsDate = new Date();
       loadVaultFromStorage();
       loadCalendarFromStorage();
       updateVolumeOptions();
+      toggleFormFieldsByDestination();
       switchTab('collection');
     };
 
     function switchTab(tabKey) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-      const activeSec = document.getElementById(`tab-${tabKey}`);
-      if (activeSec) activeSec.classList.add('active');
+      const activeTab = document.getElementById(`tab-${tabKey}`);
+      if (activeTab) activeTab.classList.add('active');
 
       const tabs = ['purchase', 'collection', 'smelling', 'calendar', 'compare'];
       tabs.forEach(t => {
@@ -1812,6 +1876,25 @@
         renderCompareChecklists();
         renderComparisonOutput();
       }
+    }
+
+    // --- VIRTUAL KEYBOARD VIEWPORT & BLUR FIX ---
+    document.addEventListener('focusout', function(e) {
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
+        setTimeout(() => {
+          window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+          document.body.scrollTop = 0;
+        }, 50);
+      }
+    });
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', () => {
+        const main = document.querySelector('main');
+        if (main) {
+          main.style.height = `${window.visualViewport.height - 110}px`;
+        }
+      });
     }
 
     function handleUrlImage(url) {
@@ -1864,12 +1947,12 @@
       lines.forEach(line => {
         const trimmed = line.trim();
         if (!trimmed) return;
-        if (/前調|前味|^top\b|^top\s*notes?:?/i.test(trimmed)) {
-          top = cleanNoteLine(trimmed, /前調|前味|^top\b|^top\s*notes?:?/i);
-        } else if (/中調|中味|middle|^heart\b|^heart\s*notes?:?/i.test(trimmed)) {
-          heart = cleanNoteLine(trimmed, /中調|中味|middle|^heart\b|^heart\s*notes?:?/i);
-        } else if (/後調|后调|基調|基调|後味|^base\b|^base\s*notes?:?/i.test(trimmed)) {
-          base = cleanNoteLine(trimmed, /後調|后调|基調|基调|後味|^base\b|^base\s*notes?:?/i);
+        if (/前調|前味|^Top(?:\s*Notes?)?/i.test(trimmed)) {
+          top = cleanNoteLine(trimmed, /前調|前味|^Top(?:\s*Notes?)?/i);
+        } else if (/中調|中味|^Heart(?:\s*Notes?)?|^Middle(?:\s*Notes?)?/i.test(trimmed)) {
+          heart = cleanNoteLine(trimmed, /中調|中味|^Heart(?:\s*Notes?)?|^Middle(?:\s*Notes?)?/i);
+        } else if (/後調|后调|基調|基调|後味|^Base(?:\s*Notes?)?/i.test(trimmed)) {
+          base = cleanNoteLine(trimmed, /後調|后调|基調|基调|後味|^Base(?:\s*Notes?)?/i);
         }
       });
 
@@ -1903,9 +1986,9 @@
       }
 
       const price = priceStr ? parseFloat(priceStr) : 0;
-      const merchant = document.getElementById('merchant').value.trim() || 'N/A';
-      const purchaseDate = document.getElementById('purchaseDate').value;
-      const smellingLocation = document.getElementById('smellingLocation').value.trim() || '';
+      const merchant = destination === 'SmellingList' ? 'N/A' : (document.getElementById('merchant').value.trim() || 'N/A');
+      const purchaseDate = destination === 'SmellingList' ? '' : document.getElementById('purchaseDate').value;
+      const smellingLocation = destination === 'SmellingList' ? (document.getElementById('smellingLocation').value.trim() || '') : '';
       const remarks = document.getElementById('remarks').value.trim() || '';
       
       const volSelect = document.getElementById('volumeSelect').value;
@@ -1953,6 +2036,7 @@
       document.getElementById('purchaseForm').reset();
       clearPhotoPreview();
       updateVolumeOptions();
+      toggleFormFieldsByDestination();
       document.getElementById('purchaseDate').valueAsDate = new Date();
 
       if (destination === 'SmellingList') {
@@ -2005,6 +2089,7 @@
       }
     }
 
+    // --- DETAIL MODAL LOGIC WITH ISOLATED NOTES SCROLL ---
     function openDetailModal(id) {
       const item = perfumeVault.find(p => p.id === id);
       if (!item) return;
@@ -2020,13 +2105,13 @@
 
       const content = document.getElementById('modalContent');
       content.innerHTML = `
-        <!-- FIXED TOP SECTION (Image, Brand/Name Summary, Type & Vol, Total Price, Price/mL, Status & Bottled) -->
-        <div class="space-y-3 flex-shrink-0 pb-1">
-          <div class="flex gap-4 items-center">
-            <div class="w-24 h-28 rounded-2xl overflow-hidden bg-stone-100 dark:bg-stone-800 flex-shrink-0 border border-stone-200 dark:border-stone-700">
+        <!-- FIXED TOP DETAIL CONTAINER -->
+        <div class="flex-shrink-0 space-y-2">
+          <div class="flex gap-3 items-center">
+            <div class="w-20 h-24 rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-800 flex-shrink-0 border border-stone-200 dark:border-stone-700">
               <img src="${item.photoUrl}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.src='${DEFAULT_PLACEHOLDER}'">
             </div>
-            <div class="space-y-1.5 text-xs flex-1 min-w-0">
+            <div class="space-y-1 text-xs flex-1 min-w-0">
               <div class="flex justify-between items-center">
                 <span class="text-stone-400">Section:</span>
                 <span class="font-semibold text-brand-600 dark:text-brand-400">${item.section === 'SmellingList' ? 'To-smell List' : 'Collection'}</span>
@@ -2066,7 +2151,7 @@
                 <span class="text-stone-400">Total Price:</span>
                 <span class="font-semibold text-stone-800 dark:text-stone-200">$${item.price.toFixed(2)}</span>
               </div>
-              <div class="flex justify-between bg-brand-50 dark:bg-brand-900/30 p-1.5 rounded-lg">
+              <div class="flex justify-between bg-brand-50 dark:bg-brand-900/30 p-1 rounded-lg">
                 <span class="text-brand-700 dark:text-brand-300 font-medium">Price / mL:</span>
                 <span class="font-bold text-brand-700 dark:text-brand-300">$${item.pricePerMl.toFixed(2)} / mL</span>
               </div>
@@ -2074,10 +2159,9 @@
           </div>
         </div>
 
-        <!-- SCROLLING BOTTOM SECTION (Merchant/Store, Date, Remarks & Fragrance Notes Hierarchy) -->
-        <div class="space-y-3 pt-2 border-t border-stone-100 dark:border-stone-800 flex-1 overflow-y-auto pr-1 no-scrollbar">
-          <!-- Purchase & Location Info -->
-          <div class="space-y-1 text-xs bg-stone-50 dark:bg-stone-800/50 p-2.5 rounded-xl">
+        <!-- SCROLLABLE BODY FOR PURCHASE DETAILS & FRAGRANCE NOTES -->
+        <div class="flex-1 overflow-y-auto pr-1 no-scrollbar space-y-3">
+          <div class="space-y-1.5 text-xs bg-stone-50 dark:bg-stone-800/50 p-2.5 rounded-xl">
             <div class="flex justify-between">
               <span class="text-stone-400">Merchant / Store:</span>
               <span class="font-medium text-stone-700 dark:text-stone-300">${item.merchant}</span>
@@ -2093,23 +2177,22 @@
               </div>
             ` : ''}
             ${item.remarks ? `
-              <div class="pt-1 border-t border-stone-200 dark:border-stone-700">
+              <div class="pt-1.5 border-t border-stone-200 dark:border-stone-700">
                 <span class="text-stone-400 block mb-0.5">Remarks:</span>
                 <p class="text-stone-700 dark:text-stone-300 whitespace-pre-wrap">${item.remarks}</p>
               </div>
             ` : ''}
           </div>
 
-          <!-- Fragrance Notes Breakdown -->
           <div class="space-y-2">
-            <p class="text-xs font-bold text-brand-700 dark:text-brand-400 uppercase tracking-wider sticky top-0 bg-white dark:bg-stone-900 py-0.5 z-10">Fragrance Notes Hierarchy</p>
-            <div class="space-y-1.5 text-xs pb-1">
-              <div class="bg-brand-50 dark:bg-brand-950/30 p-2.5 rounded-xl border border-brand-100">
+            <p class="text-xs font-bold text-brand-700 dark:text-brand-400 uppercase tracking-wider">Fragrance Notes Hierarchy</p>
+            <div class="space-y-1.5 text-xs">
+              <div class="bg-brand-50 dark:bg-brand-950/30 p-2 rounded-xl border border-brand-100">
                 <span class="text-[10px] font-bold text-brand-700 uppercase">General Note (香調)</span>
                 <p class="text-stone-800 dark:text-stone-200 font-medium mt-0.5">${item.notes.general || '花香調'}</p>
               </div>
               
-              <div class="bg-amber-50 dark:bg-amber-950/30 p-2.5 rounded-xl border border-amber-100 space-y-1">
+              <div class="bg-amber-50 dark:bg-amber-950/30 p-2 rounded-xl border border-amber-100 space-y-1">
                 <span class="text-[10px] font-bold text-amber-700 uppercase">Top Notes (前調)</span>
                 <div class="grid grid-cols-2 gap-2 text-stone-800 dark:text-stone-200 font-medium">
                   <div><span class="text-[9px] text-stone-400 block">中文:</span>${item.notes.topZh || 'N/A'}</div>
@@ -2117,7 +2200,7 @@
                 </div>
               </div>
 
-              <div class="bg-rose-50 dark:bg-rose-950/30 p-2.5 rounded-xl border border-rose-100 space-y-1">
+              <div class="bg-rose-50 dark:bg-rose-950/30 p-2 rounded-xl border border-rose-100 space-y-1">
                 <span class="text-[10px] font-bold text-rose-700 uppercase">Heart Notes (中調)</span>
                 <div class="grid grid-cols-2 gap-2 text-stone-800 dark:text-stone-200 font-medium">
                   <div><span class="text-[9px] text-stone-400 block">中文:</span>${item.notes.heartZh || 'N/A'}</div>
@@ -2125,7 +2208,7 @@
                 </div>
               </div>
 
-              <div class="bg-stone-100 dark:bg-stone-800 p-2.5 rounded-xl border border-stone-200 space-y-1">
+              <div class="bg-stone-100 dark:bg-stone-800 p-2 rounded-xl border border-stone-200 space-y-1">
                 <span class="text-[10px] font-bold text-stone-600 uppercase">Base Notes (後調)</span>
                 <div class="grid grid-cols-2 gap-2 text-stone-800 dark:text-stone-200 font-medium">
                   <div><span class="text-[9px] text-stone-400 block">中文:</span>${item.notes.baseZh || 'N/A'}</div>
