@@ -2329,19 +2329,28 @@
                 return;
             }
 
-            // Support multi-line, single-line slash/pipe-separated, colonless space-separated, and 前味/中味/後味/基調 variants
-            const extractTier = (labelPattern) => {
-                const regex = new RegExp(
-                    `(?:${labelPattern})\\s*(?:[:：\\-–—]|\\s+)\\s*([\\s\\S]*?)(?=(?:\\n|\\s*(?:[/|｜]\\s*)?(?:香調|香調表|前調|前味|頭調|中調|中味|心調|後調|後味|基調|尾調|Top\\s*Notes?|Heart\\s*Notes?|Middle\\s*Notes?|Base\\s*Notes?)\\s*(?:[:：\\-–—]|\\s)|$))`,
-                    'i'
-                );
-                const match = rawText.match(regex);
-                if (!match || !match[1]) return '';
-                return match[1]
-                    .split('\n')[0]
-                    .replace(/^[•·\-–—:：\s]+|[。.;；\s]+$/g, '')
-                    .trim();
+           // Normalize colons while keeping line breaks so entering a new row stops copying the previous tier
+            const normalized = rawText.replace(/\r\n/g, '\n').replace(/：/g, ':');
+            const lines = normalized.split('\n').map(line => line.trim()).filter(Boolean);
+
+            const labelRegex = /^(前調|前味|初調|頭調|中調|中味|核心調|後調|後味|基調|尾調|top\s*(?:notes?)?|head\s*(?:notes?)?|heart\s*(?:notes?)?|middle\s*(?:notes?)?|mid\s*(?:notes?)?|base\s*(?:notes?)?|dry\s*-?\s*down\s*(?:notes?)?)\s*[:\-–—]\s*(.*)$/i;
+
+            const buckets = {
+                topZh: [], topEn: [],
+                heartZh: [], heartEn: [],
+                baseZh: [], baseEn: []
             };
+
+            const classifyTier = (label) => {
+                const l = label.toLowerCase().replace(/\s+/g, '');
+                if (/^(前調|前味|初調|頭調|top|head)/.test(l)) return 'top';
+                if (/^(中調|中味|核心調|heart|middle|mid)/.test(l)) return 'heart';
+                if (/^(後調|後味|基調|尾調|base|drydown)/.test(l)) return 'base';
+                return null;
+            };
+
+            const hasCJK = (text) => /[\u4e00-\u9fff\u3400-\u4dbf]/.test(text);
+
 
             const familyStr = extractTier('香調|香調表|氣味屬性|Fragrance\\s*Family');
             const topStr = extractTier('前調|前味|頭調|Top\\s*Notes?');
