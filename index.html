@@ -752,11 +752,7 @@
     </div>
 
     <!-- CLOUD STORAGE & APP SCRIPT -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, deleteDoc, getDocs, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
+    <script>
         const LOCAL_CACHE_KEY = 'sillage_perfume_collection_v2';
         const USER_API_KEY_STORAGE = 'yuenying_gemini_search_key_v1';
         const MONTH_NAMES = [
@@ -864,6 +860,7 @@
         let db = null;
         let auth = null;
         let currentUser = null;
+        let firestoreMod = null;
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'yuenying-scented-world';
 
         let collectionItems = [];
@@ -904,8 +901,8 @@
         }
 
         function getUserCollectionRef() {
-            if (!db || !currentUser) return null;
-            return collection(db, 'artifacts', appId, 'users', currentUser.uid, 'perfumes');
+            if (!db || !currentUser || !firestoreMod) return null;
+            return firestoreMod.collection(db, 'artifacts', appId, 'users', currentUser.uid, 'perfumes');
         }
 
         async function syncAllToCloud() {
@@ -915,28 +912,26 @@
                 if (syncBtn) syncBtn.disabled = true;
                 updateCloudStatus('syncing', 'Syncing');
 
-                // Attempt Firestore cloud sync silently; gracefully fall back if permissions restrict writes
-                if (colRef) {
+                if (colRef && firestoreMod) {
                     try {
-                        const existingSnap = await getDocs(colRef);
+                        const existingSnap = await firestoreMod.getDocs(colRef);
                         const currentIds = new Set(collectionItems.map(item => item.id));
                         const deletePromises = [];
                         existingSnap.forEach(docSnap => {
                             if (!currentIds.has(docSnap.id)) {
-                                deletePromises.push(deleteDoc(doc(colRef, docSnap.id)));
+                                deletePromises.push(firestoreMod.deleteDoc(firestoreMod.doc(colRef, docSnap.id)));
                             }
                         });
 
                         await Promise.all([
                             ...deletePromises,
-                            ...collectionItems.map(item => setDoc(doc(colRef, item.id), item))
+                            ...collectionItems.map(item => firestoreMod.setDoc(firestoreMod.doc(colRef, item.id), item))
                         ]);
                     } catch (cloudErr) {
-                        console.warn('Firestore sync skipped due to rules/permissions, proceeding with iCloud Drive backup:', cloudErr.message || cloudErr);
+                        console.warn('Firestore sync skipped, proceeding with iCloud Drive backup:', cloudErr.message || cloudErr);
                     }
                 }
 
-                // Automatically link & save directly to iCloud Drive (via iOS Share Sheet / macOS Save to iCloud Drive)
                 await exportToICloudDrive();
 
                 hasUnsavedCloudChanges = false;
@@ -948,7 +943,6 @@
                     updateCloudStatus('pending', 'Unsaved');
                     showToast('iCloud save cancelled');
                 } else {
-                    // Fallback to direct file download if Web Share API throws NotAllowedError after async gap
                     try {
                         downloadICloudBackupFile();
                         hasUnsavedCloudChanges = false;
@@ -1076,15 +1070,21 @@
                     updateCloudStatus('offline', 'Local');
                     return;
                 }
+                const [appMod, authMod, fsMod] = await Promise.all([
+                    import("https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js"),
+                    import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js"),
+                    import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js")
+                ]);
+                firestoreMod = fsMod;
                 const firebaseConfig = JSON.parse(__firebase_config);
-                const app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = getFirestore(app);
+                const app = appMod.initializeApp(firebaseConfig);
+                auth = authMod.getAuth(app);
+                db = fsMod.getFirestore(app);
 
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
+                    await authMod.signInWithCustomToken(auth, __initial_auth_token);
                 } else {
-                    await signInAnonymously(auth);
+                    await authMod.signInAnonymously(auth);
                 }
 
                 currentUser = auth.currentUser;
@@ -1093,9 +1093,8 @@
                     return;
                 }
 
-                // Load initial cloud snapshot only if local cache isn't already populated
                 const colRef = getUserCollectionRef();
-                const snapshot = await getDocs(colRef);
+                const snapshot = await fsMod.getDocs(colRef);
                 if (!snapshot.empty && !hasLocalData) {
                     const cloudList = [];
                     snapshot.forEach(docSnap => {
@@ -1111,7 +1110,7 @@
                     updateCloudStatus('ready', 'Ready');
                 }
             } catch (err) {
-                console.error('Cloud initialization error:', err);
+                console.warn('Running in local/offline mode:', err);
                 updateCloudStatus('offline', 'Offline');
             }
         }
@@ -1990,7 +1989,6 @@
                 modal.classList.remove('hidden');
                 modal.classList.add('flex');
             }
-            if (window.lucide) lucide.createIcons();
         }
 
         function closeApiKeyModal(event) {
@@ -2003,23 +2001,34 @@
         }
 
         function saveUserApiKey() {
-            const val = (document.getElementById('input-user-api-key')?.value || '').trim();
+            const input = document.getElementById('input-user-api-key');
+            if (!input) return;
+            const key = input.value.trim();
             try {
-                if (val) localStorage.setItem(USER_API_KEY_STORAGE, val);
-                else localStorage.removeItem(USER_API_KEY_STORAGE);
-            } catch (e) {}
+                if (key) {
+                    localStorage.setItem(USER_API_KEY_STORAGE, key);
+                    showToast('Gemini API key saved to device');
+                } else {
+                    localStorage.removeItem(USER_API_KEY_STORAGE);
+                    showToast('API key cleared');
+                }
+            } catch (e) {
+                showToast('Could not save API key');
+            }
             closeApiKeyModal();
-            showToast(val ? 'Google Search API key saved' : 'API key cleared');
         }
 
         function clearSavedApiKey() {
+            try {
+                localStorage.removeItem(USER_API_KEY_STORAGE);
+            } catch (e) {}
             const input = document.getElementById('input-user-api-key');
             if (input) input.value = '';
-            try { localStorage.removeItem(USER_API_KEY_STORAGE); } catch (e) {}
-            showToast('Saved API key cleared');
+            showToast('API key cleared');
+            closeApiKeyModal();
         }
 
-        // CORS-open Wikimedia Commons fallback search (never blocked by Safari, even without an API key)
+        // CORS-open Wikimedia & Wikipedia fallback search (never blocked by Safari, even without an API key)
         async function fetchWikimediaBottleFallback(brand, name) {
             try {
                 const q = encodeURIComponent(`${brand} ${name} perfume bottle`);
@@ -2033,6 +2042,37 @@
                     .filter(u => /\.(jpg|jpeg|png|webp)(\?|$)/i.test(u));
             } catch (e) {
                 return [];
+            }
+        }
+
+        async function fetchWikipediaNotesFallback(brand, name) {
+            try {
+                const q = encodeURIComponent(`${brand} ${name} perfume`);
+                const searchRes = await fetch(`https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${q}&srlimit=3&format=json&origin=*`);
+                if (!searchRes.ok) return null;
+                const searchData = await searchRes.json();
+                const topTitle = searchData?.query?.search?.[0]?.title;
+                if (!topTitle) return null;
+
+                const extractRes = await fetch(`https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=false&explaintext=true&titles=${encodeURIComponent(topTitle)}&format=json&origin=*`);
+                if (!extractRes.ok) return null;
+                const extractData = await extractRes.json();
+                const pages = Object.values(extractData?.query?.pages || {});
+                const extract = pages[0]?.extract || '';
+                if (!extract) return null;
+
+                const topMatch = extract.match(/top notes?\s*(?:include|are|of|:)?\s*([^.;\n]+)/i);
+                const heartMatch = extract.match(/(?:heart|middle) notes?\s*(?:include|are|of|:)?\s*([^.;\n]+)/i);
+                const baseMatch = extract.match(/base notes?\s*(?:include|are|of|:)?\s*([^.;\n]+)/i);
+
+                if (!topMatch && !heartMatch && !baseMatch) return null;
+                return {
+                    topNotesEn: topMatch ? topMatch[1].replace(/\band\b/gi, ',').trim() : '',
+                    heartNotesEn: heartMatch ? heartMatch[1].replace(/\band\b/gi, ',').trim() : '',
+                    baseNotesEn: baseMatch ? baseMatch[1].replace(/\band\b/gi, ',').trim() : ''
+                };
+            } catch (e) {
+                return null;
             }
         }
 
@@ -2104,19 +2144,28 @@
                     if (fallbackBar) fallbackBar.classList.remove('hidden');
                     showToast('Olfactory notes auto-filled');
                 } else {
-                    if (statusText) statusText.textContent = 'View full notes on Google Search:';
-                    if (fallbackBar) fallbackBar.classList.remove('hidden');
-                    showToast('Open Google Search link to inspect notes');
+                    throw new Error('Empty notes');
                 }
             } catch (err) {
-                const hasKey = Boolean(getActiveGeminiApiKey());
-                if (statusText) {
-                    statusText.textContent = hasKey
-                        ? 'Search notes on Google & paste into Smart Auto-Fill:'
-                        : 'Tap key icon in header to enable direct Google Search, or open link:';
+                // Try CORS-open Wikipedia fallback before showing Google Search link
+                const wikiNotes = await fetchWikipediaNotesFallback(brand, name);
+                if (wikiNotes && (wikiNotes.topNotesEn || wikiNotes.heartNotesEn || wikiNotes.baseNotesEn)) {
+                    if (wikiNotes.topNotesEn) document.getElementById('input-top-notes-en').value = wikiNotes.topNotesEn;
+                    if (wikiNotes.heartNotesEn) document.getElementById('input-heart-notes-en').value = wikiNotes.heartNotesEn;
+                    if (wikiNotes.baseNotesEn) document.getElementById('input-base-notes-en').value = wikiNotes.baseNotesEn;
+                    if (statusText) statusText.textContent = 'English notes found via open fragrance archive:';
+                    if (fallbackBar) fallbackBar.classList.remove('hidden');
+                    showToast('English notes auto-filled');
+                } else {
+                    const hasKey = Boolean(getActiveGeminiApiKey());
+                    if (statusText) {
+                        statusText.textContent = hasKey
+                            ? 'Search notes on Google & paste into Smart Auto-Fill:'
+                            : 'Tap key icon in header for direct Google Search, or open link:';
+                    }
+                    if (fallbackBar) fallbackBar.classList.remove('hidden');
+                    showToast(hasKey ? 'Tap Google Search link to look up notes' : 'Add free Gemini API key (top right) or tap Google link');
                 }
-                if (fallbackBar) fallbackBar.classList.remove('hidden');
-                showToast(hasKey ? 'Tap Google Search link to look up notes' : 'Add free Gemini API key (top right) or tap Google link');
             } finally {
                 if (btn) btn.disabled = false;
                 if (labelEl) labelEl.textContent = 'Auto-Find Notes';
@@ -2297,17 +2346,17 @@
                 return;
             }
 
-            // Support both multi-line and single-line slash/pipe-separated formats, plus 前味/中味/後味/基調 variants
+            // Support multi-line, single-line slash/pipe-separated, colonless space-separated, and 前味/中味/後味/基調 variants
             const extractTier = (labelPattern) => {
                 const regex = new RegExp(
-                    `(?:${labelPattern})\\s*[:：\\-–—]\\s*([\\s\\S]*?)(?=(?:\\n|\\s*[/|｜]\\s*(?:前調|前味|頭調|中調|中味|心調|後調|後味|基調|尾調|Top\\s*Notes?|Heart\\s*Notes?|Middle\\s*Notes?|Base\\s*Notes?)|$))`,
+                    `(?:${labelPattern})\\s*(?:[:：\\-–—]|\\s+)\\s*([\\s\\S]*?)(?=(?:\\n|\\s*(?:[/|｜]\\s*)?(?:香調|香調表|前調|前味|頭調|中調|中味|心調|後調|後味|基調|尾調|Top\\s*Notes?|Heart\\s*Notes?|Middle\\s*Notes?|Base\\s*Notes?)\\s*(?:[:：\\-–—]|\\s)|$))`,
                     'i'
                 );
                 const match = rawText.match(regex);
                 if (!match || !match[1]) return '';
                 return match[1]
                     .split('\n')[0]
-                    .replace(/^[•·\-–—\s]+|[。.;；\s]+$/g, '')
+                    .replace(/^[•·\-–—:：\s]+|[。.;；\s]+$/g, '')
                     .trim();
             };
 
