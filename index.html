@@ -425,7 +425,7 @@
 
                         <div>
                             <div id="photo-preview-box" class="w-full h-44 rounded-2xl border border-hairline bg-[#FFFFFF] flex items-center justify-center p-4 overflow-hidden relative">
-                                <img id="photo-preview-img" src="" alt="Perfume Preview" class="hidden max-h-full max-w-full object-contain object-center mx-auto my-auto">
+                                <img id="photo-preview-img" src="" alt="Perfume Preview" referrerpolicy="no-referrer" class="hidden max-h-full max-w-full object-contain object-center mx-auto my-auto">
                                 <div id="photo-preview-placeholder" class="text-center text-graphite/40 flex flex-col items-center">
                                     <svg class="w-9 h-9 mb-1 stroke-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                         <rect x="6" y="8" width="12" height="13" rx="2"/>
@@ -513,13 +513,13 @@
                                     <i data-lucide="sparkles" class="w-3 h-3 text-champagne"></i>
                                     <span>Smart Notes Auto-Fill</span>
                                 </label>
-                                <button type="button" onclick="parseNotesParagraph()" class="min-h-[28px] px-2.5 rounded-full bg-charcoal text-white text-[9px] uppercase tracking-wider font-medium active:bg-champagne transition cursor-pointer">
+                                <button type="button" id="smart-auto-fill-btn" onclick="parseNotesParagraph()" class="min-h-[32px] px-3 rounded-full bg-charcoal text-white text-[9px] uppercase tracking-wider font-medium active:bg-champagne transition cursor-pointer touch-manipulation">
                                     Auto-Fill
                                 </button>
                             </div>
                             <textarea id="input-notes-paragraph" rows="3" placeholder="Paste description (e.g., 前調: 佛手柑 / 中調: 玫瑰 / 後調: 檀香木), then press Auto-Fill" class="w-full p-2.5 rounded-lg bg-white border border-hairline text-charcoal placeholder:text-graphite/45 focus:outline-none focus:border-champagne transition"></textarea>
                             <p id="smart-parse-status" class="text-[9px] text-graphite/75">
-                                Press Auto-Fill to copy notes after 前調:, 中調:, 後調: (stops at each new line).
+                                Press Auto-Fill to copy notes after 前調/前味:, 中調/中味:, 後調/基調:.
                             </p>
                         </div>
 
@@ -1892,6 +1892,7 @@
             const previewImg = document.getElementById('photo-preview-img');
             const placeholder = document.getElementById('photo-preview-placeholder');
             if (src) {
+                previewImg.referrerPolicy = 'no-referrer';
                 previewImg.src = src;
                 previewImg.classList.remove('hidden');
                 placeholder.classList.add('hidden');
@@ -2009,7 +2010,8 @@
                     return;
                 }
                 const img = new Image();
-                const timer = setTimeout(() => resolve(false), 6500);
+                img.referrerPolicy = 'no-referrer';
+                const timer = setTimeout(() => resolve(false), 7500);
                 img.onload = () => {
                     clearTimeout(timer);
                     resolve(img.naturalWidth > 40 && img.naturalHeight > 40);
@@ -2020,6 +2022,34 @@
                 };
                 img.src = url;
             });
+        }
+
+        async function fetchBottleUrlsFromGoogle(queryText, systemPrompt) {
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [{ parts: [{ text: queryText }] }],
+                tools: [{ "google_search": {} }],
+                systemInstruction: {
+                    parts: [{ text: systemPrompt }]
+                }
+            };
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) return [];
+            const data = await response.json();
+            const rawOutput = data?.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('\n') || '';
+            const groundedChunks = data?.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
+            const groundedUrls = groundedChunks.map(c => c?.web?.uri || '').filter(u => /\.(jpg|jpeg|png|webp)(\?|$)/i.test(u));
+            const textUrls = rawOutput.match(/https?:\/\/[^\s"'<>)\]]+/gi) || [];
+
+            return [...new Set([...textUrls, ...groundedUrls])];
         }
 
         async function autoSearchPerfumePhoto() {
@@ -2048,33 +2078,23 @@
             if (loadingOverlay) loadingOverlay.classList.remove('hidden');
 
             try {
-                const apiKey = "";
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+                const systemPrompt = "You are a perfume product image finder. Search Google for an official product packshot photo of the requested perfume bottle isolated on a pure solid white background (#FFFFFF). Do NOT choose lifestyle photos, colored backgrounds, or wooden/marble surfaces. Return ONLY direct HTTPS image URLs (ending in .jpg, .jpeg, .png, or .webp, or CDN product image URLs), one per line, with no extra text or markdown.";
 
-                const systemPrompt = "You are a perfume product image finder. Search Google for an official product packshot photo of the requested perfume bottle isolated on a pure solid white background (#FFFFFF). Do NOT choose lifestyle photos, colored backgrounds, or wooden/marble surfaces. Return ONLY direct HTTPS image URLs (ending in .jpg, .jpeg, .png, or .webp), one per line, with no extra text or markdown.";
-                const userQuery = `Find direct image URLs of the perfume bottle "${brand} ${name}" isolated on a pure white background (#FFFFFF).`;
+                let candidateUrls = await fetchBottleUrlsFromGoogle(
+                    `Find direct image URLs of the perfume bottle "${brand} ${name}" isolated on a pure white background (#FFFFFF).`,
+                    systemPrompt
+                );
 
-                const payload = {
-                    contents: [{ parts: [{ text: userQuery }] }],
-                    tools: [{ "google_search": {} }],
-                    systemInstruction: {
-                        parts: [{ text: systemPrompt }]
-                    }
-                };
-
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) throw new Error('Search request failed');
-                const data = await response.json();
-                const rawOutput = data?.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('\n') || '';
-                const urlMatches = rawOutput.match(/https?:\/\/[^\s"'<>)\]]+/gi) || [];
+                // Secondary broader query if first pass yields no candidates
+                if (candidateUrls.length === 0) {
+                    candidateUrls = await fetchBottleUrlsFromGoogle(
+                        `${brand} ${name} eau de parfum bottle white background image url`,
+                        systemPrompt
+                    );
+                }
 
                 let foundValidUrl = '';
-                for (const candidateUrl of urlMatches) {
+                for (const candidateUrl of candidateUrls) {
                     const cleanUrl = candidateUrl.replace(/[.,;!?]+$/, '');
                     const isValid = await verifyImageLoads(cleanUrl);
                     if (isValid) {
@@ -2106,50 +2126,68 @@
         }
 
         function parseNotesParagraph() {
-            const rawText = document.getElementById('input-notes-paragraph').value || '';
+            const textarea = document.getElementById('input-notes-paragraph');
+            const rawText = (textarea ? textarea.value : '')
+                .replace(/\u00A0/g, ' ')
+                .replace(/\r\n?/g, '\n');
             const statusEl = document.getElementById('smart-parse-status');
             if (!rawText.trim()) {
-                statusEl.textContent = 'Please paste a fragrance description first.';
+                if (statusEl) statusEl.textContent = 'Please paste a fragrance description first.';
+                showToast('Paste fragrance notes first');
                 return;
             }
 
-            const extractAfterLabel = (regex) => {
+            // Support both multi-line and single-line slash/pipe-separated formats, plus 前味/中味/後味/基調 variants
+            const extractTier = (labelPattern) => {
+                const regex = new RegExp(
+                    `(?:${labelPattern})\\s*[:：\\-–—]\\s*([\\s\\S]*?)(?=(?:\\n|\\s*[/|｜]\\s*(?:前調|前味|頭調|中調|中味|心調|後調|後味|基調|尾調|Top\\s*Notes?|Heart\\s*Notes?|Middle\\s*Notes?|Base\\s*Notes?)|$))`,
+                    'i'
+                );
                 const match = rawText.match(regex);
-                return match && match[1] ? match[1].trim() : '';
+                if (!match || !match[1]) return '';
+                return match[1]
+                    .split('\n')[0]
+                    .replace(/^[•·\-–—\s]+|[。.;；\s]+$/g, '')
+                    .trim();
             };
 
-            const topStr = extractAfterLabel(/(?:前調|Top\s*Notes?)\s*[:：]\s*([^\r\n]+)/i);
-            const heartStr = extractAfterLabel(/(?:中調|Heart\s*Notes?|Middle\s*Notes?)\s*[:：]\s*([^\r\n]+)/i);
-            const baseStr = extractAfterLabel(/(?:後調|Base\s*Notes?)\s*[:：]\s*([^\r\n]+)/i);
+            const familyStr = extractTier('香調|香調表|氣味屬性|Fragrance\\s*Family');
+            const topStr = extractTier('前調|前味|頭調|Top\\s*Notes?');
+            const heartStr = extractTier('中調|中味|心調|Heart\\s*Notes?|Middle\\s*Notes?');
+            const baseStr = extractTier('後調|後味|基調|尾調|Base\\s*Notes?');
 
             let updatedCount = 0;
-            if (topStr) {
-                const split = splitBilingualString(topStr);
-                if (split.zh) document.getElementById('input-top-notes-zh').value = split.zh;
-                if (split.en) document.getElementById('input-top-notes-en').value = split.en;
-                if (!split.zh && !split.en) document.getElementById('input-top-notes-zh').value = topStr;
-                updatedCount++;
-            }
-            if (heartStr) {
-                const split = splitBilingualString(heartStr);
-                if (split.zh) document.getElementById('input-heart-notes-zh').value = split.zh;
-                if (split.en) document.getElementById('input-heart-notes-en').value = split.en;
-                if (!split.zh && !split.en) document.getElementById('input-heart-notes-zh').value = heartStr;
-                updatedCount++;
-            }
-            if (baseStr) {
-                const split = splitBilingualString(baseStr);
-                if (split.zh) document.getElementById('input-base-notes-zh').value = split.zh;
-                if (split.en) document.getElementById('input-base-notes-en').value = split.en;
-                if (!split.zh && !split.en) document.getElementById('input-base-notes-zh').value = baseStr;
-                updatedCount++;
+
+            if (familyStr) {
+                const familySelect = document.getElementById('input-general-notes');
+                const matchedFamily = ['花香調', '清新調', '木質調', '琥珀調'].find(f => familyStr.includes(f) || familyStr.includes(f.replace('調', '')));
+                if (matchedFamily && familySelect) {
+                    familySelect.value = matchedFamily;
+                    updatedCount++;
+                }
             }
 
+            const applyTierToInputs = (noteText, zhId, enId) => {
+                if (!noteText) return false;
+                const zhInput = document.getElementById(zhId);
+                const enInput = document.getElementById(enId);
+                const split = splitBilingualString(noteText);
+                if (split.zh && zhInput) zhInput.value = split.zh;
+                if (split.en && enInput) enInput.value = split.en;
+                if (!split.zh && !split.en && zhInput) zhInput.value = noteText;
+                return true;
+            };
+
+            if (applyTierToInputs(topStr, 'input-top-notes-zh', 'input-top-notes-en')) updatedCount++;
+            if (applyTierToInputs(heartStr, 'input-heart-notes-zh', 'input-heart-notes-en')) updatedCount++;
+            if (applyTierToInputs(baseStr, 'input-base-notes-zh', 'input-base-notes-en')) updatedCount++;
+
             if (updatedCount > 0) {
-                statusEl.textContent = `Auto-filled ${updatedCount} note tier(s) successfully.`;
+                if (statusEl) statusEl.textContent = `Auto-filled ${updatedCount} field(s) successfully.`;
                 showToast('Olfactory notes auto-filled');
             } else {
-                statusEl.textContent = 'No 前調:, 中調:, or 後調: labels detected.';
+                if (statusEl) statusEl.textContent = 'No 前調/前味:, 中調/中味:, or 後調/基調: labels detected.';
+                showToast('Could not detect 前調 / 中調 / 後調 labels');
             }
         }
 
