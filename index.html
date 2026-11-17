@@ -950,37 +950,6 @@
             };
             reader.readAsText(file);
         }
-            try {
-                if (syncBtn) syncBtn.disabled = true;
-                updateCloudStatus('syncing', 'Uploading');
-
-                // Fetch existing cloud docs so removed items are also cleaned up on upload
-                const existingSnap = await getDocs(colRef);
-                const currentIds = new Set(collectionItems.map(item => item.id));
-                const deletePromises = [];
-                existingSnap.forEach(docSnap => {
-                    if (!currentIds.has(docSnap.id)) {
-                        deletePromises.push(deleteDoc(doc(colRef, docSnap.id)));
-                    }
-                });
-
-                await Promise.all([
-                    ...deletePromises,
-                    ...collectionItems.map(item => setDoc(doc(colRef, item.id), item))
-                ]);
-
-                hasUnsavedCloudChanges = false;
-                saveLocalCache();
-                updateCloudStatus('synced', 'Uploaded');
-                    updateCloudStatus('synced', 'iCloud');
-                } else {
-                    updateCloudStatus('ready', 'iCloud');
-                }
-            } catch (err) {
-                console.error('Cloud initialization error:', err);
-                updateCloudStatus('ready', 'iCloud');
-            }
-        }
 
         function saveLocalCache() {
             try {
