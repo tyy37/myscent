@@ -128,21 +128,14 @@
                     <span class="editorial-title text-[17px] sm:text-lg tracking-[0.06em] font-semibold text-charcoal leading-tight truncate">Yuenying's Scented World</span>
                 </div>
 
-                <div class="flex items-center gap-1.5 shrink-0">
-                    <!-- Cloud Sync Status Pill -->
-                    <span id="cloud-status-pill" class="px-2 py-1 rounded-full bg-ivory border border-hairline text-[10px] font-medium text-graphite flex items-center gap-1">
-                        <span id="cloud-status-dot" class="w-1.5 h-1.5 rounded-full bg-champagne"></span>
-                        <span id="cloud-status-text">Ready</span>
-                    </span>
-
-                    <!-- Upload to Cloud Button -->
-                    <button type="button" id="cloud-sync-btn" onclick="syncAllToCloud()" aria-label="Upload collection to cloud" title="Upload to Cloud" class="h-9 px-3 rounded-full bg-white active:bg-charcoal text-charcoal active:text-white border border-hairline flex items-center justify-center gap-1.5 transition-colors shadow-[0_1px_4px_rgba(26,43,60,0.04)] cursor-pointer">
-                        <svg class="w-4 h-4 text-champagne shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <div class="flex items-center shrink-0">
+                    <!-- Upload to Cloud Icon Button -->
+                    <button type="button" id="cloud-sync-btn" onclick="syncAllToCloud()" aria-label="Upload collection to cloud" title="Upload to Cloud" class="w-9 h-9 rounded-full bg-white active:bg-charcoal text-charcoal active:text-white border border-hairline flex items-center justify-center transition-colors shadow-[0_1px_4px_rgba(26,43,60,0.06)] cursor-pointer">
+                        <svg width="18" height="18" class="w-[18px] h-[18px] text-champagne shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/>
                             <path d="M12 12v9"/>
                             <path d="m16 16-4-4-4 4"/>
                         </svg>
-                        <span class="text-[10px] font-semibold tracking-wide">Upload</span>
                     </button>
                 </div>
             </div>
@@ -850,10 +843,113 @@
         async function syncAllToCloud() {
             const colRef = getUserCollectionRef();
             const syncBtn = document.getElementById('cloud-sync-btn');
-            if (!colRef) {
-                showToast('Cloud connecting, please try again shortly');
+            try {
+                if (syncBtn) syncBtn.disabled = true;
+                updateCloudStatus('syncing', 'Syncing');
+
+                // Sync to cloud storage if available
+                if (colRef) {
+                    const existingSnap = await getDocs(colRef);
+                    const currentIds = new Set(collectionItems.map(item => item.id));
+                    const deletePromises = [];
+                    existingSnap.forEach(docSnap => {
+                        if (!currentIds.has(docSnap.id)) {
+                            deletePromises.push(deleteDoc(doc(colRef, docSnap.id)));
+                        }
+                    });
+
+                    await Promise.all([
+                        ...deletePromises,
+                        ...collectionItems.map(item => setDoc(doc(colRef, item.id), item))
+                    ]);
+                }
+
+                // Automatically link & save directly to iCloud Drive (via iOS Share Sheet / macOS Save to iCloud Drive)
+                await exportToICloudDrive();
+
+                hasUnsavedCloudChanges = false;
+                saveLocalCache();
+                updateCloudStatus('synced', 'iCloud');
+                showToast(`Saved ${collectionItems.length} items to iCloud`);
+            } catch (err) {
+                if (err && err.name === 'AbortError') {
+                    updateCloudStatus('pending', 'Unsaved');
+                    showToast('iCloud save cancelled');
+                } else {
+                    console.error('iCloud sync error:', err);
+                    updateCloudStatus('pending', 'Retry');
+                    showToast('Unable to save to iCloud right now');
+                }
+            } finally {
+                if (syncBtn) syncBtn.disabled = false;
+            }
+        }
+
+        async function exportToICloudDrive() {
+            const payload = JSON.stringify({
+                archive: "Yuenying's Scented World",
+                syncedAt: new Date().toISOString(),
+                items: collectionItems
+            }, null, 2);
+
+            const fileName = `Yuenying-Scented-World-iCloud.json`;
+            const blob = new Blob([payload], { type: 'application/json' });
+            const file = new File([blob], fileName, { type: 'application/json' });
+
+            // On iPhone / iPad Safari, navigator.share opens the native iOS sheet with "Save to Files -> iCloud Drive"
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                await navigator.share({
+                    files: [file],
+                    title: "Yuenying's Scented World (iCloud)",
+                    text: "Save perfume collection backup to iCloud Drive"
+                });
                 return;
             }
+
+            // Fallback for desktop Safari / Chrome (downloads directly to iCloud Downloads / Drive folder)
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        function triggerICloudImport() {
+            const input = document.getElementById('icloud-file-input');
+            if (input) {
+                input.value = '';
+                input.click();
+            }
+        }
+
+        function handleICloudFileImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    const rawList = Array.isArray(parsed) ? parsed : (Array.isArray(parsed.items) ? parsed.items : null);
+                    if (!rawList) throw new Error('Invalid iCloud archive format');
+
+                    collectionItems = rawList
+                        .filter(item => item && item.brand && item.name)
+                        .map((item, idx) => normalizeEntry(item, idx));
+
+                    hasUnsavedCloudChanges = false;
+                    saveLocalCache();
+                    renderCollection();
+                    updateCloudStatus('synced', 'iCloud');
+                    showToast(`Loaded ${collectionItems.length} items from iCloud`);
+                } catch (err) {
+                    showToast('Could not read iCloud archive file');
+                }
+            };
+            reader.readAsText(file);
+        }
             try {
                 if (syncBtn) syncBtn.disabled = true;
                 updateCloudStatus('syncing', 'Uploading');
@@ -876,13 +972,13 @@
                 hasUnsavedCloudChanges = false;
                 saveLocalCache();
                 updateCloudStatus('synced', 'Uploaded');
-                showToast(`Uploaded ${collectionItems.length} fragrances to Cloud`);
+                    updateCloudStatus('synced', 'iCloud');
+                } else {
+                    updateCloudStatus('ready', 'iCloud');
+                }
             } catch (err) {
-                console.error('Manual cloud upload error:', err);
-                updateCloudStatus('pending', 'Retry');
-                showToast('Unable to upload to cloud right now');
-            } finally {
-                if (syncBtn) syncBtn.disabled = false;
+                console.error('Cloud initialization error:', err);
+                updateCloudStatus('ready', 'iCloud');
             }
         }
 
@@ -2083,10 +2179,10 @@
             if (id) {
                 const idx = collectionItems.findIndex(p => p.id === id);
                 if (idx !== -1) collectionItems[idx] = entryData;
-                showToast('Updated — press Upload to save to Cloud');
+                showToast('Updated — press iCloud to sync');
             } else {
                 collectionItems.unshift(entryData);
-                showToast(`${brand} added — press Upload to save to Cloud`);
+                showToast(`${brand} added — press iCloud to sync`);
             }
 
             markPendingCloudUpload();
@@ -2114,6 +2210,8 @@
 
         window.switchView = switchView;
         window.syncAllToCloud = syncAllToCloud;
+        window.triggerICloudImport = triggerICloudImport;
+        window.handleICloudFileImport = handleICloudFileImport;
         window.toggleCollectionViewMode = toggleCollectionViewMode;
         window.clearSearch = clearSearch;
         window.clearIngredientFilter = clearIngredientFilter;
