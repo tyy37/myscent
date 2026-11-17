@@ -709,21 +709,42 @@
         let currentUser = null;
         let unsubscribeSnapshot = null;
 
-        function setCloudIndicator(state, label) {
+        let collectionItems = [];
+        let activeFilter = 'All';
+        let activeGeneralNotesFilter = 'All';
+        let activeIngredientFilter = '';
+        let isGeneralNotesPanelOpen = false;
+        let searchQuery = '';
+        let sortOption = 'date-desc';
+        let collectionViewMode = 'cards';
+        let currentPhotoData = '';
+        let pendingDeleteId = null;
+        let color1Selected = false;
+        let color2Selected = false;
+        let selectedVolumeOption = '50';
+        let hasUnsavedCloudChanges = false;
+
+        function updateCloudStatus(state, label) {
             const dot = document.getElementById('cloud-status-dot');
             const text = document.getElementById('cloud-status-text');
             if (!dot || !text) return;
-
             text.textContent = label;
-            if (state === 'connected') {
+            if (state === 'synced') {
                 dot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-500';
             } else if (state === 'syncing') {
-                dot.className = 'w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse';
+                dot.className = 'w-1.5 h-1.5 rounded-full bg-champagne animate-ping';
+            } else if (state === 'pending') {
+                dot.className = 'w-1.5 h-1.5 rounded-full bg-amber-400';
             } else {
-                dot.className = 'w-1.5 h-1.5 rounded-full bg-rose-400';
+                dot.className = 'w-1.5 h-1.5 rounded-full bg-slate-400';
             }
         }
 
+        function markPendingCloudUpload() {
+            hasUnsavedCloudChanges = true;
+            saveLocalCache();
+            updateCloudStatus('pending', 'Unsaved');
+        }
         function getUserCollectionRef() {
             if (!db || !currentUser) return null;
             return collection(db, 'artifacts', appId, 'users', currentUser.uid, 'perfumes');
