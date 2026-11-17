@@ -477,26 +477,11 @@
                         </div>
                     </div>
 
-                    <!-- SECTION 3: OLFACTORY NOTES -->
-                    <div class="bg-white rounded-2xl border border-hairline p-3.5 space-y-3.5 shadow-[0_2px_10px_rgba(26,43,60,0.03)]">
-                        <div class="flex items-center justify-between gap-2 pb-2.5 border-b border-hairline">
-                            <div class="flex items-center gap-2">
-                                <span class="w-5 h-5 rounded-full bg-champagneLight text-champagne text-[10px] font-semibold flex items-center justify-center shrink-0">03</span>
-                                <h2 class="editorial-title text-lg text-charcoal leading-none">Olfactory Notes</h2>
-                            </div>
-                            <button type="button" id="auto-search-notes-btn" onclick="autoSearchPerfumeNotes()" class="min-h-[30px] px-2.5 rounded-xl border border-dashed border-champagne/70 bg-alabaster/80 active:bg-champagneLight/40 cursor-pointer flex items-center justify-center gap-1 transition shrink-0">
-                                <i data-lucide="search" class="w-3 h-3 text-champagne"></i>
-                                <span id="auto-search-notes-label" class="text-[10px] font-medium text-charcoal">Auto-Find Notes</span>
-                            </button>
-                        </div>
-
-                        <!-- Google Search Notes Fallback Link Bar -->
-                        <div id="google-notes-fallback-bar" class="hidden flex items-center justify-between gap-2 bg-alabaster border border-hairline rounded-xl px-3 py-2">
-                            <span id="notes-search-status-text" class="text-[10px] text-graphite truncate">Search notes on Google:</span>
-                            <a id="google-notes-external-link" href="#" target="_blank" rel="noopener noreferrer" class="shrink-0 px-2.5 py-1 rounded-full bg-white border border-hairline text-[10px] font-semibold text-charcoal hover:border-champagne flex items-center gap-1 transition">
-                                <span>Google Search</span>
-                                <i data-lucide="external-link" class="w-3 h-3 text-champagne"></i>
-                            </a>
+                   <!-- SECTION 3: OLFACTORY NOTES -->
+                    <div class="bg-white rounded-2xl border border-hairline p-3.5 space-y-3.5 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+                        <div class="flex items-center gap-2 pb-2.5 border-b border-hairline">
+                            <span class="w-5 h-5 rounded-full bg-champagneLight text-champagne text-[10px] font-semibold flex items-center justify-center shrink-0">03</span>
+                            <h2 class="editorial-title text-lg text-charcoal leading-none">Olfactory Notes</h2>
                         </div>
 
                         <div>
@@ -515,75 +500,73 @@
                             </div>
                         </div>
 
-                        <div class="bg-alabaster/90 rounded-xl border border-dashed border-champagne/60 p-2.5 space-y-2">
+                        <div class="bg-alabaster/90 rounded-xl border border-dashed border-champagne/60 p-2.5 space-y-1.5">
                             <div class="flex items-center justify-between gap-2">
-                                <label for="input-notes-paragraph" class="text-[10px] uppercase tracking-wider text-charcoal font-medium flex items-center gap-1">
+                                <label for="input-notes-paragraph" class="text-[10px] uppercase tracking-wider text-charcoal font-medium flex items-center gap-1.5">
                                     <i data-lucide="sparkles" class="w-3 h-3 text-champagne"></i>
                                     <span>Smart Notes Auto-Fill</span>
                                 </label>
-                                <button type="button" id="smart-auto-fill-btn" onclick="parseNotesParagraph()" class="min-h-[32px] px-3 rounded-full bg-charcoal text-white text-[9px] uppercase tracking-wider font-medium active:bg-champagne transition cursor-pointer touch-manipulation">
+                                <button type="button" onclick="parseNotesParagraph(true)" class="min-h-[28px] px-2.5 rounded-full bg-charcoal text-white text-[9px] uppercase tracking-wider font-medium active:bg-champagne transition cursor-pointer">
                                     Auto-Fill
                                 </button>
                             </div>
-                            <textarea id="input-notes-paragraph" rows="3" placeholder="Paste description (e.g., 前調: 佛手柑 / 中調: 玫瑰 / 後調: 檀香木), then press Auto-Fill" class="w-full p-2.5 rounded-lg bg-white border border-hairline text-charcoal placeholder:text-graphite/45 focus:outline-none focus:border-champagne transition"></textarea>
+                            <textarea id="input-notes-paragraph" rows="3" placeholder="Paste description (e.g., 前調: 佛手柑、粉紅胡椒&#10;中調: 玫瑰&#10;後調: 檀香木)" class="w-full p-2.5 rounded-lg bg-white border border-hairline text-charcoal placeholder:text-graphite/45 focus:outline-none focus:border-champagne transition"></textarea>
                             <p id="smart-parse-status" class="text-[9px] text-graphite/75">
-                                Press Auto-Fill to copy notes after 前調/前味:, 中調/中味:, 後調/基調:.
+                                Paste text and press <strong>Auto-Fill</strong> to extract 前調 / 中調 / 後調 and Top / Heart / Base notes.
                             </p>
                         </div>
 
-                        <div class="space-y-3 pt-1">
-                            <!-- Top Notes -->
+                        <div class="space-y-3 pt-0.5">
                             <div class="space-y-1.5">
                                 <div class="flex items-center justify-between text-[10px] uppercase tracking-wider text-graphite font-medium">
                                     <span>Top Notes <span class="text-champagne font-normal ml-1">前調</span></span>
                                 </div>
                                 <div class="space-y-1.5">
                                     <div class="relative flex items-center">
-                                        <span class="absolute left-2.5 px-2 py-0.5 rounded-md bg-champagneLight/85 border border-champagne/30 text-[9px] font-semibold text-charcoal pointer-events-none">中</span>
+                                        <span class="absolute left-2 px-2 py-0.5 rounded bg-champagneLight/85 border border-champagne/30 text-[9px] font-semibold text-charcoal pointer-events-none">中</span>
                                         <input type="text" id="input-top-notes-zh" placeholder="例如：佛手柑、粉紅胡椒" class="w-full h-10 pl-11 pr-3 rounded-xl bg-alabaster border border-hairline text-charcoal focus:outline-none focus:border-champagne focus:bg-white transition">
                                     </div>
                                     <div class="relative flex items-center">
-                                        <span class="absolute left-2.5 px-2 py-0.5 rounded-md bg-ivory border border-hairline text-[9px] font-semibold text-graphite pointer-events-none">EN</span>
-                                        <input type="text" id="input-top-notes-en" placeholder="e.g., Bergamot, Pink Pepper" class="w-full h-10 pl-12 pr-3 rounded-xl bg-alabaster border border-hairline text-charcoal focus:outline-none focus:border-champagne focus:bg-white transition">
+                                        <span class="absolute left-2 px-2 py-0.5 rounded bg-ivory border border-hairline text-[9px] font-semibold text-graphite pointer-events-none">EN</span>
+                                        <input type="text" id="input-top-notes-en" placeholder="e.g., Bergamot, Pink Pepper" class="w-full h-10 pl-11 pr-3 rounded-xl bg-alabaster border border-hairline text-charcoal focus:outline-none focus:border-champagne focus:bg-white transition">
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Heart Notes -->
                             <div class="space-y-1.5 pt-2 border-t border-hairline/60">
                                 <div class="flex items-center justify-between text-[10px] uppercase tracking-wider text-graphite font-medium">
                                     <span>Heart Notes <span class="text-champagne font-normal ml-1">中調</span></span>
                                 </div>
                                 <div class="space-y-1.5">
                                     <div class="relative flex items-center">
-                                        <span class="absolute left-2.5 px-2 py-0.5 rounded-md bg-champagneLight/85 border border-champagne/30 text-[9px] font-semibold text-charcoal pointer-events-none">中</span>
+                                        <span class="absolute left-2 px-2 py-0.5 rounded bg-champagneLight/85 border border-champagne/30 text-[9px] font-semibold text-charcoal pointer-events-none">中</span>
                                         <input type="text" id="input-heart-notes-zh" placeholder="例如：鳶尾花、大馬士革玫瑰" class="w-full h-10 pl-11 pr-3 rounded-xl bg-alabaster border border-hairline text-charcoal focus:outline-none focus:border-champagne focus:bg-white transition">
                                     </div>
                                     <div class="relative flex items-center">
-                                        <span class="absolute left-2.5 px-2 py-0.5 rounded-md bg-ivory border border-hairline text-[9px] font-semibold text-graphite pointer-events-none">EN</span>
-                                        <input type="text" id="input-heart-notes-en" placeholder="e.g., Iris, Damask Rose" class="w-full h-10 pl-12 pr-3 rounded-xl bg-alabaster border border-hairline text-charcoal focus:outline-none focus:border-champagne focus:bg-white transition">
+                                        <span class="absolute left-2 px-2 py-0.5 rounded bg-ivory border border-hairline text-[9px] font-semibold text-graphite pointer-events-none">EN</span>
+                                        <input type="text" id="input-heart-notes-en" placeholder="e.g., Iris, Damask Rose" class="w-full h-10 pl-11 pr-3 rounded-xl bg-alabaster border border-hairline text-charcoal focus:outline-none focus:border-champagne focus:bg-white transition">
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Base Notes -->
                             <div class="space-y-1.5 pt-2 border-t border-hairline/60">
                                 <div class="flex items-center justify-between text-[10px] uppercase tracking-wider text-graphite font-medium">
                                     <span>Base Notes <span class="text-champagne font-normal ml-1">後調</span></span>
                                 </div>
                                 <div class="space-y-1.5">
                                     <div class="relative flex items-center">
-                                        <span class="absolute left-2.5 px-2 py-0.5 rounded-md bg-champagneLight/85 border border-champagne/30 text-[9px] font-semibold text-charcoal pointer-events-none">中</span>
+                                        <span class="absolute left-2 px-2 py-0.5 rounded bg-champagneLight/85 border border-champagne/30 text-[9px] font-semibold text-charcoal pointer-events-none">中</span>
                                         <input type="text" id="input-base-notes-zh" placeholder="例如：檀香木、白麝香" class="w-full h-10 pl-11 pr-3 rounded-xl bg-alabaster border border-hairline text-charcoal focus:outline-none focus:border-champagne focus:bg-white transition">
                                     </div>
                                     <div class="relative flex items-center">
-                                        <span class="absolute left-2.5 px-2 py-0.5 rounded-md bg-ivory border border-hairline text-[9px] font-semibold text-graphite pointer-events-none">EN</span>
-                                        <input type="text" id="input-base-notes-en" placeholder="e.g., Sandalwood, White Musk" class="w-full h-10 pl-12 pr-3 rounded-xl bg-alabaster border border-hairline text-charcoal focus:outline-none focus:border-champagne focus:bg-white transition">
+                                        <span class="absolute left-2 px-2 py-0.5 rounded bg-ivory border border-hairline text-[9px] font-semibold text-graphite pointer-events-none">EN</span>
+                                        <input type="text" id="input-base-notes-en" placeholder="e.g., Sandalwood, White Musk" class="w-full h-10 pl-11 pr-3 rounded-xl bg-alabaster border border-hairline text-charcoal focus:outline-none focus:border-champagne focus:bg-white transition">
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
 
                     <!-- SECTION 4: REMARKS (OPTIONAL) -->
                     <div class="bg-white rounded-2xl border border-hairline p-3.5 space-y-2.5 shadow-[0_2px_10px_rgba(26,43,60,0.03)]">
