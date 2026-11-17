@@ -442,12 +442,15 @@
                         </div>
 
                         <!-- Google Search Photo Fallback Link Bar -->
-                        <div id="google-images-fallback-bar" class="hidden flex items-center justify-between gap-2 bg-alabaster border border-hairline rounded-xl px-3 py-2">
-                            <span id="photo-search-status-text" class="text-[10px] text-graphite truncate">Pick a white-background photo on Google:</span>
-                            <a id="google-images-external-link" href="#" target="_blank" rel="noopener noreferrer" class="shrink-0 px-2.5 py-1 rounded-full bg-white border border-hairline text-[10px] font-semibold text-charcoal hover:border-champagne flex items-center gap-1 transition">
-                                <span>Google Images</span>
-                                <i data-lucide="external-link" class="w-3 h-3 text-champagne"></i>
-                            </a>
+                        <div id="google-images-fallback-bar" class="hidden flex flex-col gap-2 bg-alabaster border border-hairline rounded-xl px-3 py-2.5">
+                            <div class="flex items-center justify-between gap-2">
+                                <span id="photo-search-status-text" class="text-[10px] text-graphite truncate">Pick a white-background photo on Google:</span>
+                                <a id="google-images-external-link" href="#" target="_blank" rel="noopener noreferrer" class="shrink-0 px-2.5 py-1 rounded-full bg-white border border-hairline text-[10px] font-semibold text-charcoal hover:border-champagne flex items-center gap-1 transition">
+                                    <span>Google Images</span>
+                                    <i data-lucide="external-link" class="w-3 h-3 text-champagne"></i>
+                                </a>
+                            </div>
+                            <div id="searched-photo-links-list" class="hidden flex flex-col gap-1.5 pt-1.5 border-t border-hairline/70"></div>
                         </div>
 
                         <div>
@@ -1908,7 +1911,19 @@
             document.getElementById('input-photo-url').value = '';
             const fallbackBar = document.getElementById('google-images-fallback-bar');
             if (fallbackBar) fallbackBar.classList.add('hidden');
+            const linksList = document.getElementById('searched-photo-links-list');
+            if (linksList) {
+                linksList.innerHTML = '';
+                linksList.classList.add('hidden');
+            }
             updatePhotoPreview('');
+        }
+
+        function applySearchedPhotoLink(url) {
+            if (!url) return;
+            document.getElementById('input-photo-url').value = url;
+            handlePhotoUrlInput(url);
+            showToast('Selected photo link applied');
         }
 
         function escapeHTML(str) {
@@ -2071,8 +2086,13 @@
             const fallbackBar = document.getElementById('google-images-fallback-bar');
             const fallbackLink = document.getElementById('google-images-external-link');
             const statusText = document.getElementById('photo-search-status-text');
+            const linksList = document.getElementById('searched-photo-links-list');
 
             if (fallbackLink) fallbackLink.href = googleImagesUrl;
+            if (linksList) {
+                linksList.innerHTML = '';
+                linksList.classList.add('hidden');
+            }
             if (btn) btn.disabled = true;
             if (labelEl) labelEl.textContent = 'Searching...';
             if (loadingOverlay) loadingOverlay.classList.remove('hidden');
@@ -2093,9 +2113,10 @@
                     );
                 }
 
+                const cleanedCandidates = [...new Set(candidateUrls.map(u => u.replace(/[.,;!?]+$/, '')).filter(Boolean))];
+
                 let foundValidUrl = '';
-                for (const candidateUrl of candidateUrls) {
-                    const cleanUrl = candidateUrl.replace(/[.,;!?]+$/, '');
+                for (const cleanUrl of cleanedCandidates) {
                     const isValid = await verifyImageLoads(cleanUrl);
                     if (isValid) {
                         foundValidUrl = cleanUrl;
@@ -2103,12 +2124,41 @@
                     }
                 }
 
+                const displayUrls = foundValidUrl
+                    ? [foundValidUrl, ...cleanedCandidates.filter(u => u !== foundValidUrl)].slice(0, 4)
+                    : cleanedCandidates.slice(0, 4);
+
+                if (displayUrls.length > 0 && linksList) {
+                    linksList.innerHTML = displayUrls.map((url, index) => {
+                        const safeUrl = escapeHTML(url);
+                        const jsArg = url.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+                        const isActive = foundValidUrl && index === 0;
+                        return `
+                            <div class="flex items-center justify-between gap-2 bg-white border ${isActive ? 'border-champagne' : 'border-hairline'} rounded-lg px-2.5 py-1.5">
+                                <a href="${safeUrl}" target="_blank" rel="noopener noreferrer" class="text-[10px] text-charcoal underline truncate flex-1 min-w-0" title="${safeUrl}">
+                                    ${safeUrl}
+                                </a>
+                                <button type="button" onclick="applySearchedPhotoLink('${jsArg}')" class="shrink-0 px-2 py-0.5 rounded-md ${isActive ? 'bg-charcoal text-white' : 'bg-champagneLight text-charcoal'} text-[9px] font-semibold uppercase tracking-wider cursor-pointer">
+                                    ${isActive ? 'Applied' : 'Use'}
+                                </button>
+                            </div>
+                        `;
+                    }).join('');
+                    linksList.classList.remove('hidden');
+                }
+
                 if (foundValidUrl) {
                     document.getElementById('input-photo-url').value = foundValidUrl;
                     handlePhotoUrlInput(foundValidUrl);
-                    if (statusText) statusText.textContent = 'White-background photo found! Want another angle?';
+                    if (statusText) statusText.textContent = 'White-background photo link found:';
                     if (fallbackBar) fallbackBar.classList.remove('hidden');
                     showToast('Perfume photo found via Google');
+                } else if (displayUrls.length > 0) {
+                    document.getElementById('input-photo-url').value = displayUrls[0];
+                    handlePhotoUrlInput(displayUrls[0]);
+                    if (statusText) statusText.textContent = 'Candidate photo links found (tap to open or Use):';
+                    if (fallbackBar) fallbackBar.classList.remove('hidden');
+                    showToast('Photo links listed below');
                 } else {
                     if (statusText) statusText.textContent = 'Open Google Images (white background) to copy link:';
                     if (fallbackBar) fallbackBar.classList.remove('hidden');
@@ -2384,6 +2434,7 @@
         window.handlePhotoUrlInput = handlePhotoUrlInput;
         window.handlePhotoFileUpload = handlePhotoFileUpload;
         window.clearPhotoSelection = clearPhotoSelection;
+        window.applySearchedPhotoLink = applySearchedPhotoLink;
         window.autoSearchPerfumePhoto = autoSearchPerfumePhoto;
         window.autoSearchPerfumeNotes = autoSearchPerfumeNotes;
         window.parseNotesParagraph = parseNotesParagraph;
