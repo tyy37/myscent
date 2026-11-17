@@ -485,7 +485,7 @@
                                 <h2 class="editorial-title text-lg text-charcoal leading-none">Olfactory Notes</h2>
                             </div>
                             <button type="button" id="auto-search-notes-btn" onclick="autoSearchPerfumeNotes()" class="min-h-[30px] px-2.5 rounded-xl border border-dashed border-champagne/70 bg-alabaster/80 active:bg-champagneLight/40 cursor-pointer flex items-center justify-center gap-1 transition shrink-0">
-                                <i data-lucide="search" class="w-3.5 h-3.5 text-champagne"></i>
+                                <i data-lucide="search" class="w-3 h-3 text-champagne"></i>
                                 <span id="auto-search-notes-label" class="text-[10px] font-medium text-charcoal">Auto-Find Notes</span>
                             </button>
                         </div>
@@ -755,7 +755,6 @@
     <script>
         const LOCAL_CACHE_KEY = 'sillage_perfume_collection_v2';
         const USER_API_KEY_STORAGE = 'yuenying_gemini_search_key_v1';
-        const GEMINI_SEARCH_MODEL = 'gemini-2.5-flash';
         const MONTH_NAMES = [
             'January', 'February', 'March', 'April', 'May', 'June',
             'July', 'August', 'September', 'October', 'November', 'December'
@@ -990,6 +989,7 @@
             const blob = new Blob([payload], { type: 'application/json' });
             const file = new File([blob], fileName, { type: 'application/json' });
 
+            // On iPhone / iPad Safari, navigator.share opens the native iOS sheet with "Save to Files -> iCloud Drive"
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
                 await navigator.share({
                     files: [file],
@@ -999,6 +999,7 @@
                 return;
             }
 
+            // Fallback for desktop Safari / Chrome
             downloadICloudBackupFile();
         }
 
@@ -1632,6 +1633,7 @@
             document.getElementById('stat-decant-count').textContent = collectionItems.filter(i => i.category === 'Decant').length;
             document.getElementById('stat-sample-count').textContent = collectionItems.filter(i => i.category === 'Sample').length;
 
+            // Compute General Notes Counts
             const presetCategories = ['花香調', '清新調', '木質調', '琥珀調'];
             const notesCounts = { '花香調': 0, '清新調': 0, '木質調': 0, '琥珀調': 0 };
             collectionItems.forEach(item => {
@@ -1640,6 +1642,7 @@
                 }
             });
 
+            // Render General Notes Filter Buttons with Count in brackets
             let pillsHtml = `<button type="button" onclick="setGeneralNotesFilter('All')" class="px-3 py-1 rounded-full text-[11px] font-medium transition cursor-pointer ${activeGeneralNotesFilter === 'All' ? 'bg-charcoal text-white' : 'bg-alabaster text-graphite border border-hairline'}">All (${collectionItems.length})</button>`;
             const orderedKeys = [...new Set([...presetCategories, ...Object.keys(notesCounts)])];
             orderedKeys.forEach(note => {
@@ -1649,6 +1652,7 @@
             });
             notesFilterPills.innerHTML = pillsHtml;
 
+            // Filter items
             let filtered = collectionItems.filter(item => {
                 const matchesCategory = activeFilter === 'All' || item.category === activeFilter;
                 const matchesGeneralNote = activeGeneralNotesFilter === 'All' || item.generalNotes === activeGeneralNotesFilter;
@@ -1674,6 +1678,7 @@
                 return searchQuery.split(/\s+/).every(token => searchableText.includes(token));
             });
 
+            // Sort
             filtered.sort((a, b) => {
                 const pA = a.volume > 0 ? a.price / a.volume : 0;
                 const pB = b.volume > 0 ? b.price / b.volume : 0;
@@ -1714,6 +1719,7 @@
                     return `
                     <article onclick="openDetailModal('${item.id}')" class="perfume-card bg-white rounded-2xl border border-hairline p-3.5 cursor-pointer shadow-[0_2px_10px_rgba(26,43,60,0.03)]">
                         <div class="grid grid-cols-12 gap-3 items-start">
+                            <!-- Left Column: Perfume Photo & Basic Information -->
                             <div class="col-span-5 flex flex-col space-y-2 border-r border-hairline/70 pr-2.5">
                                 <div class="relative w-full h-28 rounded-xl bg-[#FFFFFF] border border-hairline p-2 flex items-center justify-center overflow-hidden">
                                     <span class="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full text-[8px] uppercase tracking-[0.1em] font-semibold border ${badgeStyle}">${escapeHTML(item.category)}</span>
@@ -1747,6 +1753,7 @@
                                 </div>
                             </div>
 
+                            <!-- Right Column: Olfactory Notes Details & Remarks -->
                             <div class="col-span-7 flex flex-col space-y-2 min-w-0">
                                 <span class="text-[9px] uppercase tracking-wider text-graphite/70 font-semibold">Olfactory Notes</span>
                                 ${renderBilingualPyramidHTML(item, true)}
@@ -2021,6 +2028,7 @@
             closeApiKeyModal();
         }
 
+        // CORS-open Wikimedia & Wikipedia fallback search (never blocked by Safari, even without an API key)
         async function fetchWikimediaBottleFallback(brand, name) {
             try {
                 const q = encodeURIComponent(`${brand} ${name} perfume bottle`);
@@ -2037,37 +2045,35 @@
             }
         }
 
-        async function callGeminiWithSearch(prompt, systemInstruction = '') {
-            const apiKey = getActiveGeminiApiKey();
-            if (!apiKey) {
-                throw new Error('Missing Gemini API key');
+        async function fetchWikipediaNotesFallback(brand, name) {
+            try {
+                const q = encodeURIComponent(`${brand} ${name} perfume`);
+                const searchRes = await fetch(`https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${q}&srlimit=3&format=json&origin=*`);
+                if (!searchRes.ok) return null;
+                const searchData = await searchRes.json();
+                const topTitle = searchData?.query?.search?.[0]?.title;
+                if (!topTitle) return null;
+
+                const extractRes = await fetch(`https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=false&explaintext=true&titles=${encodeURIComponent(topTitle)}&format=json&origin=*`);
+                if (!extractRes.ok) return null;
+                const extractData = await extractRes.json();
+                const pages = Object.values(extractData?.query?.pages || {});
+                const extract = pages[0]?.extract || '';
+                if (!extract) return null;
+
+                const topMatch = extract.match(/top notes?\s*(?:include|are|of|:)?\s*([^.;\n]+)/i);
+                const heartMatch = extract.match(/(?:heart|middle) notes?\s*(?:include|are|of|:)?\s*([^.;\n]+)/i);
+                const baseMatch = extract.match(/base notes?\s*(?:include|are|of|:)?\s*([^.;\n]+)/i);
+
+                if (!topMatch && !heartMatch && !baseMatch) return null;
+                return {
+                    topNotesEn: topMatch ? topMatch[1].replace(/\band\b/gi, ',').trim() : '',
+                    heartNotesEn: heartMatch ? heartMatch[1].replace(/\band\b/gi, ',').trim() : '',
+                    baseNotesEn: baseMatch ? baseMatch[1].replace(/\band\b/gi, ',').trim() : ''
+                };
+            } catch (e) {
+                return null;
             }
-
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_SEARCH_MODEL}:generateContent?key=${encodeURIComponent(apiKey)}`;
-            const body = {
-                contents: [{ parts: [{ text: prompt }] }],
-                tools: [{ google_search: {} }]
-            };
-            if (systemInstruction) {
-                body.systemInstruction = { parts: [{ text: systemInstruction }] };
-            }
-
-            const res = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
-            });
-
-            if (!res.ok) {
-                const errText = await res.text().catch(() => '');
-                throw new Error(`Gemini HTTP ${res.status}: ${errText.slice(0, 140)}`);
-            }
-
-            const data = await res.json();
-            const text = data?.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('\n') || '';
-            const chunks = data?.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
-            const groundedUris = chunks.map(c => c?.web?.uri || '').filter(Boolean);
-            return { text, groundedUris };
         }
 
         async function autoSearchPerfumeNotes() {
@@ -2082,6 +2088,7 @@
 
             const queryTerm = `${brand} ${name} perfume notes 前調 中調 後調`.trim();
             const googleSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(queryTerm)}`;
+
             const btn = document.getElementById('auto-search-notes-btn');
             const labelEl = document.getElementById('auto-search-notes-label');
             const fallbackBar = document.getElementById('google-notes-fallback-bar');
@@ -2094,36 +2101,32 @@
 
             try {
                 const apiKey = getActiveGeminiApiKey();
-                if (!apiKey) {
-                    openApiKeyModal();
-                    throw new Error('No API key saved');
-                }
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
 
-                // Pass 1: Grounded Google Search for raw notes
-                const { text: groundedNotesText } = await callGeminiWithSearch(
-                    `Look up the official fragrance family and top, heart/middle, and base notes for "${brand} ${name}" perfume. Include both Traditional Chinese and English note names.`
-                );
+                const systemPrompt = "You are a fragrance archivist. Search Google for the official olfactory pyramid of the requested perfume and return ONLY a valid JSON object (no markdown fences, no commentary) with keys: generalNotes (must be one of: '花香調', '清新調', '木質調', '琥珀調', or ''), topNotesZh (Traditional Chinese comma-separated with '、'), topNotesEn (English comma-separated), heartNotesZh (Traditional Chinese comma-separated with '、'), heartNotesEn (English comma-separated), baseNotesZh (Traditional Chinese comma-separated with '、'), baseNotesEn (English comma-separated). Always provide both Traditional Chinese and English translations for every note found.";
+                const userQuery = `Find the official top notes, heart/middle notes, base notes, and general fragrance family for the perfume: "${brand} ${name}".`;
 
-                // Pass 2: Structured JSON extraction without search tool conflict
-                const structUrl = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_SEARCH_MODEL}:generateContent?key=${encodeURIComponent(apiKey)}`;
-                const structRes = await fetch(structUrl, {
+                const payload = {
+                    contents: [{ parts: [{ text: userQuery }] }],
+                    tools: [{ "google_search": {} }],
+                    systemInstruction: {
+                        parts: [{ text: systemPrompt }]
+                    }
+                };
+
+                const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{
-                            parts: [{
-                                text: `Extract fragrance notes from this text into JSON:\n${groundedNotesText}\n\nReturn keys: generalNotes (one of "花香調", "清新調", "木質調", "琥珀調", or ""), topNotesZh, topNotesEn, heartNotesZh, heartNotesEn, baseNotesZh, baseNotesEn. Use "、" between Chinese items and ", " between English items.`
-                            }]
-                        }],
-                        generationConfig: { responseMimeType: 'application/json' }
-                    })
+                    body: JSON.stringify(payload)
                 });
 
-                if (!structRes.ok) throw new Error('Structuring failed');
-                const structData = await structRes.json();
-                const rawJson = structData?.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
-                const parsed = JSON.parse(rawJson);
+                if (!response.ok) throw new Error('Search request failed');
+                const data = await response.json();
+                const rawOutput = data?.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('\n') || '';
+                const jsonMatch = rawOutput.match(/\{[\s\S]*\}/);
+                if (!jsonMatch) throw new Error('No structured notes returned');
 
+                const parsed = JSON.parse(jsonMatch[0]);
                 const validFamilies = ['花香調', '清新調', '木質調', '琥珀調'];
                 if (parsed.generalNotes && validFamilies.includes(parsed.generalNotes.trim())) {
                     document.getElementById('input-general-notes').value = parsed.generalNotes.trim();
@@ -2135,16 +2138,34 @@
                 if (parsed.baseNotesZh) document.getElementById('input-base-notes-zh').value = String(parsed.baseNotesZh).trim();
                 if (parsed.baseNotesEn) document.getElementById('input-base-notes-en').value = String(parsed.baseNotesEn).trim();
 
-                const hasAny = [parsed.topNotesZh, parsed.topNotesEn, parsed.heartNotesZh, parsed.heartNotesEn, parsed.baseNotesZh, parsed.baseNotesEn].some(Boolean);
-                if (!hasAny) throw new Error('Empty notes');
-
-                if (statusText) statusText.textContent = 'Olfactory notes found via Google Search.';
-                if (fallbackBar) fallbackBar.classList.remove('hidden');
-                showToast('Olfactory notes auto-filled');
+                const hasAnyNote = parsed.topNotesEn || parsed.topNotesZh || parsed.heartNotesEn || parsed.heartNotesZh || parsed.baseNotesEn || parsed.baseNotesZh;
+                if (hasAnyNote) {
+                    if (statusText) statusText.textContent = 'Olfactory notes found via Google Search.';
+                    if (fallbackBar) fallbackBar.classList.remove('hidden');
+                    showToast('Olfactory notes auto-filled');
+                } else {
+                    throw new Error('Empty notes');
+                }
             } catch (err) {
-                if (statusText) statusText.textContent = 'Search notes on Google & paste into Smart Auto-Fill:';
-                if (fallbackBar) fallbackBar.classList.remove('hidden');
-                showToast(err.message.includes('API key') ? 'Enter Gemini API key first' : 'Tap Google Search link to look up notes');
+                // Try CORS-open Wikipedia fallback before showing Google Search link
+                const wikiNotes = await fetchWikipediaNotesFallback(brand, name);
+                if (wikiNotes && (wikiNotes.topNotesEn || wikiNotes.heartNotesEn || wikiNotes.baseNotesEn)) {
+                    if (wikiNotes.topNotesEn) document.getElementById('input-top-notes-en').value = wikiNotes.topNotesEn;
+                    if (wikiNotes.heartNotesEn) document.getElementById('input-heart-notes-en').value = wikiNotes.heartNotesEn;
+                    if (wikiNotes.baseNotesEn) document.getElementById('input-base-notes-en').value = wikiNotes.baseNotesEn;
+                    if (statusText) statusText.textContent = 'English notes found via open fragrance archive:';
+                    if (fallbackBar) fallbackBar.classList.remove('hidden');
+                    showToast('English notes auto-filled');
+                } else {
+                    const hasKey = Boolean(getActiveGeminiApiKey());
+                    if (statusText) {
+                        statusText.textContent = hasKey
+                            ? 'Search notes on Google & paste into Smart Auto-Fill:'
+                            : 'Tap key icon in header for direct Google Search, or open link:';
+                    }
+                    if (fallbackBar) fallbackBar.classList.remove('hidden');
+                    showToast(hasKey ? 'Tap Google Search link to look up notes' : 'Add free Gemini API key (top right) or tap Google link');
+                }
             } finally {
                 if (btn) btn.disabled = false;
                 if (labelEl) labelEl.textContent = 'Auto-Find Notes';
@@ -2153,9 +2174,13 @@
 
         function verifyImageLoads(url) {
             return new Promise((resolve) => {
-                if (!url || !/^https?:\/\//i.test(url)) return resolve(false);
+                if (!url || !/^https?:\/\//i.test(url)) {
+                    resolve(false);
+                    return;
+                }
                 const img = new Image();
-                const timer = setTimeout(() => resolve(false), 7000);
+                img.referrerPolicy = 'no-referrer';
+                const timer = setTimeout(() => resolve(false), 7500);
                 img.onload = () => {
                     clearTimeout(timer);
                     resolve(img.naturalWidth > 40 && img.naturalHeight > 40);
@@ -2166,6 +2191,34 @@
                 };
                 img.src = url;
             });
+        }
+
+        async function fetchBottleUrlsFromGoogle(queryText, systemPrompt) {
+            const apiKey = getActiveGeminiApiKey();
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [{ parts: [{ text: queryText }] }],
+                tools: [{ "google_search": {} }],
+                systemInstruction: {
+                    parts: [{ text: systemPrompt }]
+                }
+            };
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) return [];
+            const data = await response.json();
+            const rawOutput = data?.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('\n') || '';
+            const groundedChunks = data?.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
+            const groundedUrls = groundedChunks.map(c => c?.web?.uri || '').filter(u => /\.(jpg|jpeg|png|webp)(\?|$)/i.test(u));
+            const textUrls = rawOutput.match(/https?:\/\/[^\s"'<>)\]]+/gi) || [];
+
+            return [...new Set([...textUrls, ...groundedUrls])];
         }
 
         async function autoSearchPerfumePhoto() {
@@ -2199,28 +2252,40 @@
             if (loadingOverlay) loadingOverlay.classList.remove('hidden');
 
             try {
-                const { text, groundedUris } = await callGeminiWithSearch(
-                    `Find direct HTTPS product image URLs for "${brand} ${name}" perfume bottle on a white background. List image URLs one per line.`,
-                    'Return direct image URLs (https://...) for product packshots. Do not wrap in markdown.'
+                const systemPrompt = "You are a perfume product image finder. Search Google for an official product packshot photo of the requested perfume bottle isolated on a pure solid white background (#FFFFFF). Do NOT choose lifestyle photos, colored backgrounds, or wooden/marble surfaces. Return ONLY direct HTTPS image URLs (ending in .jpg, .jpeg, .png, or .webp, or CDN product image URLs), one per line, with no extra text or markdown.";
+
+                let candidateUrls = await fetchBottleUrlsFromGoogle(
+                    `Find direct image URLs of the perfume bottle "${brand} ${name}" isolated on a pure white background (#FFFFFF).`,
+                    systemPrompt
                 );
 
-                const textUrls = text.match(/https?:\/\/[^\s"'<>)\]]+/gi) || [];
-                const wikiUrls = await fetchWikimediaBottleFallback(brand, name);
-                const candidates = [...new Set([...textUrls, ...groundedUris, ...wikiUrls])]
-                    .map(u => u.replace(/[.,;!?]+$/, ''))
-                    .filter(u => /^https?:\/\//i.test(u) && !/google\.com\/search/i.test(u));
+                // Secondary broader query if first pass yields no candidates
+                if (candidateUrls.length === 0) {
+                    candidateUrls = await fetchBottleUrlsFromGoogle(
+                        `${brand} ${name} eau de parfum bottle white background image url`,
+                        systemPrompt
+                    );
+                }
+
+                // Third pass: CORS-open Wikimedia Commons search (always works in standalone Safari without blocking)
+                if (candidateUrls.length === 0) {
+                    candidateUrls = await fetchWikimediaBottleFallback(brand, name);
+                }
+
+                const cleanedCandidates = [...new Set(candidateUrls.map(u => u.replace(/[.,;!?]+$/, '')).filter(Boolean))];
 
                 let foundValidUrl = '';
-                for (const candidate of candidates.slice(0, 8)) {
-                    if (await verifyImageLoads(candidate)) {
-                        foundValidUrl = candidate;
+                for (const cleanUrl of cleanedCandidates) {
+                    const isValid = await verifyImageLoads(cleanUrl);
+                    if (isValid) {
+                        foundValidUrl = cleanUrl;
                         break;
                     }
                 }
 
                 const displayUrls = foundValidUrl
-                    ? [foundValidUrl, ...candidates.filter(u => u !== foundValidUrl)].slice(0, 4)
-                    : candidates.slice(0, 4);
+                    ? [foundValidUrl, ...cleanedCandidates.filter(u => u !== foundValidUrl)].slice(0, 4)
+                    : cleanedCandidates.slice(0, 4);
 
                 if (displayUrls.length > 0 && linksList) {
                     linksList.innerHTML = displayUrls.map((url, index) => {
@@ -2229,7 +2294,9 @@
                         const isActive = foundValidUrl && index === 0;
                         return `
                             <div class="flex items-center justify-between gap-2 bg-white border ${isActive ? 'border-champagne' : 'border-hairline'} rounded-lg px-2.5 py-1.5">
-                                <a href="${safeUrl}" target="_blank" rel="noopener noreferrer" class="text-[10px] text-charcoal underline truncate flex-1 min-w-0">${safeUrl}</a>
+                                <a href="${safeUrl}" target="_blank" rel="noopener noreferrer" class="text-[10px] text-charcoal underline truncate flex-1 min-w-0" title="${safeUrl}">
+                                    ${safeUrl}
+                                </a>
                                 <button type="button" onclick="applySearchedPhotoLink('${jsArg}')" class="shrink-0 px-2 py-0.5 rounded-md ${isActive ? 'bg-charcoal text-white' : 'bg-champagneLight text-charcoal'} text-[9px] font-semibold uppercase tracking-wider cursor-pointer">
                                     ${isActive ? 'Applied' : 'Use'}
                                 </button>
@@ -2245,15 +2312,21 @@
                     if (statusText) statusText.textContent = 'White-background photo link found:';
                     if (fallbackBar) fallbackBar.classList.remove('hidden');
                     showToast('Perfume photo found via Google');
+                } else if (displayUrls.length > 0) {
+                    document.getElementById('input-photo-url').value = displayUrls[0];
+                    handlePhotoUrlInput(displayUrls[0]);
+                    if (statusText) statusText.textContent = 'Candidate photo links found (tap to open or Use):';
+                    if (fallbackBar) fallbackBar.classList.remove('hidden');
+                    showToast('Photo links listed below');
                 } else {
-                    if (statusText) statusText.textContent = 'Tap Google Images link below to pick a photo:';
+                    if (statusText) statusText.textContent = 'Open Google Images (white background) to copy link:';
                     if (fallbackBar) fallbackBar.classList.remove('hidden');
                     showToast('Tap Google Images link below to pick a photo');
                 }
             } catch (err) {
-                if (statusText) statusText.textContent = 'Tap Google Images link below to pick a photo:';
+                if (statusText) statusText.textContent = 'Open Google Images (white background) to copy link:';
                 if (fallbackBar) fallbackBar.classList.remove('hidden');
-                showToast(err.message.includes('API key') ? 'Enter Gemini API key first' : 'Tap Google Images link below to pick a photo');
+                showToast('Tap Google Images link below to pick a photo');
             } finally {
                 if (loadingOverlay) loadingOverlay.classList.add('hidden');
                 if (btn) btn.disabled = false;
@@ -2273,6 +2346,7 @@
                 return;
             }
 
+            // Support multi-line, single-line slash/pipe-separated, colonless space-separated, and 前味/中味/後味/基調 variants
             const extractTier = (labelPattern) => {
                 const regex = new RegExp(
                     `(?:${labelPattern})\\s*(?:[:：\\-–—]|\\s+)\\s*([\\s\\S]*?)(?=(?:\\n|\\s*(?:[/|｜]\\s*)?(?:香調|香調表|前調|前味|頭調|中調|中味|心調|後調|後味|基調|尾調|Top\\s*Notes?|Heart\\s*Notes?|Middle\\s*Notes?|Base\\s*Notes?)\\s*(?:[:：\\-–—]|\\s)|$))`,
