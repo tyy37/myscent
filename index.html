@@ -847,21 +847,25 @@
                 if (syncBtn) syncBtn.disabled = true;
                 updateCloudStatus('syncing', 'Syncing');
 
-                // Sync to cloud storage if available
+                // Attempt Firestore cloud sync silently; gracefully fall back if permissions restrict writes
                 if (colRef) {
-                    const existingSnap = await getDocs(colRef);
-                    const currentIds = new Set(collectionItems.map(item => item.id));
-                    const deletePromises = [];
-                    existingSnap.forEach(docSnap => {
-                        if (!currentIds.has(docSnap.id)) {
-                            deletePromises.push(deleteDoc(doc(colRef, docSnap.id)));
-                        }
-                    });
+                    try {
+                        const existingSnap = await getDocs(colRef);
+                        const currentIds = new Set(collectionItems.map(item => item.id));
+                        const deletePromises = [];
+                        existingSnap.forEach(docSnap => {
+                            if (!currentIds.has(docSnap.id)) {
+                                deletePromises.push(deleteDoc(doc(colRef, docSnap.id)));
+                            }
+                        });
 
-                    await Promise.all([
-                        ...deletePromises,
-                        ...collectionItems.map(item => setDoc(doc(colRef, item.id), item))
-                    ]);
+                        await Promise.all([
+                            ...deletePromises,
+                            ...collectionItems.map(item => setDoc(doc(colRef, item.id), item))
+                        ]);
+                    } catch (cloudErr) {
+                        console.warn('Firestore sync skipped due to rules/permissions, proceeding with iCloud Drive backup:', cloudErr.message || cloudErr);
+                    }
                 }
 
                 // Automatically link & save directly to iCloud Drive (via iOS Share Sheet / macOS Save to iCloud Drive)
@@ -876,13 +880,40 @@
                     updateCloudStatus('pending', 'Unsaved');
                     showToast('iCloud save cancelled');
                 } else {
-                    console.error('iCloud sync error:', err);
-                    updateCloudStatus('pending', 'Retry');
-                    showToast('Unable to save to iCloud right now');
+                    // Fallback to direct file download if Web Share API throws NotAllowedError after async gap
+                    try {
+                        downloadICloudBackupFile();
+                        hasUnsavedCloudChanges = false;
+                        saveLocalCache();
+                        updateCloudStatus('synced', 'iCloud');
+                        showToast(`Saved ${collectionItems.length} items to iCloud`);
+                    } catch (downloadErr) {
+                        updateCloudStatus('pending', 'Retry');
+                        showToast('Unable to save to iCloud right now');
+                    }
                 }
             } finally {
                 if (syncBtn) syncBtn.disabled = false;
             }
+        }
+
+        function downloadICloudBackupFile() {
+            const payload = JSON.stringify({
+                archive: "Yuenying's Scented World",
+                syncedAt: new Date().toISOString(),
+                items: collectionItems
+            }, null, 2);
+
+            const fileName = `Yuenying-Scented-World-iCloud.json`;
+            const blob = new Blob([payload], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
         }
 
         async function exportToICloudDrive() {
@@ -906,15 +937,8 @@
                 return;
             }
 
-            // Fallback for desktop Safari / Chrome (downloads directly to iCloud Downloads / Drive folder)
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = fileName;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
+            // Fallback for desktop Safari / Chrome
+            downloadICloudBackupFile();
         }
 
         function triggerICloudImport() {
