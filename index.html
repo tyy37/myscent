@@ -6,12 +6,12 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="theme-color" content="#F7FAFD">
-    <title>Yuenying's Scented World — Fragrance Archive &amp; Collection</title>
+    <title>Yuenying's Scented World — Fragrance Archive & Collection</title>
     
     <!-- Google Fonts: Cormorant Garamond (Editorial Serif) & Plus Jakarta Sans (Clean UI) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=Plus+Jakarta+Sans:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -23,7 +23,7 @@
                         alabaster: '#F7FAFD',
                         ivory: '#EBF3FA',
                         charcoal: '#1A2B3C',
-                        graphite: '#52677A',
+                        graphite: '#51677D',
                         champagne: '#6FA3D2',
                         champagneLight: '#DCEAF7',
                         hairline: '#D4E3F0'
@@ -96,6 +96,9 @@
         #search-input {
             font-size: 13px !important;
         }
+        #search-input::placeholder {
+            font-size: 12px !important;
+        }
         #view-new input,
         #view-new select,
         #view-new textarea {
@@ -126,17 +129,20 @@
                 </div>
 
                 <div class="flex items-center gap-1.5 shrink-0">
-                    <span id="cloud-status-badge" title="Cloud Sync Status" class="inline-flex items-center gap-1 px-2.5 h-8 rounded-full bg-white border border-hairline text-[10px] font-medium text-graphite">
-                        <span id="cloud-status-dot" class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
-                        <span id="cloud-status-text">Syncing</span>
+                    <!-- Cloud Sync Status Pill -->
+                    <span id="cloud-status-pill" class="px-2 py-1 rounded-full bg-ivory border border-hairline text-[10px] font-medium text-graphite flex items-center gap-1">
+                        <span id="cloud-status-dot" class="w-1.5 h-1.5 rounded-full bg-champagne"></span>
+                        <span id="cloud-status-text">Ready</span>
                     </span>
 
-                    <button type="button" onclick="syncToCloudNow()" aria-label="Save collection to cloud" title="Save to Cloud" class="w-10 h-10 rounded-full bg-white active:bg-charcoal text-charcoal active:text-white border border-hairline flex items-center justify-center transition-colors shadow-[0_1px_4px_rgba(0,0,0,0.03)] cursor-pointer">
-                        <svg class="w-[17px] h-[17px] text-champagne" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
-                            <path d="M12 13v6"/>
-                            <path d="m9.5 15.5 2.5-2.5 2.5 2.5"/>
+                    <!-- Upload to Cloud Button -->
+                    <button type="button" id="cloud-sync-btn" onclick="syncAllToCloud()" aria-label="Upload collection to cloud" title="Upload to Cloud" class="h-9 px-3 rounded-full bg-white active:bg-charcoal text-charcoal active:text-white border border-hairline flex items-center justify-center gap-1.5 transition-colors shadow-[0_1px_4px_rgba(26,43,60,0.04)] cursor-pointer">
+                        <svg class="w-4 h-4 text-champagne shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/>
+                            <path d="M12 12v9"/>
+                            <path d="m16 16-4-4-4 4"/>
                         </svg>
+                        <span class="text-[10px] font-semibold tracking-wide">Upload</span>
                     </button>
                 </div>
             </div>
@@ -148,13 +154,10 @@
             <!-- ================= COLLECTION VIEW ================= -->
             <section id="view-collection" class="space-y-4">
                 
-                <div class="bg-white rounded-2xl border border-hairline p-4 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+                <div class="bg-white rounded-2xl border border-hairline p-4 shadow-[0_2px_10px_rgba(26,43,60,0.03)]">
                     <div class="flex items-center justify-between gap-2 mb-3">
                         <div class="flex items-center gap-2 min-w-0">
                             <h1 class="editorial-title text-2xl font-medium text-charcoal leading-none shrink-0">My Collection</h1>
-                            <span id="results-counter" class="px-2.5 py-1 rounded-full bg-champagneLight/80 border border-champagne/40 text-charcoal font-semibold text-[11px] tracking-wide shrink-0">
-                                Total: 0 Items
-                            </span>
                         </div>
 
                         <button type="button" id="view-mode-toggle" onclick="toggleCollectionViewMode()" aria-label="Switch between Cards view and All Info view" class="min-h-[34px] px-3 rounded-full border border-hairline bg-alabaster active:bg-charcoal active:text-white text-charcoal text-[11px] font-medium tracking-wide flex items-center gap-1.5 transition-colors shrink-0 cursor-pointer">
@@ -183,9 +186,22 @@
                 <div class="space-y-2.5">
                     <div class="relative">
                         <i data-lucide="search" class="w-3.5 h-3.5 text-graphite/60 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
-                        <input type="text" id="search-input" placeholder="Search notes (中/EN), brand, or name..." class="w-full h-10 pl-9 pr-10 bg-white border border-hairline rounded-2xl text-[13px] text-charcoal placeholder:text-[12px] placeholder:text-graphite/50 focus:outline-none focus:border-champagne transition-colors shadow-[0_1px_4px_rgba(0,0,0,0.02)]">
+                        <input type="text" id="search-input" placeholder="Search notes (中/EN), brand, name, or remarks..." class="w-full h-10 pl-9 pr-10 bg-white border border-hairline rounded-2xl text-charcoal placeholder:text-graphite/50 focus:outline-none focus:border-champagne transition-colors shadow-[0_1px_4px_rgba(26,43,60,0.03)]">
                         <button type="button" id="clear-search-btn" onclick="clearSearch()" aria-label="Clear search" class="hidden absolute right-0 top-0 w-10 h-10 flex items-center justify-center text-graphite/60 active:text-charcoal">
                             <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+
+                    <!-- Active Ingredient Filter Banner -->
+                    <div id="active-ingredient-banner" class="hidden flex items-center justify-between bg-champagneLight/70 border border-champagne/40 rounded-xl px-3.5 py-2">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-champagne shrink-0"></i>
+                            <span class="text-[11px] text-charcoal truncate">
+                                Ingredient: <strong id="active-ingredient-label" class="font-semibold"></strong>
+                            </span>
+                        </div>
+                        <button type="button" onclick="clearIngredientFilter()" class="shrink-0 ml-2 px-2.5 py-1 rounded-full bg-charcoal text-white text-[10px] uppercase tracking-wider font-medium active:bg-champagne transition cursor-pointer">
+                            Clear
                         </button>
                     </div>
 
@@ -205,19 +221,17 @@
                         </button>
                     </div>
 
-                    <!-- General Notes Collapsible Filter -->
-                    <div class="bg-white border border-hairline rounded-2xl p-3 space-y-2.5">
+                    <!-- Collapsible General Notes Filter Bar -->
+                    <div class="bg-white border border-hairline rounded-2xl px-3.5 py-2.5">
                         <button type="button" id="general-notes-toggle-btn" onclick="toggleGeneralNotesPanel()" aria-expanded="false" class="w-full flex items-center justify-between text-left cursor-pointer">
                             <span class="text-[11px] uppercase tracking-wider text-charcoal font-semibold flex items-center gap-1.5">
-                                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-champagne"></i>
+                                <i data-lucide="filter" class="w-3.5 h-3.5 text-champagne"></i>
                                 <span>General Notes</span>
                                 <span id="active-general-note-badge" class="hidden px-2 py-0.5 rounded-full bg-champagneLight text-charcoal text-[10px] font-semibold normal-case tracking-normal"></span>
                             </span>
                             <i id="general-notes-chevron" data-lucide="chevron-down" class="w-4 h-4 text-graphite transition-transform duration-200"></i>
                         </button>
-                        <div id="notes-filter-pills" class="hidden flex-wrap gap-1.5 pt-2 border-t border-hairline/70">
-                            <!-- Injected dynamically with category counts in brackets -->
-                        </div>
+                        <div id="notes-filter-pills" class="hidden flex-wrap gap-1.5 pt-2.5 mt-2 border-t border-hairline/70"></div>
                     </div>
 
                     <!-- Sort Bar -->
@@ -232,19 +246,6 @@
                             <option value="price-ml-asc">From Lowest $/mL to Highest</option>
                             <option value="price-ml-desc">From Highest $/mL to Lowest</option>
                         </select>
-                    </div>
-
-                    <!-- Active Ingredient Filter Banner (Shown when an ingredient pill is clicked) -->
-                    <div id="active-ingredient-bar" class="hidden items-center justify-between gap-2 bg-champagneLight/75 border border-champagne/50 rounded-xl px-3.5 py-2">
-                        <div class="flex items-center gap-2 min-w-0">
-                            <i data-lucide="sprout" class="w-3.5 h-3.5 text-champagne shrink-0"></i>
-                            <span class="text-[11px] text-charcoal truncate">
-                                Ingredient: <strong id="active-ingredient-name" class="font-semibold text-charcoal"></strong>
-                            </span>
-                        </div>
-                        <button type="button" onclick="clearIngredientFilter()" class="px-2.5 py-1 rounded-full bg-charcoal text-white text-[10px] uppercase tracking-wider font-medium shrink-0 cursor-pointer">
-                            Clear
-                        </button>
                     </div>
                 </div>
 
@@ -282,7 +283,7 @@
                     <input type="hidden" id="entry-id" value="">
 
                     <!-- SECTION 1: BASIC DETAILS -->
-                    <div class="bg-white rounded-2xl border border-hairline p-3.5 space-y-3.5 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+                    <div class="bg-white rounded-2xl border border-hairline p-3.5 space-y-3.5 shadow-[0_2px_10px_rgba(26,43,60,0.03)]">
                         <div class="flex items-center gap-2 pb-2.5 border-b border-hairline">
                             <span class="w-5 h-5 rounded-full bg-champagneLight text-champagne text-[10px] font-semibold flex items-center justify-center shrink-0">01</span>
                             <h2 class="editorial-title text-lg text-charcoal leading-none">Basic Details</h2>
@@ -325,50 +326,44 @@
                             <input type="text" id="input-name" required="" placeholder="e.g., Blanche, Santal 33" class="w-full h-10 px-3 rounded-xl bg-alabaster border border-hairline text-charcoal focus:outline-none focus:border-champagne focus:bg-white transition">
                         </div>
 
-                        <!-- Color Picker (Shown ONLY in Edit Entry mode; 1 or 2 colors, default no color) -->
-                        <div id="edit-color-picker-section" class="hidden pt-1 border-t border-hairline/60">
-                            <div class="flex items-center justify-between mb-1">
-                                <label class="block text-[10px] uppercase tracking-wider text-graphite font-medium">Perfume Color (1 or 2 Colors)</label>
-                                <button type="button" onclick="clearColors()" class="text-[10px] text-champagne font-medium hover:underline cursor-pointer">No Color</button>
-                            </div>
+                        <!-- Color Picker (Visible ONLY on Edit Entry) -->
+                        <div id="edit-color-section" class="hidden pt-1 border-t border-hairline/60">
+                            <label class="block text-[10px] uppercase tracking-wider text-graphite font-medium mb-1">Perfume Color (1 or 2 Colors)</label>
                             <div class="grid grid-cols-2 gap-2.5">
                                 <div class="flex items-center gap-2 bg-alabaster border border-hairline rounded-xl px-2.5 h-10">
-                                    <input type="color" id="input-color-1" value="#D4AF37" oninput="handleColorChange(1)" class="w-6 h-6 rounded-lg border-0 bg-transparent cursor-pointer">
-                                    <span class="text-[11px] text-graphite truncate" id="color-1-label">Color 1 (None)</span>
+                                    <input type="color" id="input-color-1" value="#FFFFFF" oninput="handleColorChange(1)" class="w-6 h-6 rounded-lg border-0 bg-transparent cursor-pointer">
+                                    <span class="text-[11px] text-graphite truncate" id="color-1-label">No color</span>
                                 </div>
                                 <div class="flex items-center gap-2 bg-alabaster border border-hairline rounded-xl px-2.5 h-10">
-                                    <input type="color" id="input-color-2" value="#8C6239" oninput="handleColorChange(2)" class="w-6 h-6 rounded-lg border-0 bg-transparent cursor-pointer">
-                                    <span class="text-[11px] text-graphite truncate" id="color-2-label">Color 2 (None)</span>
+                                    <input type="color" id="input-color-2" value="#FFFFFF" oninput="handleColorChange(2)" class="w-6 h-6 rounded-lg border-0 bg-transparent cursor-pointer">
+                                    <span class="text-[11px] text-graphite truncate" id="color-2-label">2nd color (opt.)</span>
                                 </div>
                             </div>
-                            <div class="mt-1.5 flex items-center gap-2 text-[10px] text-graphite px-1">
-                                <span>Dot preview:</span>
-                                <span id="color-preview-display" class="inline-flex items-center gap-1.5 font-medium text-charcoal">No color</span>
+                            <div class="mt-1.5 flex items-center justify-between text-[10px] text-graphite px-1">
+                                <span class="flex items-center gap-1.5">Dot preview: <span id="color-dot-preview-wrapper" class="inline-flex items-center">None</span></span>
+                                <button type="button" onclick="clearColors()" class="text-champagne font-medium hover:underline">Clear Colors</button>
                             </div>
                         </div>
 
-                        <!-- Volume & Price Section -->
-                        <div class="space-y-3">
-                            <div>
-                                <label class="block text-[10px] uppercase tracking-wider text-graphite font-medium mb-1.5">Volume <span class="text-champagne">*</span></label>
-                                <div id="volume-options-container" class="flex flex-wrap gap-1.5">
-                                    <!-- Injected dynamically based on category -->
-                                </div>
-                                <div id="custom-volume-wrapper" class="hidden mt-2 relative">
-                                    <input type="number" id="input-volume" required="" min="0.1" step="0.1" inputmode="decimal" placeholder="Enter custom volume" oninput="updateLivePricePerMl()" class="w-full h-10 pl-3 pr-9 rounded-xl bg-alabaster border border-hairline text-charcoal focus:outline-none focus:border-champagne focus:bg-white transition">
-                                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-graphite font-medium">mL</span>
-                                </div>
+                        <!-- Volume Options -->
+                        <div>
+                            <label class="block text-[10px] uppercase tracking-wider text-graphite font-medium mb-1.5">Volume <span class="text-champagne">*</span></label>
+                            <div id="volume-options-container" class="flex flex-wrap gap-1.5"></div>
+                            <div id="custom-volume-wrapper" class="hidden mt-2 relative">
+                                <input type="number" id="input-volume" required="" min="0.5" step="0.1" inputmode="decimal" placeholder="Enter custom volume" oninput="updateLivePricePerMl()" class="w-full h-10 pl-3 pr-9 rounded-xl bg-alabaster border border-hairline text-charcoal focus:outline-none focus:border-champagne focus:bg-white transition">
+                                <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-graphite font-medium">mL</span>
                             </div>
+                        </div>
 
-                            <div>
-                                <div class="flex justify-between items-center mb-1">
-                                    <label for="input-price" class="block text-[10px] uppercase tracking-wider text-graphite font-medium">Price <span class="text-champagne">*</span></label>
-                                    <span id="live-price-ml" class="text-[9px] font-semibold text-champagne">$0.00/mL</span>
-                                </div>
-                                <div class="relative">
-                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-graphite">$</span>
-                                    <input type="number" id="input-price" required="" min="0" step="0.01" inputmode="decimal" placeholder="220" oninput="updateLivePricePerMl()" class="w-full h-10 pl-6 pr-3 rounded-xl bg-alabaster border border-hairline text-charcoal focus:outline-none focus:border-champagne focus:bg-white transition">
-                                </div>
+                        <!-- Price Row -->
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label for="input-price" class="block text-[10px] uppercase tracking-wider text-graphite font-medium">Price <span class="text-champagne">*</span></label>
+                                <span id="live-price-ml" class="text-[10px] font-semibold text-champagne">$0.00/mL</span>
+                            </div>
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-graphite">$</span>
+                                <input type="number" id="input-price" required="" min="0" step="0.01" inputmode="decimal" placeholder="220" oninput="updateLivePricePerMl()" class="w-full h-10 pl-6 pr-3 rounded-xl bg-alabaster border border-hairline text-charcoal focus:outline-none focus:border-champagne focus:bg-white transition">
                             </div>
                         </div>
 
@@ -384,39 +379,40 @@
                             <input type="text" id="input-merchant" required="" placeholder="e.g., Selfridges, Nose Paris" class="w-full h-10 px-3 rounded-xl bg-alabaster border border-hairline text-charcoal focus:outline-none focus:border-champagne focus:bg-white transition">
                         </div>
 
-                        <!-- Purchase Date -->
+                        <!-- Purchase Date (English Month & Year Calendar) -->
                         <div>
-                            <label class="block text-[10px] uppercase tracking-wider text-graphite font-medium mb-1">Purchase Date <span class="text-champagne">*</span></label>
+                            <div class="flex items-center justify-between mb-1">
+                                <label for="input-month" class="block text-[10px] uppercase tracking-wider text-graphite font-medium">Purchase Date <span class="text-champagne">*</span></label>
+                                <span id="purchase-date-en-preview" class="text-[10px] font-medium text-champagne">November 2026</span>
+                            </div>
                             <div class="grid grid-cols-2 gap-2.5">
                                 <div class="relative">
-                                    <select id="input-purchase-month" aria-label="Purchase Month" required="" onchange="syncPurchaseDateFromSelects()" class="w-full h-10 px-3 rounded-xl bg-alabaster border border-hairline text-charcoal focus:outline-none focus:border-champagne focus:bg-white transition appearance-none cursor-pointer">
-                                        <option value="01">January</option>
-                                        <option value="02">February</option>
-                                        <option value="03">March</option>
-                                        <option value="04">April</option>
-                                        <option value="05">May</option>
-                                        <option value="06">June</option>
-                                        <option value="07">July</option>
-                                        <option value="08">August</option>
-                                        <option value="09">September</option>
+                                    <select id="input-month" required="" onchange="updatePurchaseDatePreview()" class="w-full h-10 px-3 pr-8 rounded-xl bg-alabaster border border-hairline text-charcoal focus:outline-none focus:border-champagne focus:bg-white transition appearance-none cursor-pointer">
+                                        <option value="1">January</option>
+                                        <option value="2">February</option>
+                                        <option value="3">March</option>
+                                        <option value="4">April</option>
+                                        <option value="5">May</option>
+                                        <option value="6">June</option>
+                                        <option value="7">July</option>
+                                        <option value="8">August</option>
+                                        <option value="9">September</option>
                                         <option value="10">October</option>
                                         <option value="11">November</option>
                                         <option value="12">December</option>
                                     </select>
-                                    <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-graphite/60 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                                    <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-graphite/60 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
                                 </div>
                                 <div class="relative">
-                                    <select id="input-purchase-year" aria-label="Purchase Year" required="" onchange="syncPurchaseDateFromSelects()" class="w-full h-10 px-3 rounded-xl bg-alabaster border border-hairline text-charcoal focus:outline-none focus:border-champagne focus:bg-white transition appearance-none cursor-pointer">
-                                    </select>
-                                    <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-graphite/60 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                                    <select id="input-year" required="" onchange="updatePurchaseDatePreview()" class="w-full h-10 px-3 pr-8 rounded-xl bg-alabaster border border-hairline text-charcoal focus:outline-none focus:border-champagne focus:bg-white transition appearance-none cursor-pointer"></select>
+                                    <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-graphite/60 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
                                 </div>
                             </div>
-                            <input type="hidden" id="input-purchase-date" value="">
                         </div>
                     </div>
 
                     <!-- SECTION 2: PERFUME PHOTO -->
-                    <div class="bg-white rounded-2xl border border-hairline p-3.5 space-y-3.5 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+                    <div class="bg-white rounded-2xl border border-hairline p-3.5 space-y-3 shadow-[0_2px_10px_rgba(26,43,60,0.03)]">
                         <div class="flex items-center gap-2 pb-2.5 border-b border-hairline">
                             <span class="w-5 h-5 rounded-full bg-champagneLight text-champagne text-[10px] font-semibold flex items-center justify-center shrink-0">02</span>
                             <h2 class="editorial-title text-lg text-charcoal leading-none">Perfume Photo</h2>
@@ -433,7 +429,20 @@
                                     </svg>
                                     <span class="text-[10px] tracking-wide">Centered on White Background</span>
                                 </div>
+                                <div id="photo-search-loading" class="hidden absolute inset-0 bg-white/90 backdrop-blur-xs flex flex-col items-center justify-center gap-2 text-charcoal">
+                                    <div class="w-6 h-6 border-2 border-champagne border-t-transparent rounded-full animate-spin"></div>
+                                    <span class="text-[11px] font-medium tracking-wide">Searching Google (White Background)...</span>
+                                </div>
                             </div>
+                        </div>
+
+                        <!-- Google Search Photo Fallback Link Bar -->
+                        <div id="google-images-fallback-bar" class="hidden flex items-center justify-between gap-2 bg-alabaster border border-hairline rounded-xl px-3 py-2">
+                            <span id="photo-search-status-text" class="text-[10px] text-graphite truncate">Pick a white-background photo on Google:</span>
+                            <a id="google-images-external-link" href="#" target="_blank" rel="noopener noreferrer" class="shrink-0 px-2.5 py-1 rounded-full bg-white border border-hairline text-[10px] font-semibold text-charcoal hover:border-champagne flex items-center gap-1 transition">
+                                <span>Google Images</span>
+                                <i data-lucide="external-link" class="w-3 h-3 text-champagne"></i>
+                            </a>
                         </div>
 
                         <div>
@@ -445,19 +454,18 @@
                         </div>
 
                         <div class="flex items-center gap-2">
-                            <label for="input-photo-file" class="flex-1 min-h-[40px] px-3.5 rounded-xl border border-dashed border-champagne/70 bg-alabaster/80 active:bg-champagneLight/30 cursor-pointer flex items-center justify-center gap-1.5 transition">
-                                <i data-lucide="image-plus" class="w-3.5 h-3.5 text-champagne"></i>
-                                <span class="text-[11px] font-medium text-charcoal">Upload from Gallery</span>
-                                <input id="input-photo-file" type="file" accept="image/*" class="hidden" onchange="handlePhotoFileUpload(event)">
-                            </label>
-                            <button type="button" onclick="clearPhotoSelection()" aria-label="Clear photo" class="min-h-[40px] px-3 rounded-xl border border-hairline bg-white text-[11px] text-graphite active:text-charcoal">
+                            <button type="button" id="auto-search-photo-btn" onclick="autoSearchPerfumePhoto()" class="flex-1 min-h-[38px] px-3 rounded-xl border border-dashed border-champagne/70 bg-alabaster/80 active:bg-champagneLight/40 cursor-pointer flex items-center justify-center gap-1.5 transition">
+                                <i data-lucide="search" class="w-3.5 h-3.5 text-champagne"></i>
+                                <span id="auto-search-photo-label" class="text-[11px] font-medium text-charcoal">Auto-Find Photo</span>
+                            </button>
+                            <button type="button" onclick="clearPhotoSelection()" aria-label="Clear photo" class="min-h-[38px] px-3 rounded-xl border border-hairline bg-white text-[11px] text-graphite active:text-charcoal">
                                 Clear
                             </button>
                         </div>
                     </div>
 
                     <!-- SECTION 3: OLFACTORY NOTES -->
-                    <div class="bg-white rounded-2xl border border-hairline p-3.5 space-y-3.5 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+                    <div class="bg-white rounded-2xl border border-hairline p-3.5 space-y-3.5 shadow-[0_2px_10px_rgba(26,43,60,0.03)]">
                         <div class="flex items-center gap-2 pb-2.5 border-b border-hairline">
                             <span class="w-5 h-5 rounded-full bg-champagneLight text-champagne text-[10px] font-semibold flex items-center justify-center shrink-0">03</span>
                             <h2 class="editorial-title text-lg text-charcoal leading-none">Olfactory Notes</h2>
@@ -479,67 +487,70 @@
                             </div>
                         </div>
 
-                        <div class="bg-alabaster/90 rounded-xl border border-dashed border-champagne/60 p-2.5 space-y-1.5">
+                        <div class="bg-alabaster/90 rounded-xl border border-dashed border-champagne/60 p-2.5 space-y-2">
                             <div class="flex items-center justify-between gap-2">
-                                <label for="input-notes-paragraph" class="text-[10px] uppercase tracking-wider text-charcoal font-medium flex items-center gap-1.5">
+                                <label for="input-notes-paragraph" class="text-[10px] uppercase tracking-wider text-charcoal font-medium flex items-center gap-1">
                                     <i data-lucide="sparkles" class="w-3 h-3 text-champagne"></i>
                                     <span>Smart Notes Auto-Fill</span>
                                 </label>
-                                <button type="button" onclick="parseNotesParagraph(true)" class="min-h-[28px] px-2.5 rounded-full bg-charcoal text-white text-[9px] uppercase tracking-wider font-medium active:bg-champagne transition cursor-pointer">
+                                <button type="button" onclick="parseNotesParagraph()" class="min-h-[28px] px-2.5 rounded-full bg-charcoal text-white text-[9px] uppercase tracking-wider font-medium active:bg-champagne transition cursor-pointer">
                                     Auto-Fill
                                 </button>
                             </div>
-                            <textarea id="input-notes-paragraph" rows="3" placeholder="Paste description (e.g., 前調: 佛手柑、粉紅胡椒&#10;中調: 玫瑰&#10;後調: 檀香木)" class="w-full p-2.5 rounded-lg bg-white border border-hairline text-charcoal placeholder:text-graphite/45 focus:outline-none focus:border-champagne transition"></textarea>
+                            <textarea id="input-notes-paragraph" rows="3" placeholder="Paste description (e.g., 前調: 佛手柑 / 中調: 玫瑰 / 後調: 檀香木), then press Auto-Fill" class="w-full p-2.5 rounded-lg bg-white border border-hairline text-charcoal placeholder:text-graphite/45 focus:outline-none focus:border-champagne transition"></textarea>
                             <p id="smart-parse-status" class="text-[9px] text-graphite/75">
-                                Paste text and press <strong>Auto-Fill</strong> to extract 前調 / 中調 / 後調 and Top / Heart / Base notes.
+                                Press Auto-Fill to copy notes after 前調:, 中調:, 後調: (stops at each new line).
                             </p>
                         </div>
 
-                        <div class="space-y-3 pt-0.5">
+                        <div class="space-y-3 pt-1">
+                            <!-- Top Notes -->
                             <div class="space-y-1.5">
                                 <div class="flex items-center justify-between text-[10px] uppercase tracking-wider text-graphite font-medium">
                                     <span>Top Notes <span class="text-champagne font-normal ml-1">前調</span></span>
                                 </div>
                                 <div class="space-y-1.5">
                                     <div class="relative flex items-center">
-                                        <span class="absolute left-2 px-2 py-0.5 rounded bg-champagneLight/85 border border-champagne/30 text-[9px] font-semibold text-charcoal pointer-events-none">中</span>
+                                        <span class="absolute left-2.5 px-2 py-0.5 rounded-md bg-champagneLight/85 border border-champagne/30 text-[9px] font-semibold text-charcoal pointer-events-none">中</span>
                                         <input type="text" id="input-top-notes-zh" placeholder="例如：佛手柑、粉紅胡椒" class="w-full h-10 pl-11 pr-3 rounded-xl bg-alabaster border border-hairline text-charcoal focus:outline-none focus:border-champagne focus:bg-white transition">
                                     </div>
                                     <div class="relative flex items-center">
-                                        <span class="absolute left-2 px-2 py-0.5 rounded bg-ivory border border-hairline text-[9px] font-semibold text-graphite pointer-events-none">EN</span>
-                                        <input type="text" id="input-top-notes-en" placeholder="e.g., Bergamot, Pink Pepper" class="w-full h-10 pl-11 pr-3 rounded-xl bg-alabaster border border-hairline text-charcoal focus:outline-none focus:border-champagne focus:bg-white transition">
+                                        <span class="absolute left-2.5 px-2 py-0.5 rounded-md bg-ivory border border-hairline text-[9px] font-semibold text-graphite pointer-events-none">EN</span>
+                                        <input type="text" id="input-top-notes-en" placeholder="e.g., Bergamot, Pink Pepper" class="w-full h-10 pl-12 pr-3 rounded-xl bg-alabaster border border-hairline text-charcoal focus:outline-none focus:border-champagne focus:bg-white transition">
                                     </div>
                                 </div>
                             </div>
 
+                            <!-- Heart Notes -->
                             <div class="space-y-1.5 pt-2 border-t border-hairline/60">
                                 <div class="flex items-center justify-between text-[10px] uppercase tracking-wider text-graphite font-medium">
                                     <span>Heart Notes <span class="text-champagne font-normal ml-1">中調</span></span>
                                 </div>
                                 <div class="space-y-1.5">
                                     <div class="relative flex items-center">
-                                        <span class="absolute left-2 px-2 py-0.5 rounded bg-champagneLight/85 border border-champagne/30 text-[9px] font-semibold text-charcoal pointer-events-none">中</span>
+                                        <span class="absolute left-2.5 px-2 py-0.5 rounded-md bg-champagneLight/85 border border-champagne/30 text-[9px] font-semibold text-charcoal pointer-events-none">中</span>
                                         <input type="text" id="input-heart-notes-zh" placeholder="例如：鳶尾花、大馬士革玫瑰" class="w-full h-10 pl-11 pr-3 rounded-xl bg-alabaster border border-hairline text-charcoal focus:outline-none focus:border-champagne focus:bg-white transition">
                                     </div>
                                     <div class="relative flex items-center">
-                                        <span class="absolute left-2 px-2 py-0.5 rounded bg-ivory border border-hairline text-[9px] font-semibold text-graphite pointer-events-none">EN</span>
-                                        <input type="text" id="input-heart-notes-en" placeholder="e.g., Iris, Damask Rose" class="w-full h-10 pl-11 pr-3 rounded-xl bg-alabaster border border-hairline text-charcoal focus:outline-none focus:border-champagne focus:bg-white transition">
+                                        <span class="absolute left-2.5 px-2 py-0.5 rounded-md bg-ivory border border-hairline text-[9px] font-semibold text-graphite pointer-events-none">EN</span>
+                                        <input type="text" id="input-heart-notes-en" placeholder="e.g., Iris, Damask Rose" class="w-full h-10 pl-12 pr-3 rounded-xl bg-alabaster border border-hairline text-charcoal focus:outline-none focus:border-champagne focus:bg-white transition">
                                     </div>
                                 </div>
                             </div>
 
+                            <!-- Base Notes -->
                             <div class="space-y-1.5 pt-2 border-t border-hairline/60">
                                 <div class="flex items-center justify-between text-[10px] uppercase tracking-wider text-graphite font-medium">
                                     <span>Base Notes <span class="text-champagne font-normal ml-1">後調</span></span>
                                 </div>
                                 <div class="space-y-1.5">
                                     <div class="relative flex items-center">
-                                        <span class="absolute left-2 px-2 py-0.5 rounded bg-champagneLight/85 border border-champagne/30 text-[9px] font-semibold text-charcoal pointer-events-none">中</span>
+                                        <span class="absolute left-2.5 px-2 py-0.5 rounded-md bg-champagneLight/85 border border-champagne/30 text-[9px] font-semibold text-charcoal pointer-events-none">中</span>
                                         <input type="text" id="input-base-notes-zh" placeholder="例如：檀香木、白麝香" class="w-full h-10 pl-11 pr-3 rounded-xl bg-alabaster border border-hairline text-charcoal focus:outline-none focus:border-champagne focus:bg-white transition">
                                     </div>
                                     <div class="relative flex items-center">
-                                        <span class="absolute left-2 px-2 py-0.5 rounded bg-ivory border border-hairline text-[9px] font-semibold text-graphite pointer-events-none">EN</span>
-                                        <input type="text" id="input-base-notes-en" placeholder="e.g., Sandalwood, White Musk" class="w-full h-10 pl-11 pr-3 rounded-xl bg-alabaster border border-hairline text-charcoal focus:outline-none focus:border-champagne focus:bg-white transition">
+                                        <span class="absolute left-2.5 px-2 py-0.5 rounded-md bg-ivory border border-hairline text-[9px] font-semibold text-graphite pointer-events-none">EN</span>
+                                        <input type="text" id="input-base-notes-en" placeholder="e.g., Sandalwood, White Musk" class="w-full h-10 pl-12 pr-3 rounded-xl bg-alabaster border border-hairline text-charcoal focus:outline-none focus:border-champagne focus:bg-white transition">
                                     </div>
                                 </div>
                             </div>
@@ -547,22 +558,19 @@
                     </div>
 
                     <!-- SECTION 4: REMARKS (OPTIONAL) -->
-                    <div class="bg-white rounded-2xl border border-hairline p-3.5 space-y-3 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
-                        <div class="flex items-center justify-between pb-2.5 border-b border-hairline">
+                    <div class="bg-white rounded-2xl border border-hairline p-3.5 space-y-2.5 shadow-[0_2px_10px_rgba(26,43,60,0.03)]">
+                        <div class="flex items-center justify-between pb-2 border-b border-hairline">
                             <div class="flex items-center gap-2">
                                 <span class="w-5 h-5 rounded-full bg-champagneLight text-champagne text-[10px] font-semibold flex items-center justify-center shrink-0">04</span>
                                 <h2 class="editorial-title text-lg text-charcoal leading-none">Remarks</h2>
                             </div>
-                            <span class="text-[9px] uppercase tracking-wider text-graphite/65 font-medium">Optional</span>
+                            <span class="text-[9px] uppercase tracking-wider text-graphite/60 font-medium">Optional</span>
                         </div>
-
-                        <div>
-                            <textarea id="input-remarks" rows="3" placeholder="Add personal impressions, longevity, sillage, occasions, or batch notes..." class="w-full p-3 rounded-xl bg-alabaster border border-hairline text-charcoal placeholder:text-graphite/45 focus:outline-none focus:border-champagne focus:bg-white transition"></textarea>
-                        </div>
+                        <textarea id="input-remarks" rows="3" placeholder="Add any extra notes, batch code, longevity, sillage, or personal impressions..." class="w-full p-2.5 rounded-xl bg-alabaster border border-hairline text-charcoal placeholder:text-graphite/45 focus:outline-none focus:border-champagne focus:bg-white transition"></textarea>
                     </div>
 
-                    <!-- Submit Buttons: Smaller Clear Entry + Save Entry -->
-                    <div class="flex items-center gap-2.5 pt-0.5">
+                    <!-- Submit Buttons -->
+                    <div class="flex items-center gap-2 pt-1">
                         <button type="button" onclick="clearFormEntries()" class="min-h-[40px] px-3.5 rounded-full border border-hairline bg-white text-[10px] uppercase tracking-[0.12em] font-medium text-graphite active:text-charcoal transition shrink-0">
                             Clear Entry
                         </button>
@@ -616,7 +624,7 @@
                 <div>
                     <div class="flex items-center justify-between gap-2">
                         <p id="modal-brand" class="text-[11px] uppercase tracking-[0.22em] font-semibold text-champagne mb-1">BRAND</p>
-                        <span id="modal-color-badge" class="hidden items-center justify-center"></span>
+                        <div id="modal-color-dot-container" class="hidden items-center"></div>
                     </div>
                     <h2 id="modal-name" class="editorial-title text-2xl text-charcoal font-medium leading-tight">Perfume Name</h2>
                 </div>
@@ -636,7 +644,7 @@
                     </div>
                     <div>
                         <span class="block text-[9px] uppercase tracking-wider text-graphite/60">Purchased</span>
-                        <span id="modal-date" class="text-xs font-semibold text-charcoal mt-0.5 block">October 2025</span>
+                        <span id="modal-date" class="text-xs font-semibold text-charcoal mt-0.5 block">November 2026</span>
                     </div>
                     <div id="modal-gifted-container" class="hidden col-span-2 pt-2 border-t border-hairline/70">
                         <span class="block text-[9px] uppercase tracking-wider text-graphite/60">Gifted by</span>
@@ -650,8 +658,8 @@
 
                 <div>
                     <div class="flex items-center justify-between mb-2">
-                        <span class="block text-[10px] uppercase tracking-wider text-graphite/80 font-semibold">香水概況 / Fragrance Profile</span>
-                        <span class="text-[9px] text-champagne font-medium">Tap an ingredient to find matches</span>
+                        <span class="text-[10px] uppercase tracking-wider text-graphite/70 font-semibold">香水概況 / Fragrance Profile</span>
+                        <span class="text-[9px] text-champagne">Tap ingredient to filter</span>
                     </div>
                     <div id="modal-notes-container" class="flex flex-wrap gap-1.5"></div>
                 </div>
@@ -679,178 +687,27 @@
     <div id="toast" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none w-max max-w-[90vw]">
         <div class="bg-charcoal text-white px-4 py-2.5 rounded-full shadow-lg flex items-center gap-2 text-xs tracking-wide">
             <i data-lucide="check-circle-2" class="w-4 h-4 text-champagne shrink-0"></i>
-            <span id="toast-message" class="truncate">Saved to cloud</span>
+            <span id="toast-message" class="truncate">Saved to collection</span>
         </div>
     </div>
 
-    <!-- CLOUD STORAGE & SYNC MODULE -->
+    <!-- CLOUD STORAGE & APP SCRIPT -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, deleteDoc, getDocs, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'yuenying-scented-world';
-        let db = null;
-        let auth = null;
-        let currentUser = null;
-        let unsubscribeSnapshot = null;
-
-        function setCloudIndicator(state, label) {
-            const dot = document.getElementById('cloud-status-dot');
-            const text = document.getElementById('cloud-status-text');
-            if (!dot || !text) return;
-
-            text.textContent = label;
-            if (state === 'connected') {
-                dot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-500';
-            } else if (state === 'syncing') {
-                dot.className = 'w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse';
-            } else {
-                dot.className = 'w-1.5 h-1.5 rounded-full bg-rose-400';
-            }
-        }
-
-        function getUserCollectionRef() {
-            if (!db || !currentUser) return null;
-            return collection(db, 'artifacts', appId, 'users', currentUser.uid, 'perfumes');
-        }
-
-        function getUserDocRef(perfumeId) {
-            if (!db || !currentUser) return null;
-            return doc(db, 'artifacts', appId, 'users', currentUser.uid, 'perfumes', perfumeId);
-        }
-
-        window.cloudSyncEntry = async function(entryData) {
-            if (!currentUser) return;
-            const docRef = getUserDocRef(entryData.id);
-            if (!docRef) return;
-            try {
-                setCloudIndicator('syncing', 'Saving');
-                await setDoc(docRef, entryData);
-                setCloudIndicator('connected', 'Cloud');
-            } catch (err) {
-                console.error('Cloud save error:', err);
-                setCloudIndicator('error', 'Retry');
-                if (typeof window.showToast === 'function') {
-                    window.showToast('Cloud sync failed. Please try again.');
-                }
-            }
-        };
-
-        window.cloudDeleteEntry = async function(perfumeId) {
-            if (!currentUser) return;
-            const docRef = getUserDocRef(perfumeId);
-            if (!docRef) return;
-            try {
-                setCloudIndicator('syncing', 'Updating');
-                await deleteDoc(docRef);
-                setCloudIndicator('connected', 'Cloud');
-            } catch (err) {
-                console.error('Cloud delete error:', err);
-                setCloudIndicator('error', 'Retry');
-            }
-        };
-
-        window.cloudSyncAll = async function(items, notify = false) {
-            if (!currentUser || !Array.isArray(items)) return;
-            try {
-                setCloudIndicator('syncing', 'Syncing');
-                for (const item of items) {
-                    const docRef = getUserDocRef(item.id);
-                    if (docRef) {
-                        await setDoc(docRef, item);
-                    }
-                }
-                setCloudIndicator('connected', 'Cloud');
-                if (notify && typeof window.showToast === 'function') {
-                    window.showToast(`Saved ${items.length} items to cloud`);
-                }
-            } catch (err) {
-                console.error('Cloud batch sync error:', err);
-                setCloudIndicator('error', 'Retry');
-                if (notify && typeof window.showToast === 'function') {
-                    window.showToast('Unable to sync to cloud.');
-                }
-            }
-        };
-
-        async function initCloudStorage() {
-            if (typeof __firebase_config === 'undefined' || !__firebase_config) {
-                setCloudIndicator('error', 'Offline');
-                return;
-            }
-
-            try {
-                setCloudIndicator('syncing', 'Connecting');
-                const firebaseConfig = JSON.parse(__firebase_config);
-                const app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    const cred = await signInWithCustomToken(auth, __initial_auth_token);
-                    currentUser = cred.user;
-                } else {
-                    const cred = await signInAnonymously(auth);
-                    currentUser = cred.user;
-                }
-
-                if (!currentUser) {
-                    setCloudIndicator('error', 'Offline');
-                    return;
-                }
-
-                const colRef = getUserCollectionRef();
-                if (!colRef) return;
-
-                let isFirstSnapshot = true;
-                unsubscribeSnapshot = onSnapshot(
-                    colRef,
-                    async (snapshot) => {
-                        if (snapshot.empty && isFirstSnapshot) {
-                            isFirstSnapshot = false;
-                            const starterItems = window.getDefaultCollectionItems ? window.getDefaultCollectionItems() : [];
-                            if (starterItems.length > 0) {
-                                await window.cloudSyncAll(starterItems, false);
-                            } else {
-                                setCloudIndicator('connected', 'Cloud');
-                            }
-                            return;
-                        }
-
-                        isFirstSnapshot = false;
-                        const cloudItems = [];
-                        snapshot.forEach((docSnap) => {
-                            cloudItems.push(docSnap.data());
-                        });
-
-                        if (typeof window.applyCloudCollection === 'function') {
-                            window.applyCloudCollection(cloudItems);
-                        }
-                        setCloudIndicator('connected', 'Cloud');
-                    },
-                    (error) => {
-                        console.error('Cloud listener error:', error);
-                        setCloudIndicator('error', 'Offline');
-                    }
-                );
-            } catch (err) {
-                console.error('Cloud initialization failed:', err);
-                setCloudIndicator('error', 'Offline');
-            }
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            initCloudStorage();
-        });
-    </script>
-
-    <!-- SCRIPT -->
-    <script>
+        const LOCAL_CACHE_KEY = 'sillage_perfume_collection_v2';
         const MONTH_NAMES = [
             'January', 'February', 'March', 'April', 'May', 'June',
             'July', 'August', 'September', 'October', 'November', 'December'
         ];
+
+        const VOLUME_PRESETS = {
+            Bottle: [10, 15, 50, 60, 100],
+            Decant: [2, 5, 10],
+            Sample: [1.5, 2, 5]
+        };
 
         const DEFAULT_COLLECTION = [
             {
@@ -858,12 +715,11 @@
                 category: 'Bottle',
                 brand: 'BYREDO',
                 name: 'Blanche',
-                color: '#F4E8D1 / #FFFFFF',
+                color: '',
                 volume: 50,
                 price: 220,
                 giftedBy: '',
                 merchant: 'Selfridges',
-                purchaseDate: '2026-09-15',
                 month: 9,
                 year: 2026,
                 generalNotes: '花香調',
@@ -873,7 +729,7 @@
                 heartNotesEn: 'Violet, Neroli, Peony',
                 baseNotesZh: '金木、檀香木、麝香',
                 baseNotesEn: 'Blonde Woods, Sandalwood, Musk',
-                remarks: '',
+                remarks: 'Crisp clean white linen scent, great for daily wear.',
                 photo: ''
             },
             {
@@ -881,12 +737,11 @@
                 category: 'Bottle',
                 brand: 'LE LABO',
                 name: 'Santal 33',
-                color: '#8C6239',
+                color: '',
                 volume: 100,
                 price: 325,
                 giftedBy: '',
                 merchant: 'Le Labo Boutique',
-                purchaseDate: '2026-06-10',
                 month: 6,
                 year: 2026,
                 generalNotes: '木質調',
@@ -909,7 +764,6 @@
                 price: 36,
                 giftedBy: '',
                 merchant: 'Nose Paris',
-                purchaseDate: '2026-08-22',
                 month: 8,
                 year: 2026,
                 generalNotes: '清新調',
@@ -932,7 +786,6 @@
                 price: 0,
                 giftedBy: 'MFK Official PR',
                 merchant: 'MFK Official',
-                purchaseDate: '2026-10-05',
                 month: 10,
                 year: 2026,
                 generalNotes: '琥珀調',
@@ -947,7 +800,12 @@
             }
         ];
 
-        let collection = [];
+        let db = null;
+        let auth = null;
+        let currentUser = null;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'yuenying-scented-world';
+
+        let collectionItems = [];
         let activeFilter = 'All';
         let activeGeneralNotesFilter = 'All';
         let activeIngredientFilter = '';
@@ -959,12 +817,147 @@
         let pendingDeleteId = null;
         let color1Selected = false;
         let color2Selected = false;
+        let selectedVolumeOption = '50';
+        let hasUnsavedCloudChanges = false;
 
-        const VOLUME_PRESETS = {
-            Bottle: [10, 15, 50, 60, 100],
-            Decant: [2, 5, 10],
-            Sample: [1.5, 2, 5]
-        };
+        function updateCloudStatus(state, label) {
+            const dot = document.getElementById('cloud-status-dot');
+            const text = document.getElementById('cloud-status-text');
+            if (!dot || !text) return;
+            text.textContent = label;
+            if (state === 'synced') {
+                dot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-500';
+            } else if (state === 'syncing') {
+                dot.className = 'w-1.5 h-1.5 rounded-full bg-champagne animate-ping';
+            } else if (state === 'pending') {
+                dot.className = 'w-1.5 h-1.5 rounded-full bg-amber-400';
+            } else {
+                dot.className = 'w-1.5 h-1.5 rounded-full bg-slate-400';
+            }
+        }
+
+        function markPendingCloudUpload() {
+            hasUnsavedCloudChanges = true;
+            saveLocalCache();
+            updateCloudStatus('pending', 'Unsaved');
+        }
+
+        function getUserCollectionRef() {
+            if (!db || !currentUser) return null;
+            return collection(db, 'artifacts', appId, 'users', currentUser.uid, 'perfumes');
+        }
+
+        async function syncAllToCloud() {
+            const colRef = getUserCollectionRef();
+            const syncBtn = document.getElementById('cloud-sync-btn');
+            if (!colRef) {
+                showToast('Cloud connecting, please try again shortly');
+                return;
+            }
+            try {
+                if (syncBtn) syncBtn.disabled = true;
+                updateCloudStatus('syncing', 'Uploading');
+
+                // Fetch existing cloud docs so removed items are also cleaned up on upload
+                const existingSnap = await getDocs(colRef);
+                const currentIds = new Set(collectionItems.map(item => item.id));
+                const deletePromises = [];
+                existingSnap.forEach(docSnap => {
+                    if (!currentIds.has(docSnap.id)) {
+                        deletePromises.push(deleteDoc(doc(colRef, docSnap.id)));
+                    }
+                });
+
+                await Promise.all([
+                    ...deletePromises,
+                    ...collectionItems.map(item => setDoc(doc(colRef, item.id), item))
+                ]);
+
+                hasUnsavedCloudChanges = false;
+                saveLocalCache();
+                updateCloudStatus('synced', 'Uploaded');
+                showToast(`Uploaded ${collectionItems.length} fragrances to Cloud`);
+            } catch (err) {
+                console.error('Manual cloud upload error:', err);
+                updateCloudStatus('pending', 'Retry');
+                showToast('Unable to upload to cloud right now');
+            } finally {
+                if (syncBtn) syncBtn.disabled = false;
+            }
+        }
+
+        function saveLocalCache() {
+            try {
+                localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(collectionItems));
+            } catch (e) {
+                console.warn('Local cache write skipped:', e);
+            }
+        }
+
+        function loadLocalCache() {
+            try {
+                const raw = localStorage.getItem(LOCAL_CACHE_KEY);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        return parsed.map((item, idx) => normalizeEntry(item, idx));
+                    }
+                }
+            } catch (e) {
+                console.warn('Local cache read skipped:', e);
+            }
+            return DEFAULT_COLLECTION.map((item, idx) => normalizeEntry(item, idx));
+        }
+
+        async function initCloudAndData() {
+            const hasLocalData = Boolean(localStorage.getItem(LOCAL_CACHE_KEY));
+            collectionItems = loadLocalCache();
+            renderCollection();
+
+            try {
+                if (typeof __firebase_config === 'undefined') {
+                    updateCloudStatus('offline', 'Local');
+                    return;
+                }
+                const firebaseConfig = JSON.parse(__firebase_config);
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                currentUser = auth.currentUser;
+                if (!currentUser) {
+                    updateCloudStatus('offline', 'Offline');
+                    return;
+                }
+
+                // Load initial cloud snapshot only if local cache isn't already populated
+                const colRef = getUserCollectionRef();
+                const snapshot = await getDocs(colRef);
+                if (!snapshot.empty && !hasLocalData) {
+                    const cloudList = [];
+                    snapshot.forEach(docSnap => {
+                        cloudList.push(normalizeEntry(docSnap.data()));
+                    });
+                    if (cloudList.length > 0) {
+                        collectionItems = cloudList;
+                        saveLocalCache();
+                        renderCollection();
+                    }
+                    updateCloudStatus('synced', 'Synced');
+                } else {
+                    updateCloudStatus('ready', 'Ready');
+                }
+            } catch (err) {
+                console.error('Cloud initialization error:', err);
+                updateCloudStatus('offline', 'Offline');
+            }
+        }
 
         function splitBilingualString(str) {
             if (!str) return { zh: '', en: '' };
@@ -983,6 +976,27 @@
             });
 
             return { zh: zhParts.join('、'), en: enParts.join(', ') };
+        }
+
+        function splitNoteIngredients(str) {
+            if (!str) return [];
+            return String(str)
+                .split(/[,，、;；/|｜]+/)
+                .map(t => t.trim())
+                .filter(Boolean);
+        }
+
+        function formatPurchaseDateDisplay(item, shortFormat = false) {
+            const monthIdx = Math.max(1, Math.min(12, Number(item.month) || 1)) - 1;
+            const yearNum = Number(item.year) || 2026;
+            if (shortFormat) {
+                return `${MONTH_NAMES[monthIdx].slice(0, 3)} '${String(yearNum).slice(-2)}`;
+            }
+            return `${MONTH_NAMES[monthIdx]} ${yearNum}`;
+        }
+
+        function getSortableDateValue(item) {
+            return (Number(item.year || 2026) * 100) + Number(item.month || 1);
         }
 
         function normalizeEntry(item, idx = 0) {
@@ -1012,15 +1026,10 @@
 
             let month = Number(item.month) >= 1 && Number(item.month) <= 12 ? Number(item.month) : 11;
             let year = Number(item.year) >= 1990 ? Number(item.year) : 2026;
-            let purchaseDate = item.purchaseDate ? String(item.purchaseDate).trim() : '';
-
-            if (purchaseDate && /^\d{4}-\d{2}(-\d{2})?$/.test(purchaseDate)) {
-                const [yPart, mPart] = purchaseDate.split('-');
-                year = Number(yPart);
-                month = Number(mPart);
-                purchaseDate = `${yPart}-${mPart}`;
-            } else {
-                purchaseDate = `${year}-${String(month).padStart(2, '0')}`;
+            if (item.purchaseDate && typeof item.purchaseDate === 'string' && /^\d{4}-\d{2}/.test(item.purchaseDate)) {
+                const parts = item.purchaseDate.split('-');
+                year = parseInt(parts[0], 10);
+                month = parseInt(parts[1], 10);
             }
 
             return {
@@ -1033,7 +1042,6 @@
                 price,
                 giftedBy: item.giftedBy ? String(item.giftedBy).trim() : '',
                 merchant: item.merchant ? String(item.merchant).trim() : 'Unknown',
-                purchaseDate,
                 month,
                 year,
                 generalNotes: item.generalNotes ? String(item.generalNotes).trim() : '',
@@ -1045,114 +1053,109 @@
             };
         }
 
-        function formatPurchaseDateDisplay(item, shortFormat = false) {
-            if (item.purchaseDate && /^\d{4}-\d{2}(-\d{2})?$/.test(item.purchaseDate)) {
-                const [y, m] = item.purchaseDate.split('-').map(Number);
-                const monthName = MONTH_NAMES[(m || 1) - 1] || 'January';
-                if (shortFormat) {
-                    return `${monthName.slice(0, 3)} '${String(y).slice(-2)}`;
-                }
-                return `${monthName} ${y}`;
-            }
-            const monthName = MONTH_NAMES[(item.month || 1) - 1] || 'January';
-            return shortFormat ? `${monthName.slice(0, 3)} '${String(item.year).slice(-2)}` : `${monthName} ${item.year}`;
-        }
-
-        function loadCollection() {
-            collection = DEFAULT_COLLECTION.map((item, idx) => normalizeEntry(item, idx));
-        }
-
-        window.getDefaultCollectionItems = function() {
-            return DEFAULT_COLLECTION.map((item, idx) => normalizeEntry(item, idx));
-        };
-
-        window.applyCloudCollection = function(cloudItems) {
-            if (!Array.isArray(cloudItems)) return;
-            collection = cloudItems.map((item, idx) => normalizeEntry(item, idx));
-            renderCollection();
-        };
-
-        function saveCollection() {
-            if (typeof window.cloudSyncAll === 'function') {
-                window.cloudSyncAll(collection, false);
-            }
-        }
-
-        function syncToCloudNow() {
-            if (typeof window.cloudSyncAll === 'function') {
-                window.cloudSyncAll(collection, true);
-            } else {
-                showToast('Cloud storage is initializing...');
-            }
-        }
-
         document.addEventListener('DOMContentLoaded', () => {
-            loadCollection();
-            populatePurchaseYearOptions();
+            populateYearDropdown();
             setDefaultDateSelectors();
             renderVolumeOptions('Bottle', 50);
             setupEventListeners();
-            renderCollection();
+            initCloudAndData();
             if (window.lucide) lucide.createIcons();
         });
 
-        function populatePurchaseYearOptions() {
-            const yearSelect = document.getElementById('input-purchase-year');
-            if (!yearSelect || yearSelect.options.length > 0) return;
-            const currentYear = new Date().getFullYear();
-            for (let y = currentYear + 1; y >= 2005; y--) {
-                const opt = document.createElement('option');
-                opt.value = String(y);
-                opt.textContent = String(y);
-                yearSelect.appendChild(opt);
-            }
-        }
-
-        function setPurchaseDateSelectors(ymString) {
-            populatePurchaseYearOptions();
-            const monthSelect = document.getElementById('input-purchase-month');
-            const yearSelect = document.getElementById('input-purchase-year');
-            const hiddenInput = document.getElementById('input-purchase-date');
-            if (!monthSelect || !yearSelect || !hiddenInput) return;
-
-            const [y, m] = ymString.split('-');
-            if (!Array.from(yearSelect.options).some(o => o.value === y)) {
+        function populateYearDropdown() {
+            const yearSelect = document.getElementById('input-year');
+            if (!yearSelect) return;
+            yearSelect.innerHTML = '';
+            for (let y = 2026; y >= 2005; y--) {
                 const opt = document.createElement('option');
                 opt.value = y;
                 opt.textContent = y;
                 yearSelect.appendChild(opt);
             }
-            yearSelect.value = y;
-            monthSelect.value = m.padStart(2, '0');
-            hiddenInput.value = `${y}-${m.padStart(2, '0')}`;
-        }
-
-        function syncPurchaseDateFromSelects() {
-            const monthSelect = document.getElementById('input-purchase-month');
-            const yearSelect = document.getElementById('input-purchase-year');
-            const hiddenInput = document.getElementById('input-purchase-date');
-            if (!monthSelect || !yearSelect || !hiddenInput) return;
-            hiddenInput.value = `${yearSelect.value}-${monthSelect.value}`;
         }
 
         function setDefaultDateSelectors() {
-            const now = new Date();
-            const yyyy = now.getFullYear();
-            const mm = String(now.getMonth() + 1).padStart(2, '0');
-            setPurchaseDateSelectors(`${yyyy}-${mm}`);
+            const monthSelect = document.getElementById('input-month');
+            const yearSelect = document.getElementById('input-year');
+            if (monthSelect) monthSelect.value = '11';
+            if (yearSelect) yearSelect.value = '2026';
+            updatePurchaseDatePreview();
         }
 
-        function updatePurchaseDateEnglishLabel() {
-            const dateInput = document.getElementById('input-purchase-date');
-            const badge = document.getElementById('purchase-date-en-badge');
-            if (!dateInput || !badge) return;
-            if (dateInput.value && /^\d{4}-\d{2}$/.test(dateInput.value)) {
-                const [y, m] = dateInput.value.split('-').map(Number);
-                const monthName = MONTH_NAMES[(m || 1) - 1] || 'January';
-                badge.textContent = `${monthName} ${y}`;
-            } else {
-                badge.textContent = '';
+        function updatePurchaseDatePreview() {
+            const monthVal = parseInt(document.getElementById('input-month')?.value || '11', 10);
+            const yearVal = parseInt(document.getElementById('input-year')?.value || '2026', 10);
+            const previewEl = document.getElementById('purchase-date-en-preview');
+            if (previewEl) {
+                const monthName = MONTH_NAMES[Math.max(1, Math.min(12, monthVal)) - 1];
+                previewEl.textContent = `${monthName} ${yearVal}`;
             }
+        }
+
+        function renderVolumeOptions(category, targetVolume = null) {
+            const container = document.getElementById('volume-options-container');
+            const customWrapper = document.getElementById('custom-volume-wrapper');
+            const volumeInput = document.getElementById('input-volume');
+            const presets = VOLUME_PRESETS[category] || VOLUME_PRESETS.Bottle;
+
+            let isCustom = false;
+            if (targetVolume !== null && targetVolume !== '') {
+                const numVol = Number(targetVolume);
+                if (presets.includes(numVol)) {
+                    selectedVolumeOption = String(numVol);
+                    volumeInput.value = numVol;
+                } else {
+                    selectedVolumeOption = 'Others';
+                    isCustom = true;
+                    volumeInput.value = numVol;
+                }
+            } else {
+                selectedVolumeOption = String(presets[0]);
+                volumeInput.value = presets[0];
+            }
+
+            const optionsList = [...presets.map(String), 'Others'];
+            container.innerHTML = optionsList.map(opt => {
+                const isSelected = selectedVolumeOption === opt;
+                const displayLabel = opt === 'Others' ? 'Others' : `${opt}mL`;
+                return `
+                    <button type="button" onclick="selectVolumeOption('${opt}')" class="min-h-[34px] px-3 rounded-xl border text-[11px] font-medium transition cursor-pointer ${
+                        isSelected
+                            ? 'bg-charcoal text-white border-charcoal'
+                            : 'bg-alabaster text-graphite border-hairline active:border-champagne'
+                    }">
+                        ${displayLabel}
+                    </button>
+                `;
+            }).join('');
+
+            if (isCustom) {
+                customWrapper.classList.remove('hidden');
+            } else {
+                customWrapper.classList.add('hidden');
+            }
+            updateLivePricePerMl();
+        }
+
+        function selectVolumeOption(opt) {
+            const category = document.querySelector('input[name="category"]:checked').value;
+            const customWrapper = document.getElementById('custom-volume-wrapper');
+            const volumeInput = document.getElementById('input-volume');
+
+            selectedVolumeOption = opt;
+
+            if (opt === 'Others') {
+                renderVolumeOptions(category, 'custom');
+                selectedVolumeOption = 'Others';
+                customWrapper.classList.remove('hidden');
+                volumeInput.value = '';
+                volumeInput.focus();
+            } else {
+                renderVolumeOptions(category, Number(opt));
+                customWrapper.classList.add('hidden');
+                volumeInput.value = Number(opt);
+            }
+            updateLivePricePerMl();
         }
 
         function setupEventListeners() {
@@ -1181,32 +1184,16 @@
 
         function resetFilters() {
             clearSearch();
+            activeIngredientFilter = '';
             setFilter('All');
             setGeneralNotesFilter('All');
-            clearIngredientFilter();
-        }
-
-        function tokenizeIngredientList(str) {
-            if (!str) return [];
-            return String(str)
-                .split(/[,，、;；/|｜]+/)
-                .map(s => s.trim())
-                .filter(Boolean);
         }
 
         function filterByIngredient(ingredient) {
             if (!ingredient) return;
             activeIngredientFilter = ingredient.trim();
             closeDetailModal();
-
-            const collectionView = document.getElementById('view-collection');
-            if (collectionView.classList.contains('hidden')) {
-                switchView('collection');
-            } else {
-                renderCollection();
-            }
-
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            switchView('collection');
             showToast(`Showing perfumes with "${activeIngredientFilter}"`);
         }
 
@@ -1250,28 +1237,38 @@
             renderCollection();
         }
 
-        function setGeneralNotesFilter(noteCategory) {
-            activeGeneralNotesFilter = noteCategory;
-            renderCollection();
-        }
-
         function toggleGeneralNotesPanel() {
             isGeneralNotesPanelOpen = !isGeneralNotesPanelOpen;
-            const pillsContainer = document.getElementById('notes-filter-pills');
+            const pillsEl = document.getElementById('notes-filter-pills');
+            const chevronEl = document.getElementById('general-notes-chevron');
             const toggleBtn = document.getElementById('general-notes-toggle-btn');
-            const chevron = document.getElementById('general-notes-chevron');
 
             if (isGeneralNotesPanelOpen) {
-                pillsContainer.classList.remove('hidden');
-                pillsContainer.classList.add('flex');
+                pillsEl.classList.remove('hidden');
+                pillsEl.classList.add('flex');
+                chevronEl.classList.add('rotate-180');
                 toggleBtn.setAttribute('aria-expanded', 'true');
-                chevron.classList.add('rotate-180');
             } else {
-                pillsContainer.classList.add('hidden');
-                pillsContainer.classList.remove('flex');
+                pillsEl.classList.add('hidden');
+                pillsEl.classList.remove('flex');
+                chevronEl.classList.remove('rotate-180');
                 toggleBtn.setAttribute('aria-expanded', 'false');
-                chevron.classList.remove('rotate-180');
             }
+        }
+
+        function setGeneralNotesFilter(noteCategory) {
+            activeGeneralNotesFilter = noteCategory;
+            const activeBadge = document.getElementById('active-general-note-badge');
+            if (activeBadge) {
+                if (noteCategory === 'All') {
+                    activeBadge.classList.add('hidden');
+                    activeBadge.textContent = '';
+                } else {
+                    activeBadge.classList.remove('hidden');
+                    activeBadge.textContent = noteCategory;
+                }
+            }
+            renderCollection();
         }
 
         function toggleCollectionViewMode() {
@@ -1292,10 +1289,12 @@
             renderCollection();
         }
 
-        function onCategoryChange(preferredVolume = null) {
+        function onCategoryChange() {
             const category = document.querySelector('input[name="category"]:checked').value;
             const priceInput = document.getElementById('input-price');
             const giftedRow = document.getElementById('gifted-row');
+
+            renderVolumeOptions(category);
 
             if (category === 'Sample') {
                 priceInput.value = '0';
@@ -1308,64 +1307,26 @@
                 giftedRow.classList.add('hidden');
                 document.getElementById('input-gifted').value = '';
             }
-
-            renderVolumeOptions(category, preferredVolume);
             updateLivePricePerMl();
         }
 
-        function renderVolumeOptions(category, selectedVal = null) {
-            const container = document.getElementById('volume-options-container');
-            const customWrapper = document.getElementById('custom-volume-wrapper');
-            const volumeInput = document.getElementById('input-volume');
-            const presets = VOLUME_PRESETS[category] || VOLUME_PRESETS.Bottle;
+        function renderColorDotHTML(colorStr, sizeClass = 'w-3.5 h-3.5') {
+            if (!colorStr) return '';
+            const parts = colorStr.split('/').map(s => s.trim()).filter(Boolean);
+            if (parts.length === 0) return '';
 
-            let targetVal = selectedVal !== null ? Number(selectedVal) : presets[0];
-            const isCustom = selectedVal !== null && !presets.includes(targetVal);
-
-            let html = presets.map(vol => {
-                const isSelected = !isCustom && targetVal === vol;
-                const btnClass = isSelected
-                    ? 'bg-charcoal text-white border-charcoal'
-                    : 'bg-alabaster text-graphite border-hairline active:border-champagne';
-                return `<button type="button" onclick="selectVolumePreset(${vol})" data-vol="${vol}" class="vol-option-btn min-h-[36px] px-3 rounded-xl border text-[11px] font-medium transition-all cursor-pointer ${btnClass}">${vol}mL</button>`;
-            }).join('');
-
-            const othersClass = isCustom
-                ? 'bg-charcoal text-white border-charcoal'
-                : 'bg-alabaster text-graphite border-hairline active:border-champagne';
-            html += `<button type="button" onclick="selectVolumePreset('others')" data-vol="others" class="vol-option-btn min-h-[36px] px-3 rounded-xl border text-[11px] font-medium transition-all cursor-pointer ${othersClass}">Others</button>`;
-
-            container.innerHTML = html;
-
-            if (isCustom) {
-                customWrapper.classList.remove('hidden');
-                volumeInput.value = targetVal;
-            } else {
-                customWrapper.classList.add('hidden');
-                volumeInput.value = targetVal;
+            if (parts.length >= 2) {
+                const c1 = escapeHTML(parts[0]);
+                const c2 = escapeHTML(parts[1]);
+                return `
+                    <span class="relative inline-block ${sizeClass} rounded-full border border-charcoal/25 shadow-2xs overflow-hidden shrink-0" title="${c1} / ${c2}" style="background: linear-gradient(135deg, ${c1} 47%, #FFFFFF 47%, #FFFFFF 53%, ${c2} 53%);"></span>
+                `;
             }
-        }
 
-        function selectVolumePreset(choice) {
-            const customWrapper = document.getElementById('custom-volume-wrapper');
-            const volumeInput = document.getElementById('input-volume');
-
-            document.querySelectorAll('.vol-option-btn').forEach(btn => {
-                const match = String(btn.dataset.vol) === String(choice);
-                btn.className = match
-                    ? 'vol-option-btn min-h-[36px] px-3 rounded-xl border text-[11px] font-medium transition-all cursor-pointer bg-charcoal text-white border-charcoal'
-                    : 'vol-option-btn min-h-[36px] px-3 rounded-xl border text-[11px] font-medium transition-all cursor-pointer bg-alabaster text-graphite border-hairline active:border-champagne';
-            });
-
-            if (choice === 'others') {
-                customWrapper.classList.remove('hidden');
-                volumeInput.value = '';
-                volumeInput.focus();
-            } else {
-                customWrapper.classList.add('hidden');
-                volumeInput.value = choice;
-            }
-            updateLivePricePerMl();
+            const c1 = escapeHTML(parts[0]);
+            return `
+                <span class="inline-block ${sizeClass} rounded-full border border-charcoal/25 shadow-2xs shrink-0" title="${c1}" style="background-color: ${c1};"></span>
+            `;
         }
 
         function handleColorChange(slot) {
@@ -1374,62 +1335,36 @@
             updateColorPreview();
         }
 
-        function renderColorDotHTML(colorStr, sizePx = 14) {
-            if (!colorStr) return '';
-            const colors = colorStr.split('/').map(s => s.trim()).filter(Boolean);
-            if (colors.length === 0) return '';
-
-            if (colors.length === 1) {
-                return `<span class="inline-block rounded-full border border-charcoal/25 shadow-2xs shrink-0" style="width:${sizePx}px;height:${sizePx}px;background-color:${escapeHTML(colors[0])};" title="${escapeHTML(colors[0])}"></span>`;
-            }
-
-            const c1 = escapeHTML(colors[0]);
-            const c2 = escapeHTML(colors[1]);
-            return `
-                <span class="relative inline-block rounded-full border border-charcoal/30 shadow-2xs overflow-hidden shrink-0" style="width:${sizePx}px;height:${sizePx}px;background:linear-gradient(135deg, ${c1} 0%, ${c1} 47%, #FFFFFF 47%, #FFFFFF 53%, ${c2} 53%, ${c2} 100%);" title="${c1} / ${c2}">
-                    <svg viewBox="0 0 16 16" class="absolute inset-0 w-full h-full pointer-events-none">
-                        <line x1="14.5" y1="1.5" x2="1.5" y2="14.5" stroke="rgba(26,26,26,0.55)" stroke-width="1.35" />
-                    </svg>
-                </span>
-            `;
-        }
-
         function updateColorPreview() {
             const c1 = document.getElementById('input-color-1').value;
             const c2 = document.getElementById('input-color-2').value;
-            const previewDisplay = document.getElementById('color-preview-display');
+            const previewWrapper = document.getElementById('color-dot-preview-wrapper');
             const label1 = document.getElementById('color-1-label');
             const label2 = document.getElementById('color-2-label');
 
-            label1.textContent = color1Selected ? c1.toUpperCase() : 'Color 1 (None)';
-            label2.textContent = color2Selected ? c2.toUpperCase() : 'Color 2 (None)';
+            label1.textContent = color1Selected ? c1.toUpperCase() : 'No color';
+            label2.textContent = color2Selected ? c2.toUpperCase() : '2nd color (opt.)';
 
-            if (color1Selected && color2Selected) {
-                const combined = `${c1.toUpperCase()} / ${c2.toUpperCase()}`;
-                previewDisplay.innerHTML = `${renderColorDotHTML(combined, 16)} <span>${combined}</span>`;
-            } else if (color1Selected) {
-                const single = c1.toUpperCase();
-                previewDisplay.innerHTML = `${renderColorDotHTML(single, 16)} <span>${single}</span>`;
-            } else if (color2Selected) {
-                const single = c2.toUpperCase();
-                previewDisplay.innerHTML = `${renderColorDotHTML(single, 16)} <span>${single}</span>`;
-            } else {
-                previewDisplay.textContent = 'No color';
-            }
+            let activeStr = '';
+            if (color1Selected && color2Selected) activeStr = `${c1.toUpperCase()} / ${c2.toUpperCase()}`;
+            else if (color1Selected) activeStr = c1.toUpperCase();
+            else if (color2Selected) activeStr = c2.toUpperCase();
+
+            previewWrapper.innerHTML = activeStr ? renderColorDotHTML(activeStr, 'w-4 h-4') : 'None';
         }
 
         function clearColors() {
             color1Selected = false;
             color2Selected = false;
-            document.getElementById('input-color-1').value = '#D4AF37';
-            document.getElementById('input-color-2').value = '#8C6239';
+            document.getElementById('input-color-1').value = '#FFFFFF';
+            document.getElementById('input-color-2').value = '#FFFFFF';
             updateColorPreview();
         }
 
         function clearFormEntries() {
+            const category = document.querySelector('input[name="category"]:checked').value;
             document.getElementById('input-brand').value = '';
             document.getElementById('input-name').value = '';
-            const category = document.querySelector('input[name="category"]:checked').value;
             renderVolumeOptions(category);
             if (!document.getElementById('input-price').disabled) {
                 document.getElementById('input-price').value = '';
@@ -1445,11 +1380,7 @@
             document.getElementById('input-base-notes-zh').value = '';
             document.getElementById('input-base-notes-en').value = '';
             document.getElementById('input-remarks').value = '';
-            const statusEl = document.getElementById('smart-parse-status');
-            if (statusEl) {
-                statusEl.innerHTML = 'Paste text and press <strong>Auto-Fill</strong> to extract 前調 / 中調 / 後調 and Top / Heart / Base notes.';
-                statusEl.className = 'text-[10px] text-graphite/75';
-            }
+            setDefaultDateSelectors();
             clearColors();
             clearPhotoSelection();
             updateLivePricePerMl();
@@ -1476,52 +1407,52 @@
             return `<div class="flex flex-col items-center justify-center text-graphite/35"><svg class="${sizeClass}" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="6" y="8" width="12" height="13" rx="2" /><path d="M9 8V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3" /><path d="M10 2h4" /><rect x="9" y="12" width="6" height="5" rx="0.5" /></svg><span class="text-[10px] uppercase tracking-widest mt-2 text-graphite/40">${labelText}</span></div>`;
         }
 
+        function renderInteractiveIngredientPills(noteStr, isZh = false) {
+            const tokens = splitNoteIngredients(noteStr);
+            if (tokens.length === 0) return '';
+            const activeLower = activeIngredientFilter.toLowerCase();
+
+            return tokens.map(token => {
+                const isSelected = activeLower && token.toLowerCase() === activeLower;
+                const safeToken = escapeHTML(token);
+                const jsArg = token.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+                if (isSelected) {
+                    return `<button type="button" onclick="event.stopPropagation(); filterByIngredient('${jsArg}')" class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-charcoal text-white border border-charcoal transition cursor-pointer">${safeToken}</button>`;
+                }
+                return `<button type="button" onclick="event.stopPropagation(); filterByIngredient('${jsArg}')" class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium ${isZh ? 'bg-champagneLight/75 text-charcoal border-champagne/30' : 'bg-ivory text-graphite border-hairline'} border hover:border-champagne hover:text-charcoal active:bg-charcoal active:text-white transition cursor-pointer">${safeToken}</button>`;
+            }).join('');
+        }
+
         function renderBilingualPyramidHTML(item, compact = false) {
             const tiers = [
-                { labelZh: '前調', labelEn: 'Top notes', zh: item.topNotesZh, en: item.topNotesEn },
-                { labelZh: '中調', labelEn: 'Heart notes', zh: item.heartNotesZh, en: item.heartNotesEn },
-                { labelZh: '後調', labelEn: 'Base notes', zh: item.baseNotesZh, en: item.baseNotesEn }
+                { zhLabel: '前調', enLabel: 'Top notes', zh: item.topNotesZh, en: item.topNotesEn },
+                { zhLabel: '中調', enLabel: 'Heart notes', zh: item.heartNotesZh, en: item.heartNotesEn },
+                { zhLabel: '後調', enLabel: 'Base notes', zh: item.baseNotesZh, en: item.baseNotesEn }
             ];
 
             const activeTiers = tiers.filter(t => t.zh || t.en);
             if (activeTiers.length === 0 && !item.generalNotes) {
-                return `<span class="text-xs italic text-graphite/60">No olfactory notes entered.</span>`;
+                return `<span class="text-[11px] italic text-graphite/60">No olfactory notes entered.</span>`;
             }
 
-            const renderIngredientButtons = (rawStr, lang) => {
-                const ingredients = tokenizeIngredientList(rawStr);
-                if (ingredients.length === 0) return '';
-                return ingredients.map(ing => {
-                    const isSelected = activeIngredientFilter && activeIngredientFilter.toLowerCase() === ing.toLowerCase();
-                    const escapedIng = escapeHTML(ing);
-                    const jsSafeIng = ing.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
-                    const pillClass = isSelected
-                        ? 'bg-charcoal text-white border-charcoal shadow-2xs'
-                        : (lang === 'zh'
-                            ? 'bg-champagneLight/65 hover:bg-champagneLight active:bg-charcoal active:text-white text-charcoal border-champagne/40'
-                            : 'bg-alabaster hover:bg-ivory active:bg-charcoal active:text-white text-charcoal border-hairline');
-                    return `<button type="button" onclick="event.stopPropagation(); filterByIngredient('${jsSafeIng}')" title="Find all perfumes containing ${escapedIng}" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border text-[11px] font-medium transition-colors cursor-pointer ${pillClass}"><span>${escapedIng}</span></button>`;
-                }).join('');
-            };
-
-            let html = `<div class="w-full space-y-${compact ? '2' : '2.5'}">`;
+            let html = `<div class="w-full space-y-${compact ? '1.5' : '2'}">`;
             if (item.generalNotes && !compact) {
                 html += `<div class="flex items-center justify-between bg-champagneLight/45 border border-champagne/30 rounded-xl px-3 py-2"><span class="text-[10px] uppercase tracking-wider text-graphite">香調 / General Notes</span><span class="text-xs font-semibold text-charcoal">${escapeHTML(item.generalNotes)}</span></div>`;
             }
 
             activeTiers.forEach(tier => {
-                const zhButtons = renderIngredientButtons(tier.zh, 'zh');
-                const enButtons = renderIngredientButtons(tier.en, 'en');
+                const zhPills = renderInteractiveIngredientPills(tier.zh, true);
+                const enPills = renderInteractiveIngredientPills(tier.en, false);
                 html += `
-                <div class="bg-${compact ? 'alabaster/85' : 'white'} border border-hairline rounded-xl px-3 py-2.5 space-y-2">
-                    <div class="flex items-center justify-between border-b border-hairline/60 pb-1">
-                        <span class="text-[10px] font-semibold tracking-wide text-charcoal">${tier.labelZh} <span class="text-champagne font-normal ml-1">${tier.labelEn}</span></span>
-                    </div>
-                    <div class="flex flex-wrap gap-1.5">
-                        ${zhButtons}
-                        ${enButtons}
-                    </div>
-                </div>`;
+                    <div class="bg-${compact ? 'alabaster/85' : 'white'} border border-hairline rounded-xl px-2.5 py-2 space-y-1.5">
+                        <div class="flex items-center justify-between border-b border-hairline/60 pb-1">
+                            <span class="text-[10px] font-semibold text-charcoal tracking-wide">${tier.zhLabel} <span class="text-[9px] font-normal text-graphite">${tier.enLabel}</span></span>
+                        </div>
+                        <div class="flex flex-wrap gap-1 pt-0.5">
+                            ${zhPills}
+                            ${enPills}
+                        </div>
+                    </div>`;
             });
             html += `</div>`;
             return html;
@@ -1530,78 +1461,60 @@
         function renderCollection() {
             const grid = document.getElementById('perfume-grid');
             const emptyState = document.getElementById('empty-state');
-            const resultsCounter = document.getElementById('results-counter');
             const notesFilterPills = document.getElementById('notes-filter-pills');
-            const ingredientBar = document.getElementById('active-ingredient-bar');
-            const ingredientNameEl = document.getElementById('active-ingredient-name');
+            const ingredientBanner = document.getElementById('active-ingredient-banner');
+            const ingredientLabel = document.getElementById('active-ingredient-label');
 
-            if (ingredientBar && ingredientNameEl) {
-                if (activeIngredientFilter) {
-                    ingredientNameEl.textContent = activeIngredientFilter;
-                    ingredientBar.classList.remove('hidden');
-                    ingredientBar.classList.add('flex');
-                } else {
-                    ingredientBar.classList.add('hidden');
-                    ingredientBar.classList.remove('flex');
-                }
+            if (activeIngredientFilter) {
+                ingredientBanner.classList.remove('hidden');
+                ingredientLabel.textContent = activeIngredientFilter;
+            } else {
+                ingredientBanner.classList.add('hidden');
             }
 
-            document.getElementById('nav-count-badge').textContent = collection.length;
-            document.getElementById('stat-bottle-count').textContent = collection.filter(i => i.category === 'Bottle').length;
-            document.getElementById('stat-decant-count').textContent = collection.filter(i => i.category === 'Decant').length;
-            document.getElementById('stat-sample-count').textContent = collection.filter(i => i.category === 'Sample').length;
+            document.getElementById('nav-count-badge').textContent = collectionItems.length;
+            document.getElementById('stat-bottle-count').textContent = collectionItems.filter(i => i.category === 'Bottle').length;
+            document.getElementById('stat-decant-count').textContent = collectionItems.filter(i => i.category === 'Decant').length;
+            document.getElementById('stat-sample-count').textContent = collectionItems.filter(i => i.category === 'Sample').length;
 
-            // Compute General Notes Counts across the active format filter
-            const notesCounts = {
-                '花香調': 0,
-                '清新調': 0,
-                '木質調': 0,
-                '琥珀調': 0
-            };
-            const baseForCounts = collection.filter(item => activeFilter === 'All' || item.category === activeFilter);
-            baseForCounts.forEach(item => {
+            // Compute General Notes Counts
+            const presetCategories = ['花香調', '清新調', '木質調', '琥珀調'];
+            const notesCounts = { '花香調': 0, '清新調': 0, '木質調': 0, '琥珀調': 0 };
+            collectionItems.forEach(item => {
                 if (item.generalNotes) {
                     notesCounts[item.generalNotes] = (notesCounts[item.generalNotes] || 0) + 1;
                 }
             });
 
-            // Render General Notes Filter Buttons with Category Counts in Brackets
-            const activeBadge = document.getElementById('active-general-note-badge');
-            if (activeBadge) {
-                if (activeGeneralNotesFilter !== 'All') {
-                    activeBadge.textContent = activeGeneralNotesFilter;
-                    activeBadge.classList.remove('hidden');
-                } else {
-                    activeBadge.classList.add('hidden');
-                }
-            }
-
-            let pillsHtml = `<button type="button" onclick="setGeneralNotesFilter('All')" class="px-3 py-1.5 rounded-full text-[11px] font-medium transition cursor-pointer ${activeGeneralNotesFilter === 'All' ? 'bg-charcoal text-white' : 'bg-alabaster text-graphite border border-hairline'}">All (${baseForCounts.length})</button>`;
-            Object.entries(notesCounts).forEach(([note, count]) => {
+            // Render General Notes Filter Buttons with Count in brackets
+            let pillsHtml = `<button type="button" onclick="setGeneralNotesFilter('All')" class="px-3 py-1 rounded-full text-[11px] font-medium transition cursor-pointer ${activeGeneralNotesFilter === 'All' ? 'bg-charcoal text-white' : 'bg-alabaster text-graphite border border-hairline'}">All (${collectionItems.length})</button>`;
+            const orderedKeys = [...new Set([...presetCategories, ...Object.keys(notesCounts)])];
+            orderedKeys.forEach(note => {
+                const count = notesCounts[note] || 0;
                 const active = activeGeneralNotesFilter === note;
-                pillsHtml += `<button type="button" onclick="setGeneralNotesFilter('${escapeHTML(note)}')" class="px-3 py-1.5 rounded-full text-[11px] font-medium transition cursor-pointer ${active ? 'bg-charcoal text-white' : 'bg-alabaster text-graphite border border-hairline'}">${escapeHTML(note)} (${count})</button>`;
+                pillsHtml += `<button type="button" onclick="setGeneralNotesFilter('${note}')" class="px-3 py-1 rounded-full text-[11px] font-medium transition cursor-pointer ${active ? 'bg-charcoal text-white' : 'bg-alabaster text-graphite border border-hairline'}">${escapeHTML(note)} (${count})</button>`;
             });
             notesFilterPills.innerHTML = pillsHtml;
 
             // Filter items
-            let filtered = collection.filter(item => {
+            let filtered = collectionItems.filter(item => {
                 const matchesCategory = activeFilter === 'All' || item.category === activeFilter;
                 const matchesGeneralNote = activeGeneralNotesFilter === 'All' || item.generalNotes === activeGeneralNotesFilter;
                 if (!matchesCategory || !matchesGeneralNote) return false;
 
                 if (activeIngredientFilter) {
-                    const targetIng = activeIngredientFilter.toLowerCase();
-                    const itemIngredients = [
-                        ...tokenizeIngredientList(item.topNotesZh),
-                        ...tokenizeIngredientList(item.topNotesEn),
-                        ...tokenizeIngredientList(item.heartNotesZh),
-                        ...tokenizeIngredientList(item.heartNotesEn),
-                        ...tokenizeIngredientList(item.baseNotesZh),
-                        ...tokenizeIngredientList(item.baseNotesEn)
+                    const allItemIngredients = [
+                        ...splitNoteIngredients(item.topNotesZh),
+                        ...splitNoteIngredients(item.topNotesEn),
+                        ...splitNoteIngredients(item.heartNotesZh),
+                        ...splitNoteIngredients(item.heartNotesEn),
+                        ...splitNoteIngredients(item.baseNotesZh),
+                        ...splitNoteIngredients(item.baseNotesEn)
                     ].map(i => i.toLowerCase());
 
-                    const hasIngredient = itemIngredients.some(ing => ing === targetIng || ing.includes(targetIng));
-                    if (!hasIngredient) return false;
+                    if (!allItemIngredients.includes(activeIngredientFilter.toLowerCase())) {
+                        return false;
+                    }
                 }
 
                 if (!searchQuery) return true;
@@ -1613,8 +1526,8 @@
             filtered.sort((a, b) => {
                 const pA = a.volume > 0 ? a.price / a.volume : 0;
                 const pB = b.volume > 0 ? b.price / b.volume : 0;
-                const dA = (Number(a.year) * 100) + Number(a.month);
-                const dB = (Number(b.year) * 100) + Number(b.month);
+                const dA = getSortableDateValue(a);
+                const dB = getSortableDateValue(b);
 
                 if (sortOption === 'date-desc') return dB - dA;
                 if (sortOption === 'date-asc') return dA - dB;
@@ -1622,8 +1535,6 @@
                 if (sortOption === 'price-ml-desc') return pB - pA;
                 return 0;
             });
-
-            resultsCounter.textContent = `Total: ${filtered.length} ${filtered.length === 1 ? 'Item' : 'Items'}`;
 
             if (filtered.length === 0) {
                 grid.innerHTML = '';
@@ -1636,65 +1547,61 @@
             emptyState.classList.add('hidden');
             grid.classList.remove('hidden');
 
-            if (collectionViewMode === 'all-info' || activeIngredientFilter) {
+            const showExpandedCards = collectionViewMode === 'all-info' || Boolean(activeIngredientFilter);
+
+            if (showExpandedCards) {
                 grid.className = 'grid grid-cols-1 gap-3.5 pt-1';
                 grid.innerHTML = filtered.map(item => {
                     const pricePerMl = item.volume > 0 ? item.price / item.volume : 0;
-                    const formattedDate = formatPurchaseDateDisplay(item, false);
+                    const displayDate = formatPurchaseDateDisplay(item, false);
                     let badgeStyle = 'bg-alabaster text-charcoal border-hairline';
                     if (item.category === 'Decant') badgeStyle = 'bg-champagneLight/60 text-charcoal border-champagne/30';
                     if (item.category === 'Sample') badgeStyle = 'bg-ivory text-graphite border-hairline';
 
-                    const colorDot = item.color ? renderColorDotHTML(item.color, 15) : '';
+                    const colorDot = renderColorDotHTML(item.color, 'w-3.5 h-3.5');
 
                     return `
-                    <article onclick="openDetailModal('${item.id}')" class="perfume-card bg-white rounded-2xl border border-hairline p-3.5 cursor-pointer shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
-                        <div class="grid grid-cols-12 gap-3 items-stretch">
-                            <!-- Left Part: Photo & Basic Information -->
-                            <div class="col-span-5 flex flex-col justify-between pr-2.5 border-r border-hairline/70 space-y-2.5">
-                                <div class="space-y-2">
-                                    <div class="relative w-full h-24 rounded-xl bg-[#FFFFFF] border border-hairline p-2 flex items-center justify-center overflow-hidden">
-                                        <span class="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded-full text-[8px] uppercase tracking-[0.1em] font-semibold border ${badgeStyle}">${escapeHTML(item.category)}</span>
-                                        ${colorDot ? `<span class="absolute bottom-1.5 left-1.5 flex items-center justify-center bg-white/90 p-0.5 rounded-full shadow-2xs">${colorDot}</span>` : ''}
-                                        ${item.photo ? `<img src="${escapeHTML(item.photo)}" alt="" class="max-h-20 max-w-full object-contain object-center mx-auto">` : getFallbackBottleSVG(item.category, true)}
-                                    </div>
-
-                                    <div class="space-y-1">
-                                        ${item.generalNotes ? `<span class="inline-block px-2 py-0.5 rounded-full text-[9px] font-medium bg-champagneLight/85 text-charcoal border border-champagne/30">${escapeHTML(item.generalNotes)}</span>` : ''}
-                                        <p class="text-[9px] uppercase tracking-[0.16em] font-semibold text-champagne truncate">${escapeHTML(item.brand)}</p>
-                                        <h3 class="editorial-title text-base text-charcoal font-medium leading-snug">${escapeHTML(item.name)}</h3>
-                                    </div>
+                    <article onclick="openDetailModal('${item.id}')" class="perfume-card bg-white rounded-2xl border border-hairline p-3.5 cursor-pointer shadow-[0_2px_10px_rgba(26,43,60,0.03)]">
+                        <div class="grid grid-cols-12 gap-3 items-start">
+                            <!-- Left Column: Perfume Photo & Basic Information -->
+                            <div class="col-span-5 flex flex-col space-y-2 border-r border-hairline/70 pr-2.5">
+                                <div class="relative w-full h-28 rounded-xl bg-[#FFFFFF] border border-hairline p-2 flex items-center justify-center overflow-hidden">
+                                    <span class="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full text-[8px] uppercase tracking-[0.1em] font-semibold border ${badgeStyle}">${escapeHTML(item.category)}</span>
+                                    ${colorDot ? `<span class="absolute bottom-1.5 right-1.5 flex items-center justify-center">${colorDot}</span>` : ''}
+                                    ${item.photo ? `<img src="${escapeHTML(item.photo)}" alt="" class="max-h-24 max-w-full object-contain object-center mx-auto">` : getFallbackBottleSVG(item.category, true)}
                                 </div>
 
-                                <div class="space-y-1.5 pt-2 border-t border-hairline/70 text-[10px]">
+                                <div class="space-y-0.5">
+                                    <p class="text-[9px] uppercase tracking-[0.16em] font-semibold text-champagne truncate">${escapeHTML(item.brand)}</p>
+                                    <h3 class="editorial-title text-base text-charcoal font-medium leading-snug line-clamp-2">${escapeHTML(item.name)}</h3>
+                                    ${item.generalNotes ? `<span class="inline-block mt-0.5 px-2 py-0.5 rounded-full text-[8px] font-medium bg-champagneLight/85 text-charcoal border border-champagne/30">${escapeHTML(item.generalNotes)}</span>` : ''}
+                                </div>
+
+                                <div class="bg-alabaster rounded-xl border border-hairline/80 p-2 space-y-1 text-[10px]">
                                     <div class="flex items-center justify-between">
-                                        <span class="text-graphite/65">Volume</span>
+                                        <span class="text-graphite/70">Volume</span>
                                         <span class="font-semibold text-charcoal">${item.volume} mL</span>
                                     </div>
                                     <div class="flex items-center justify-between">
-                                        <span class="text-graphite/65">Price</span>
+                                        <span class="text-graphite/70">Price</span>
                                         <span class="font-semibold text-charcoal">${formatCurrency(item.price)}</span>
                                     </div>
                                     <div class="flex items-center justify-between">
-                                        <span class="text-graphite/65">Unit</span>
+                                        <span class="text-graphite/70">Unit</span>
                                         <span class="font-semibold text-champagne">${formatCurrency(pricePerMl)}/mL</span>
                                     </div>
-                                    <div class="pt-1 border-t border-hairline/50 text-[9px] text-graphite space-y-0.5">
+                                    <div class="pt-1 border-t border-hairline/70 space-y-0.5 text-[9px] text-graphite">
                                         <p class="truncate"><strong class="font-medium text-charcoal">Store:</strong> ${escapeHTML(item.merchant || '—')}</p>
-                                        <p>${formattedDate}</p>
+                                        <p class="truncate">${displayDate}</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Right Part: Olfactory Notes Details -->
-                            <div class="col-span-7 flex flex-col justify-start min-w-0">
-                                <span class="block text-[9px] uppercase tracking-wider text-graphite/70 font-semibold mb-1.5">Olfactory Notes</span>
+                            <!-- Right Column: Olfactory Notes Details & Remarks -->
+                            <div class="col-span-7 flex flex-col space-y-2 min-w-0">
+                                <span class="text-[9px] uppercase tracking-wider text-graphite/70 font-semibold">Olfactory Notes</span>
                                 ${renderBilingualPyramidHTML(item, true)}
-                                ${item.remarks ? `
-                                <div class="mt-2 pt-2 border-t border-hairline/70">
-                                    <span class="block text-[9px] uppercase tracking-wider text-graphite/70 font-semibold mb-0.5">Remarks</span>
-                                    <p class="text-[11px] text-charcoal leading-relaxed whitespace-pre-line">${escapeHTML(item.remarks)}</p>
-                                </div>` : ''}
+                                ${item.remarks ? `<div class="bg-ivory/70 border border-hairline rounded-xl px-2.5 py-1.5 text-[10px] text-graphite leading-snug"><strong class="text-charcoal font-medium">Remarks:</strong> ${escapeHTML(item.remarks)}</div>` : ''}
                             </div>
                         </div>
                     </article>`;
@@ -1708,15 +1615,15 @@
                     if (item.category === 'Decant') badgeStyle = 'bg-champagneLight/60 text-charcoal border-champagne/30';
                     if (item.category === 'Sample') badgeStyle = 'bg-ivory text-graphite border-hairline';
 
-                    const colorDotBadge = item.color ? `<span class="absolute bottom-2 left-2 flex items-center justify-center bg-white/90 p-0.5 rounded-full shadow-2xs">${renderColorDotHTML(item.color, 14)}</span>` : '';
+                    const colorDot = renderColorDotHTML(item.color, 'w-3.5 h-3.5');
 
                     return `
-                    <article onclick="openDetailModal('${item.id}')" class="perfume-card bg-white rounded-2xl border border-hairline overflow-hidden cursor-pointer flex flex-col justify-between shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
+                    <article onclick="openDetailModal('${item.id}')" class="perfume-card bg-white rounded-2xl border border-hairline overflow-hidden cursor-pointer flex flex-col justify-between shadow-[0_2px_8px_rgba(26,43,60,0.03)]">
                         <div class="relative bg-[#FFFFFF] h-40 p-4 flex items-center justify-center border-b border-hairline/70 overflow-hidden">
                             <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full text-[9px] uppercase tracking-[0.12em] font-medium border ${badgeStyle}">${escapeHTML(item.category)}</span>
                             <span class="absolute top-2.5 right-2.5 text-[10px] font-medium text-graphite/70">${item.volume}mL</span>
-                            ${item.generalNotes ? `<span class="absolute bottom-2 right-2 px-2 py-0.5 rounded-full text-[9px] font-medium bg-champagneLight/85 text-charcoal border border-champagne/30">${escapeHTML(item.generalNotes)}</span>` : ''}
-                            ${colorDotBadge}
+                            ${item.generalNotes ? `<span class="absolute top-8 right-2.5 px-2 py-0.5 rounded-full text-[9px] font-medium bg-champagneLight/85 text-charcoal border border-champagne/30">${escapeHTML(item.generalNotes)}</span>` : ''}
+                            ${colorDot ? `<span class="absolute bottom-2.5 left-2.5 flex items-center justify-center">${colorDot}</span>` : ''}
                             ${item.photo ? `<img src="${escapeHTML(item.photo)}" alt="" class="max-h-32 max-w-full object-contain object-center mx-auto">` : getFallbackBottleSVG(item.category)}
                         </div>
 
@@ -1737,7 +1644,7 @@
         }
 
         function openDetailModal(id) {
-            const item = collection.find(p => p.id === id);
+            const item = collectionItems.find(p => p.id === id);
             if (!item) return;
 
             const modal = document.getElementById('detail-modal');
@@ -1752,14 +1659,15 @@
             document.getElementById('modal-date').textContent = formatPurchaseDateDisplay(item, false);
             document.getElementById('modal-merchant').textContent = item.merchant || '—';
 
-            const colorBadge = document.getElementById('modal-color-badge');
+            const colorDotContainer = document.getElementById('modal-color-dot-container');
             if (item.color) {
-                colorBadge.innerHTML = renderColorDotHTML(item.color, 16);
-                colorBadge.classList.remove('hidden');
-                colorBadge.classList.add('inline-flex');
+                colorDotContainer.innerHTML = renderColorDotHTML(item.color, 'w-4 h-4');
+                colorDotContainer.classList.remove('hidden');
+                colorDotContainer.classList.add('flex');
             } else {
-                colorBadge.classList.add('hidden');
-                colorBadge.classList.remove('inline-flex');
+                colorDotContainer.innerHTML = '';
+                colorDotContainer.classList.add('hidden');
+                colorDotContainer.classList.remove('flex');
             }
 
             const giftedContainer = document.getElementById('modal-gifted-container');
@@ -1775,14 +1683,12 @@
 
             document.getElementById('modal-notes-container').innerHTML = renderBilingualPyramidHTML(item, false);
 
-            const modalRemarksContainer = document.getElementById('modal-remarks-container');
-            const modalRemarksEl = document.getElementById('modal-remarks');
-            if (item.remarks && item.remarks.trim()) {
-                modalRemarksEl.textContent = item.remarks.trim();
-                modalRemarksContainer.classList.remove('hidden');
+            const remarksContainer = document.getElementById('modal-remarks-container');
+            if (item.remarks) {
+                document.getElementById('modal-remarks').textContent = item.remarks;
+                remarksContainer.classList.remove('hidden');
             } else {
-                modalRemarksEl.textContent = '';
-                modalRemarksContainer.classList.add('hidden');
+                remarksContainer.classList.add('hidden');
             }
 
             document.getElementById('modal-edit-btn').onclick = () => {
@@ -1795,20 +1701,18 @@
             deleteBtn.innerHTML = `<i data-lucide="trash-2" class="w-4 h-4"></i><span>Remove</span>`;
             deleteBtn.className = 'min-h-[44px] px-4 rounded-full text-xs font-medium text-red-700 active:bg-red-50 transition flex items-center gap-1.5';
             
-            deleteBtn.onclick = () => {
+            deleteBtn.onclick = async () => {
                 if (pendingDeleteId !== item.id) {
                     pendingDeleteId = item.id;
                     deleteBtn.innerHTML = `<i data-lucide="alert-circle" class="w-4 h-4"></i><span>Tap to confirm</span>`;
                     deleteBtn.className = 'min-h-[44px] px-4 rounded-full text-xs font-medium bg-red-600 text-white transition flex items-center gap-1.5';
                     lucide.createIcons();
                 } else {
-                    collection = collection.filter(p => p.id !== item.id);
-                    if (typeof window.cloudDeleteEntry === 'function') {
-                        window.cloudDeleteEntry(item.id);
-                    }
+                    collectionItems = collectionItems.filter(p => p.id !== item.id);
+                    markPendingCloudUpload();
                     closeDetailModal();
                     renderCollection();
-                    showToast('Fragrance removed from cloud');
+                    showToast('Fragrance removed — press Upload to sync');
                 }
             };
 
@@ -1885,135 +1789,220 @@
         function clearPhotoSelection() {
             currentPhotoData = '';
             document.getElementById('input-photo-url').value = '';
-            document.getElementById('input-photo-file').value = '';
+            const fallbackBar = document.getElementById('google-images-fallback-bar');
+            if (fallbackBar) fallbackBar.classList.add('hidden');
             updatePhotoPreview('');
         }
 
-        function resetForm() {
-            document.getElementById('purchase-form').reset();
-            document.getElementById('entry-id').value = '';
-            document.getElementById('form-page-title').textContent = 'New Purchase';
-            document.getElementById('submit-btn-text').textContent = 'Save Entry';
-            document.getElementById('edit-color-picker-section').classList.add('hidden');
-            document.getElementById('gifted-row').classList.add('hidden');
-            document.getElementById('input-price').disabled = false;
-            document.getElementById('input-price').classList.remove('opacity-60', 'bg-hairline/40');
-            const statusEl = document.getElementById('smart-parse-status');
-            if (statusEl) {
-                statusEl.innerHTML = 'Paste text and press <strong>Auto-Fill</strong> to extract 前調 / 中調 / 後調 and Top / Heart / Base notes.';
-                statusEl.className = 'text-[10px] text-graphite/75';
-            }
-            renderVolumeOptions('Bottle', 50);
-            setDefaultDateSelectors();
-            clearColors();
-            updateLivePricePerMl();
-            clearPhotoSelection();
+        function verifyImageLoads(url) {
+            return new Promise((resolve) => {
+                if (!url || !url.startsWith('http')) {
+                    resolve(false);
+                    return;
+                }
+                const testImg = new Image();
+                const timer = setTimeout(() => {
+                    testImg.src = '';
+                    resolve(false);
+                }, 4500);
+                testImg.onload = () => {
+                    clearTimeout(timer);
+                    resolve(testImg.naturalWidth > 40 && testImg.naturalHeight > 40);
+                };
+                testImg.onerror = () => {
+                    clearTimeout(timer);
+                    resolve(false);
+                };
+                testImg.src = url;
+            });
         }
 
-        function parseNotesParagraph(manualTrigger = false) {
-            if (!manualTrigger) return;
+        async function autoSearchPerfumePhoto() {
+            const brand = document.getElementById('input-brand').value.trim();
+            const name = document.getElementById('input-name').value.trim();
 
-            const rawText = document.getElementById('input-notes-paragraph').value;
-            const statusEl = document.getElementById('smart-parse-status');
-            if (!rawText.trim()) {
-                showToast('Paste fragrance notes first');
+            if (!brand && !name) {
+                showToast('Please enter Brand & Perfume Name first');
+                document.getElementById('input-brand').focus();
                 return;
             }
 
-            // Normalize colons while keeping line breaks so entering a new row stops copying the previous tier
-            const normalized = rawText.replace(/\r\n/g, '\n').replace(/：/g, ':');
-            const lines = normalized.split('\n').map(line => line.trim()).filter(Boolean);
+            const queryTerm = `${brand} ${name} perfume bottle white background`.trim();
+            const googleImagesUrl = `https://www.google.com/search?tbm=isch&tbs=ic:specific,isc:white&q=${encodeURIComponent(queryTerm)}`;
 
-            const labelRegex = /^(前調|前味|初調|頭調|中調|中味|核心調|後調|後味|基調|尾調|top\s*(?:notes?)?|head\s*(?:notes?)?|heart\s*(?:notes?)?|middle\s*(?:notes?)?|mid\s*(?:notes?)?|base\s*(?:notes?)?|dry\s*-?\s*down\s*(?:notes?)?)\s*[:\-–—]\s*(.*)$/i;
+            const btn = document.getElementById('auto-search-photo-btn');
+            const labelEl = document.getElementById('auto-search-photo-label');
+            const loadingOverlay = document.getElementById('photo-search-loading');
+            const fallbackBar = document.getElementById('google-images-fallback-bar');
+            const fallbackLink = document.getElementById('google-images-external-link');
+            const statusText = document.getElementById('photo-search-status-text');
 
-            const buckets = {
-                topZh: [], topEn: [],
-                heartZh: [], heartEn: [],
-                baseZh: [], baseEn: []
-            };
+            if (fallbackLink) fallbackLink.href = googleImagesUrl;
+            if (btn) btn.disabled = true;
+            if (labelEl) labelEl.textContent = 'Searching...';
+            if (loadingOverlay) loadingOverlay.classList.remove('hidden');
 
-            const classifyTier = (label) => {
-                const l = label.toLowerCase().replace(/\s+/g, '');
-                if (/^(前調|前味|初調|頭調|top|head)/.test(l)) return 'top';
-                if (/^(中調|中味|核心調|heart|middle|mid)/.test(l)) return 'heart';
-                if (/^(後調|後味|基調|尾調|base|drydown)/.test(l)) return 'base';
-                return null;
-            };
+            try {
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
 
-            const hasCJK = (text) => /[\u4e00-\u9fff\u3400-\u4dbf]/.test(text);
+                const systemPrompt = "You find direct image URLs of official perfume bottles isolated on a pure white background (#FFFFFF) via Google Search. STRICT REQUIREMENT: Only return studio product packshot images on a solid white background—exclude lifestyle photos, colored/dark backgrounds, or hand-held shots. Return ONLY up to 5 direct HTTPS image URLs (ending in .jpg, .jpeg, .png, or .webp), one per line, with no markdown, numbering, or commentary.";
+                const userQuery = `Find direct studio product image URLs on a pure white background for the perfume bottle: "${brand} ${name}" perfume bottle isolated on white background.`;
 
-            // Process line-by-line; once a new row/line starts, the previous tier stops copying
-            lines.forEach(line => {
-                const segments = line.split(/[;；|｜]/).map(s => s.trim()).filter(Boolean);
-                segments.forEach(seg => {
-                    const match = seg.match(labelRegex);
-                    if (!match) return;
-                    const tier = classifyTier(match[1]);
-                    const content = match[2].trim();
-                    if (!tier || !content) return;
-
-                    if (hasCJK(content)) {
-                        const zhClean = content.replace(/[A-Za-z()[\]]+/g, '').replace(/\s+/g, ' ').replace(/^[、,，\s]+|[、,，\s]+$/g, '').trim();
-                        if (zhClean) buckets[`${tier}Zh`].push(zhClean);
-
-                        const split = splitBilingualString(content);
-                        if (split.en) buckets[`${tier}En`].push(split.en);
-                    } else {
-                        buckets[`${tier}En`].push(content);
+                const payload = {
+                    contents: [{ parts: [{ text: userQuery }] }],
+                    tools: [{ "google_search": {} }],
+                    systemInstruction: {
+                        parts: [{ text: systemPrompt }]
                     }
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
                 });
-            });
 
-            let filledCount = 0;
-            if (buckets.topZh.length) { document.getElementById('input-top-notes-zh').value = buckets.topZh.join('、'); filledCount++; }
-            if (buckets.topEn.length) { document.getElementById('input-top-notes-en').value = buckets.topEn.join(', '); filledCount++; }
-            if (buckets.heartZh.length) { document.getElementById('input-heart-notes-zh').value = buckets.heartZh.join('、'); filledCount++; }
-            if (buckets.heartEn.length) { document.getElementById('input-heart-notes-en').value = buckets.heartEn.join(', '); filledCount++; }
-            if (buckets.baseZh.length) { document.getElementById('input-base-notes-zh').value = buckets.baseZh.join('、'); filledCount++; }
-            if (buckets.baseEn.length) { document.getElementById('input-base-notes-en').value = buckets.baseEn.join(', '); filledCount++; }
+                if (!response.ok) throw new Error('Search request failed');
+                const data = await response.json();
+                const textOutput = data?.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('\n') || '';
 
-            if (filledCount > 0) {
-                if (statusEl) {
-                    statusEl.textContent = 'Notes extracted & filled into respective rows.';
-                    statusEl.className = 'text-[10px] text-champagne font-medium';
+                const urlMatches = textOutput.match(/https?:\/\/[^\s"'<>()]+/g) || [];
+                const cleanCandidates = [...new Set(urlMatches.map(u => u.replace(/[.,;!?)]+$/, '')))];
+
+                let validImageUrl = '';
+                for (const candidate of cleanCandidates) {
+                    const ok = await verifyImageLoads(candidate);
+                    if (ok) {
+                        validImageUrl = candidate;
+                        break;
+                    }
                 }
-                showToast('Auto-filled note rows successfully');
-            } else {
-                if (statusEl) {
-                    statusEl.textContent = 'No 前調: / 中調: / 後調: or Top: / Heart: / Base: lines detected.';
-                    statusEl.className = 'text-[10px] text-graphite/75';
+
+                if (validImageUrl) {
+                    currentPhotoData = validImageUrl;
+                    document.getElementById('input-photo-url').value = validImageUrl;
+                    updatePhotoPreview(validImageUrl);
+                    if (statusText) statusText.textContent = 'White-background photo found via Google Search.';
+                    if (fallbackBar) fallbackBar.classList.remove('hidden');
+                    showToast('White-background perfume photo found');
+                } else {
+                    if (statusText) statusText.textContent = 'Tap Google Images (white background) to copy a link:';
+                    if (fallbackBar) fallbackBar.classList.remove('hidden');
+                    showToast('Open Google Images link below to pick a white-background photo');
                 }
-                showToast('No matching note labels found');
+            } catch (err) {
+                if (statusText) statusText.textContent = 'Browse Google Images (white background) & paste link:';
+                if (fallbackBar) fallbackBar.classList.remove('hidden');
+                showToast('Tap Google Images link to select a white-background photo');
+            } finally {
+                if (btn) btn.disabled = false;
+                if (labelEl) labelEl.textContent = 'Auto-Find Photo';
+                if (loadingOverlay) loadingOverlay.classList.add('hidden');
             }
         }
 
-        function cancelForm() {
-            resetForm();
-            switchView('collection');
+        function resetForm() {
+            const form = document.getElementById('purchase-form');
+            if (form) form.reset();
+            document.getElementById('entry-id').value = '';
+            document.getElementById('form-page-title').textContent = 'New Purchase';
+            document.getElementById('submit-btn-text').textContent = 'Save Entry';
+            document.getElementById('edit-color-section').classList.add('hidden');
+            document.getElementById('gifted-row').classList.add('hidden');
+            const priceInput = document.getElementById('input-price');
+            priceInput.disabled = false;
+            priceInput.classList.remove('opacity-60', 'bg-hairline/40');
+            renderVolumeOptions('Bottle');
+            setDefaultDateSelectors();
+            clearColors();
+            clearPhotoSelection();
+            updateLivePricePerMl();
+        }
+
+        function parseNotesParagraph() {
+            const rawText = document.getElementById('input-notes-paragraph').value;
+            if (!rawText.trim()) {
+                showToast('Please paste a fragrance description first');
+                return;
+            }
+
+            const lines = rawText.replace(/\r\n/g, '\n').split('\n').map(l => l.trim()).filter(Boolean);
+            let topZh = [], topEn = [];
+            let heartZh = [], heartEn = [];
+            let baseZh = [], baseEn = [];
+
+            const extractSegmentsFromLine = (line) => {
+                const normalized = line.replace(/：/g, ':');
+                const labelRegex = /(前調|前味|初調|中調|中味|後調|后味|基調|top\s*notes?|heart\s*notes?|middle\s*notes?|base\s*notes?)\s*[:\-–—]/gi;
+                const matches = [];
+                let m;
+                while ((m = labelRegex.exec(normalized)) !== null) {
+                    matches.push({
+                        label: m[1].toLowerCase(),
+                        start: m.index,
+                        contentStart: m.index + m[0].length
+                    });
+                }
+
+                if (matches.length === 0) return;
+
+                matches.forEach((curr, idx) => {
+                    const end = idx + 1 < matches.length ? matches[idx + 1].start : normalized.length;
+                    const value = normalized.slice(curr.contentStart, end).replace(/^[\/|｜;；\s]+|[\/|｜;；\s]+$/g, '').trim();
+                    if (!value) return;
+
+                    const split = splitBilingualString(value);
+                    if (/前調|前味|初調|top/.test(curr.label)) {
+                        if (split.zh) topZh.push(split.zh);
+                        if (split.en) topEn.push(split.en);
+                    } else if (/中調|中味|heart|middle/.test(curr.label)) {
+                        if (split.zh) heartZh.push(split.zh);
+                        if (split.en) heartEn.push(split.en);
+                    } else if (/後調|后味|基調|base/.test(curr.label)) {
+                        if (split.zh) baseZh.push(split.zh);
+                        if (split.en) baseEn.push(split.en);
+                    }
+                });
+            };
+
+            lines.forEach(extractSegmentsFromLine);
+
+            if (topZh.length) document.getElementById('input-top-notes-zh').value = topZh.join('、');
+            if (topEn.length) document.getElementById('input-top-notes-en').value = topEn.join(', ');
+            if (heartZh.length) document.getElementById('input-heart-notes-zh').value = heartZh.join('、');
+            if (heartEn.length) document.getElementById('input-heart-notes-en').value = heartEn.join(', ');
+            if (baseZh.length) document.getElementById('input-base-notes-zh').value = baseZh.join('、');
+            if (baseEn.length) document.getElementById('input-base-notes-en').value = baseEn.join(', ');
+
+            const totalFilled = topZh.length + topEn.length + heartZh.length + heartEn.length + baseZh.length + baseEn.length;
+            showToast(totalFilled > 0 ? 'Auto-filled olfactory notes' : 'No 前調:/中調:/後調: or Top:/Heart:/Base: labels detected');
         }
 
         function startEditEntry(id) {
-            const item = collection.find(p => p.id === id);
+            const item = collectionItems.find(p => p.id === id);
             if (!item) return;
 
             switchView('new', true);
             document.getElementById('entry-id').value = item.id;
             document.getElementById('form-page-title').textContent = 'Edit Fragrance Entry';
             document.getElementById('submit-btn-text').textContent = 'Save Changes';
-            document.getElementById('edit-color-picker-section').classList.remove('hidden');
+
+            // Show color picker ONLY in Edit Entry
+            document.getElementById('edit-color-section').classList.remove('hidden');
 
             document.querySelectorAll('input[name="category"]').forEach(r => r.checked = (r.value === item.category));
-            onCategoryChange(item.volume);
+            onCategoryChange();
 
             document.getElementById('input-brand').value = item.brand;
             document.getElementById('input-name').value = item.name;
+            renderVolumeOptions(item.category, item.volume);
             document.getElementById('input-price').value = item.price;
             document.getElementById('input-merchant').value = item.merchant;
             document.getElementById('input-gifted').value = item.giftedBy || '';
-            const normalizedYM = item.purchaseDate && /^\d{4}-\d{2}/.test(item.purchaseDate)
-                ? item.purchaseDate.slice(0, 7)
-                : `${item.year}-${String(item.month || 1).padStart(2, '0')}`;
-            setPurchaseDateSelectors(normalizedYM);
+            document.getElementById('input-month').value = String(item.month || 11);
+            document.getElementById('input-year').value = String(item.year || 2026);
+            updatePurchaseDatePreview();
 
             clearColors();
             if (item.color) {
@@ -2044,7 +2033,7 @@
             updatePhotoPreview(currentPhotoData);
         }
 
-        function handleFormSubmit(event) {
+        async function handleFormSubmit(event) {
             event.preventDefault();
 
             const id = document.getElementById('entry-id').value;
@@ -2055,16 +2044,14 @@
             const price = category === 'Sample' ? 0 : parseFloat(document.getElementById('input-price').value);
             const giftedBy = category === 'Sample' ? document.getElementById('input-gifted').value.trim() : '';
             const merchant = document.getElementById('input-merchant').value.trim();
-            const purchaseDate = document.getElementById('input-purchase-date').value;
-            const [yearStr, monthStr] = purchaseDate ? purchaseDate.split('-') : ['2026', '11'];
-            const year = parseInt(yearStr, 10) || 2026;
-            const month = parseInt(monthStr, 10) || 11;
+            const month = parseInt(document.getElementById('input-month').value, 10) || 11;
+            const year = parseInt(document.getElementById('input-year').value, 10) || 2026;
             const generalNotes = document.getElementById('input-general-notes').value;
 
-            const c1 = document.getElementById('input-color-1').value;
-            const c2 = document.getElementById('input-color-2').value;
             let colorStr = '';
             if (id) {
+                const c1 = document.getElementById('input-color-1').value;
+                const c2 = document.getElementById('input-color-2').value;
                 if (color1Selected && color2Selected) colorStr = `${c1.toUpperCase()} / ${c2.toUpperCase()}`;
                 else if (color1Selected) colorStr = c1.toUpperCase();
                 else if (color2Selected) colorStr = c2.toUpperCase();
@@ -2080,7 +2067,6 @@
                 price,
                 giftedBy,
                 merchant,
-                purchaseDate,
                 month,
                 year,
                 generalNotes,
@@ -2095,17 +2081,15 @@
             };
 
             if (id) {
-                const idx = collection.findIndex(p => p.id === id);
-                if (idx !== -1) collection[idx] = entryData;
-                showToast('Fragrance updated in cloud');
+                const idx = collectionItems.findIndex(p => p.id === id);
+                if (idx !== -1) collectionItems[idx] = entryData;
+                showToast('Updated — press Upload to save to Cloud');
             } else {
-                collection.unshift(entryData);
-                showToast(`${brand} saved to cloud`);
+                collectionItems.unshift(entryData);
+                showToast(`${brand} added — press Upload to save to Cloud`);
             }
 
-            if (typeof window.cloudSyncEntry === 'function') {
-                window.cloudSyncEntry(entryData);
-            }
+            markPendingCloudUpload();
             resetForm();
             switchView('collection');
         }
@@ -2127,6 +2111,32 @@
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closeDetailModal();
         });
+
+        window.switchView = switchView;
+        window.syncAllToCloud = syncAllToCloud;
+        window.toggleCollectionViewMode = toggleCollectionViewMode;
+        window.clearSearch = clearSearch;
+        window.clearIngredientFilter = clearIngredientFilter;
+        window.filterByIngredient = filterByIngredient;
+        window.setFilter = setFilter;
+        window.toggleGeneralNotesPanel = toggleGeneralNotesPanel;
+        window.setGeneralNotesFilter = setGeneralNotesFilter;
+        window.resetFilters = resetFilters;
+        window.handleFormSubmit = handleFormSubmit;
+        window.onCategoryChange = onCategoryChange;
+        window.selectVolumeOption = selectVolumeOption;
+        window.handleColorChange = handleColorChange;
+        window.clearColors = clearColors;
+        window.updateLivePricePerMl = updateLivePricePerMl;
+        window.updatePurchaseDatePreview = updatePurchaseDatePreview;
+        window.autoSearchPerfumePhoto = autoSearchPerfumePhoto;
+        window.handlePhotoUrlInput = handlePhotoUrlInput;
+        window.handlePhotoFileUpload = handlePhotoFileUpload;
+        window.clearPhotoSelection = clearPhotoSelection;
+        window.parseNotesParagraph = parseNotesParagraph;
+        window.clearFormEntries = clearFormEntries;
+        window.openDetailModal = openDetailModal;
+        window.closeDetailModal = closeDetailModal;
     </script>
 </body>
 </html>
