@@ -1342,7 +1342,7 @@
         function tokenizeIngredientList(str) {
             if (!str) return [];
             return String(str)
-                .split(/[,，、;；/|｜]+/)
+                .split(/[,[,，、;；/|｜]+/)
                 .map(s => s.trim())
                 .filter(Boolean);
         }
@@ -2102,7 +2102,7 @@
                     if (!tier || !content) return;
 
                     if (hasCJK(content)) {
-                        const zhClean = content.replace(/[A-Za-z()[\]]+/g, '').replace(/\s+/g, ' ').replace(/^[、,，\s]+|[、,，\s]+$/g, '').trim();
+                        const zhClean = content.replace(/[A-Za-z()[\]]+/g, '').replace(/\s+/g, ' ').replace(/^[,，、\s]+|[,，、\s]+$/g, '').trim();
                         if (zhClean) buckets[`${tier}Zh`].push(zhClean);
 
                         const split = splitBilingualString(content);
