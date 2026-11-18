@@ -233,6 +233,7 @@
                             <i data-lucide="sprout" class="w-3.5 h-3.5 text-champagne shrink-0"></i>
                             <span class="text-[11px] text-charcoal truncate">
                                 Ingredient: <strong id="active-ingredient-name" class="font-semibold text-charcoal"></strong>
+                                <span id="active-ingredient-count" class="ml-1 px-2 py-0.5 rounded-full bg-white/90 border border-champagne/40 text-[10px] font-semibold text-charcoal"></span>
                             </span>
                         </div>
                         <button type="button" onclick="clearIngredientFilter()" class="px-2.5 py-1 rounded-full bg-charcoal text-white text-[10px] uppercase tracking-wider font-medium shrink-0 cursor-pointer">
@@ -2128,6 +2129,11 @@
             });
 
             resultsCounter.textContent = `Total: ${collection.length} ${collection.length === 1 ? 'Item' : 'Items'}`;
+
+            const ingredientCountEl = document.getElementById('active-ingredient-count');
+            if (ingredientCountEl && activeIngredientFilter) {
+                ingredientCountEl.textContent = `${filtered.length} ${filtered.length === 1 ? 'Item' : 'Items'}`;
+            }
 
             const compareBottomBar = document.getElementById('compare-bottom-bar');
             if (compareBottomBar) {
