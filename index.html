@@ -507,9 +507,14 @@
                                     <i data-lucide="sparkles" class="w-3 h-3 text-champagne"></i>
                                     <span>Smart Notes Auto-Fill</span>
                                 </label>
-                                <button type="button" onclick="parseNotesParagraph(true)" class="min-h-[30px] px-3 rounded-full bg-charcoal text-white text-[9px] uppercase tracking-wider font-medium active:bg-champagne transition cursor-pointer touch-manipulation">
-                                    Auto-Fill
-                                </button>
+                                <div class="flex items-center gap-1.5">
+                                    <button type="button" onclick="clearAutoFillBox()" class="min-h-[30px] px-2.5 rounded-full border border-hairline bg-white text-[9px] uppercase tracking-wider font-medium text-graphite active:text-charcoal transition cursor-pointer touch-manipulation">
+                                        Clear
+                                    </button>
+                                    <button type="button" onclick="parseNotesParagraph(true)" class="min-h-[30px] px-3 rounded-full bg-charcoal text-white text-[9px] uppercase tracking-wider font-medium active:bg-champagne transition cursor-pointer touch-manipulation">
+                                        Auto-Fill
+                                    </button>
+                                </div>
                             </div>
                             <textarea id="input-notes-paragraph" rows="3" placeholder="Paste description (e.g., 前調: 佛手柑、粉紅胡椒&#10;中調: 玫瑰&#10;後調: 檀香木)" class="w-full p-2.5 rounded-lg bg-white border border-hairline text-charcoal placeholder:text-graphite/45 focus:outline-none focus:border-champagne transition"></textarea>
                             <p id="smart-parse-status" class="text-[9px] text-graphite/75">
@@ -946,29 +951,42 @@
 
             tokens.forEach(token => {
                 if (hasCJK(token)) zhParts.push(token);
-                else enParts.push(token);
+                else enParts.push(capitalizeIngredient(token));
             });
 
             return { zh: zhParts.join('、'), en: enParts.join(', ') };
         }
 
+        function capitalizeIngredient(str) {
+            if (!str) return '';
+            const trimmed = String(str).trim();
+            if (!trimmed) return '';
+            return trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+        }
+
+        function formatIngredientsField(rawStr, lang = 'en') {
+            if (!rawStr) return '';
+            const tokens = tokenizeIngredientList(rawStr).map(t => capitalizeIngredient(t));
+            return tokens.join(lang === 'zh' ? '、' : ', ');
+        }
+
         function normalizeEntry(item, idx = 0) {
             let topNotesZh = item.topNotesZh ? String(item.topNotesZh).trim() : '';
-            let topNotesEn = item.topNotesEn ? String(item.topNotesEn).trim() : '';
+            let topNotesEn = item.topNotesEn ? formatIngredientsField(item.topNotesEn, 'en') : '';
             if (!topNotesZh && !topNotesEn && item.topNotes) {
                 const split = splitBilingualString(item.topNotes);
                 topNotesZh = split.zh; topNotesEn = split.en;
             }
 
             let heartNotesZh = item.heartNotesZh ? String(item.heartNotesZh).trim() : '';
-            let heartNotesEn = item.heartNotesEn ? String(item.heartNotesEn).trim() : '';
+            let heartNotesEn = item.heartNotesEn ? formatIngredientsField(item.heartNotesEn, 'en') : '';
             if (!heartNotesZh && !heartNotesEn && item.heartNotes) {
                 const split = splitBilingualString(item.heartNotes);
                 heartNotesZh = split.zh; heartNotesEn = split.en;
             }
 
             let baseNotesZh = item.baseNotesZh ? String(item.baseNotesZh).trim() : '';
-            let baseNotesEn = item.baseNotesEn ? String(item.baseNotesEn).trim() : '';
+            let baseNotesEn = item.baseNotesEn ? formatIngredientsField(item.baseNotesEn, 'en') : '';
             if (!baseNotesZh && !baseNotesEn && item.baseNotes) {
                 const split = splitBilingualString(item.baseNotes);
                 baseNotesZh = split.zh; baseNotesEn = split.en;
@@ -1358,7 +1376,7 @@
             if (!str) return [];
             return String(str)
                 .split(/[,，、;；/|｜]+/)
-                .map(s => s.trim())
+                .map(s => capitalizeIngredient(s.trim()))
                 .filter(Boolean);
         }
 
@@ -2081,6 +2099,20 @@
 
         /* ================= SMART NOTES AUTO-FILL (中 & EN) ================= */
 
+        function clearAutoFillBox() {
+            const notesPara = document.getElementById('input-notes-paragraph');
+            if (notesPara) {
+                notesPara.value = '';
+                notesPara.focus();
+            }
+            const statusEl = document.getElementById('smart-parse-status');
+            if (statusEl) {
+                statusEl.innerHTML = 'Paste text and press <strong>Auto-Fill</strong> to extract 前調 / 中調 / 後調 and Top / Heart / Base notes.';
+                statusEl.className = 'text-[9px] text-graphite/75';
+            }
+            showToast('Auto-fill box cleared');
+        }
+
         function parseNotesParagraph(manualTrigger = false) {
             if (!manualTrigger) return;
 
@@ -2160,18 +2192,18 @@
                     const split = splitBilingualString(content);
                     if (split.en) buckets[`${tier}En`].push(split.en);
                 } else {
-                    buckets[`${tier}En`].push(content);
+                    const formattedEn = formatIngredientsField(content, 'en');
+                    if (formattedEn) buckets[`${tier}En`].push(formattedEn);
                 }
             });
 
             let filledCount = 0;
             if (buckets.topZh.length) { document.getElementById('input-top-notes-zh').value = buckets.topZh.join('、'); filledCount++; }
-            if (buckets.topEn.length) { document.getElementById('input-top-notes-en').value = buckets.topEn.join(', '); filledCount++; }
+            if (buckets.topEn.length) { document.getElementById('input-top-notes-en').value = formatIngredientsField(buckets.topEn.join(', '), 'en'); filledCount++; }
             if (buckets.heartZh.length) { document.getElementById('input-heart-notes-zh').value = buckets.heartZh.join('、'); filledCount++; }
-            if (buckets.heartEn.length) { document.getElementById('input-heart-notes-en').value = buckets.heartEn.join(', '); filledCount++; }
+            if (buckets.heartEn.length) { document.getElementById('input-heart-notes-en').value = formatIngredientsField(buckets.heartEn.join(', '), 'en'); filledCount++; }
             if (buckets.baseZh.length) { document.getElementById('input-base-notes-zh').value = buckets.baseZh.join('、'); filledCount++; }
-            if (buckets.baseEn.length) { document.getElementById('input-base-notes-en').value = buckets.baseEn.join(', '); filledCount++; }
-
+            if (buckets.baseEn.length) { document.getElementById('input-base-notes-en').value = formatIngredientsField(buckets.baseEn.join(', '), 'en'); filledCount++; }
             if (filledCount > 0) {
                 if (statusEl) {
                     statusEl.textContent = 'Notes extracted & filled into respective rows.';
@@ -2284,12 +2316,12 @@
                 month,
                 year,
                 generalNotes,
-                topNotesZh: document.getElementById('input-top-notes-zh').value.trim(),
-                topNotesEn: document.getElementById('input-top-notes-en').value.trim(),
-                heartNotesZh: document.getElementById('input-heart-notes-zh').value.trim(),
-                heartNotesEn: document.getElementById('input-heart-notes-en').value.trim(),
-                baseNotesZh: document.getElementById('input-base-notes-zh').value.trim(),
-                baseNotesEn: document.getElementById('input-base-notes-en').value.trim(),
+                topNotesZh: formatIngredientsField(document.getElementById('input-top-notes-zh').value, 'zh'),
+                topNotesEn: formatIngredientsField(document.getElementById('input-top-notes-en').value, 'en'),
+                heartNotesZh: formatIngredientsField(document.getElementById('input-heart-notes-zh').value, 'zh'),
+                heartNotesEn: formatIngredientsField(document.getElementById('input-heart-notes-en').value, 'en'),
+                baseNotesZh: formatIngredientsField(document.getElementById('input-base-notes-zh').value, 'zh'),
+                baseNotesEn: formatIngredientsField(document.getElementById('input-base-notes-en').value, 'en'),
                 remarks: document.getElementById('input-remarks').value.trim(),
                 photo: currentPhotoData
             };
