@@ -438,26 +438,9 @@
 
                     <!-- SECTION 2: PERFUME PHOTO -->
                     <div class="bg-white rounded-2xl border border-hairline p-3.5 space-y-3.5 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
-                        <div class="flex items-center justify-between gap-2 pb-2.5 border-b border-hairline">
-                            <div class="flex items-center gap-2">
-                                <span class="w-5 h-5 rounded-full bg-champagneLight text-champagne text-[10px] font-semibold flex items-center justify-center shrink-0">02</span>
-                                <h2 class="editorial-title text-lg text-charcoal leading-none">Perfume Photo</h2>
-                            </div>
-                            <button type="button" id="btn-auto-find-photo" onclick="autoSearchPerfumePhoto()" class="min-h-[30px] px-3 rounded-full bg-charcoal text-white text-[10px] uppercase tracking-wider font-medium active:bg-champagne transition flex items-center gap-1.5 cursor-pointer touch-manipulation">
-                                <i data-lucide="search" class="w-3 h-3 text-champagne"></i>
-                                <span id="btn-auto-find-photo-text">Auto-find Photo</span>
-                            </button>
-                        </div>
-
-                        <!-- Searched Photo Result Bar -->
-                        <div id="photo-search-result-bar" class="hidden rounded-xl bg-alabaster border border-champagne/40 p-2.5 space-y-2">
-                            <div class="flex items-center justify-between gap-2">
-                                <span id="photo-search-status-text" class="text-[10px] font-medium text-charcoal">White background bottle lookup</span>
-                                <a id="google-images-fallback-link" href="https://www.google.com/search?tbm=isch" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-full bg-white border border-hairline text-[9px] uppercase tracking-wider font-semibold text-champagne active:bg-charcoal active:text-white transition shrink-0">
-                                    Google Images ↗
-                                </a>
-                            </div>
-                            <div id="searched-photo-links-list" class="space-y-1.5"></div>
+                        <div class="flex items-center gap-2 pb-2.5 border-b border-hairline">
+                            <span class="w-5 h-5 rounded-full bg-champagneLight text-champagne text-[10px] font-semibold flex items-center justify-center shrink-0">02</span>
+                            <h2 class="editorial-title text-lg text-charcoal leading-none">Perfume Photo</h2>
                         </div>
 
                         <div>
@@ -925,100 +908,7 @@
             'July', 'August', 'September', 'October', 'November', 'December'
         ];
 
-        const DEFAULT_COLLECTION = [
-            {
-                id: 'perf-default-1',
-                category: 'Bottle',
-                brand: 'BYREDO',
-                name: 'Blanche',
-                color: '#F4E8D1 / #FFFFFF',
-                volume: 50,
-                price: 220,
-                giftedBy: '',
-                merchant: 'Selfridges',
-                purchaseDate: '2026-09-15',
-                month: 9,
-                year: 2026,
-                generalNotes: '花香調',
-                topNotesZh: '白玫瑰、粉紅胡椒、醛香',
-                topNotesEn: 'White Rose, Pink Pepper, Aldehydes',
-                heartNotesZh: '紫羅蘭、橙花、牡丹',
-                heartNotesEn: 'Violet, Neroli, Peony',
-                baseNotesZh: '金木、檀香木、麝香',
-                baseNotesEn: 'Blonde Woods, Sandalwood, Musk',
-                remarks: '',
-                photo: ''
-            },
-            {
-                id: 'perf-default-2',
-                category: 'Bottle',
-                brand: 'LE LABO',
-                name: 'Santal 33',
-                color: '#8C6239',
-                volume: 100,
-                price: 325,
-                giftedBy: '',
-                merchant: 'Le Labo Boutique',
-                purchaseDate: '2026-06-10',
-                month: 6,
-                year: 2026,
-                generalNotes: '木質調',
-                topNotesZh: '小荳蔻、鳶尾花、紫羅蘭',
-                topNotesEn: 'Cardamom, Iris, Violet',
-                heartNotesZh: '龍涎香醚、澳洲檀香木、紙莎草',
-                heartNotesEn: 'Ambrox, Australian Sandalwood, Papyrus',
-                baseNotesZh: '雪松、皮革',
-                baseNotesEn: 'Cedarwood, Leather',
-                remarks: '',
-                photo: ''
-            },
-            {
-                id: 'perf-default-3',
-                category: 'Decant',
-                brand: 'DIPTYQUE',
-                name: 'Philosykos Eau de Parfum',
-                color: '',
-                volume: 10,
-                price: 36,
-                giftedBy: '',
-                merchant: 'Nose Paris',
-                purchaseDate: '2026-08-22',
-                month: 8,
-                year: 2026,
-                generalNotes: '清新調',
-                topNotesZh: '無花果葉、無花果',
-                topNotesEn: 'Fig Leaf, Fig',
-                heartNotesZh: '綠葉調、椰子',
-                heartNotesEn: 'Green Notes, Coconut',
-                baseNotesZh: '無花果樹、木質調、白雪松',
-                baseNotesEn: 'Fig Tree, Woody Notes, White Cedar',
-                remarks: '',
-                photo: ''
-            },
-            {
-                id: 'perf-default-4',
-                category: 'Sample',
-                brand: 'MAISON FRANCIS KURKDJIAN',
-                name: 'Baccarat Rouge 540 Extrait',
-                color: '',
-                volume: 2,
-                price: 0,
-                giftedBy: 'MFK Official PR',
-                merchant: 'MFK Official',
-                purchaseDate: '2026-10-05',
-                month: 10,
-                year: 2026,
-                generalNotes: '琥珀調',
-                topNotesZh: '苦杏仁、番紅花',
-                topNotesEn: 'Bitter Almond, Saffron',
-                heartNotesZh: '埃及茉莉、雪松',
-                heartNotesEn: 'Egyptian Jasmine, Cedar',
-                baseNotesZh: '麝香、木質調、龍涎香',
-                baseNotesEn: 'Musk, Woody Notes, Ambergris',
-                remarks: '',
-                photo: ''
-            }
-        ];
+        const DEFAULT_COLLECTION = [];
 
         let collection = [];
         let activeFilter = 'All';
@@ -1040,161 +930,6 @@
             Decant: [2, 5, 10],
             Sample: [1.5, 2, 5]
         };
-
-        /* ================= AUTO-FIND PHOTO (WHITE BACKGROUND) ================= */
-
-        function buildGoogleImagesWhiteBgUrl(brand, name) {
-            const query = `${brand} ${name} perfume bottle white background`.trim();
-            return `https://www.google.com/search?tbm=isch&tbs=ic:specific,isc:white&q=${encodeURIComponent(query)}`;
-        }
-
-        function verifyImageLoads(url) {
-            return new Promise((resolve) => {
-                if (!url || !url.startsWith('http')) {
-                    resolve(false);
-                    return;
-                }
-                const img = new Image();
-                img.referrerPolicy = 'no-referrer';
-                const timer = setTimeout(() => {
-                    img.src = '';
-                    resolve(false);
-                }, 4500);
-
-                img.onload = () => {
-                    clearTimeout(timer);
-                    resolve(img.naturalWidth >= 60 && img.naturalHeight >= 60);
-                };
-                img.onerror = () => {
-                    clearTimeout(timer);
-                    resolve(false);
-                };
-                img.src = url;
-            });
-        }
-
-        function applySearchedPhoto(encodedUrl) {
-            const url = decodeURIComponent(encodedUrl);
-            currentPhotoData = url;
-            document.getElementById('input-photo-url').value = url;
-            updatePhotoPreview(url);
-            showToast('Photo URL applied');
-        }
-
-        async function autoSearchPerfumePhoto() {
-            const brand = document.getElementById('input-brand').value.trim();
-            const name = document.getElementById('input-name').value.trim();
-
-            if (!brand && !name) {
-                showToast('Enter Brand or Perfume Name first');
-                document.getElementById('input-brand').focus();
-                return;
-            }
-
-            const btn = document.getElementById('btn-auto-find-photo');
-            const btnText = document.getElementById('btn-auto-find-photo-text');
-            const resultBar = document.getElementById('photo-search-result-bar');
-            const statusText = document.getElementById('photo-search-status-text');
-            const fallbackLink = document.getElementById('google-images-fallback-link');
-            const linksList = document.getElementById('searched-photo-links-list');
-
-            const googleUrl = buildGoogleImagesWhiteBgUrl(brand, name);
-            fallbackLink.href = googleUrl;
-            resultBar.classList.remove('hidden');
-            linksList.innerHTML = '';
-
-            btn.disabled = true;
-            btnText.textContent = 'Searching...';
-            statusText.textContent = `Searching white-background bottle for "${brand} ${name}"...`;
-
-            const candidateUrls = [];
-            const searchTerm = `${brand} ${name} perfume`.trim();
-
-            // 1. CORS-open Wikimedia Commons API search (works reliably on mobile Safari & Chrome)
-            try {
-                const wikiApi = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(searchTerm)}&gsrnamespace=6&gsrlimit=6&prop=imageinfo&iiprop=url&iiurlwidth=600&format=json&origin=*`;
-                const wikiRes = await fetch(wikiApi);
-                if (wikiRes.ok) {
-                    const wikiData = await wikiRes.json();
-                    const pages = wikiData?.query?.pages ? Object.values(wikiData.query.pages) : [];
-                    pages.forEach(p => {
-                        const info = p.imageinfo?.[0];
-                        const imgUrl = info?.thumburl || info?.url;
-                        if (imgUrl && /\.(jpe?g|png|webp)$/i.test(imgUrl)) {
-                            candidateUrls.push(imgUrl);
-                        }
-                    });
-                }
-            } catch (err) {
-                console.warn('Wikimedia photo lookup skipped:', err);
-            }
-
-            // 2. Gemini API with Google Search Grounding (when running with API environment)
-            try {
-                const apiKey = "";
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
-                const prompt = `Find direct product image URLs (.jpg, .png, or .webp) of the perfume bottle "${brand} ${name}" isolated on a clean white background. Return ONLY a JSON array of up to 4 direct image URLs.`;
-
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: prompt }] }],
-                        tools: [{ google_search: {} }]
-                    })
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-                    const urlMatches = rawText.match(/https?:\/\/[^\s"'<>]+\.(?:jpg|jpeg|png|webp)(?:\?[^\s"'<>]*)?/gi) || [];
-                    urlMatches.forEach(u => {
-                        if (!candidateUrls.includes(u)) candidateUrls.push(u);
-                    });
-                }
-            } catch (err) {
-                console.warn('Direct search API unavailable in standalone mode:', err);
-            }
-
-            // Verify which candidate URLs actually load in the browser
-            const verifiedUrls = [];
-            for (const url of candidateUrls.slice(0, 6)) {
-                const ok = await verifyImageLoads(url);
-                if (ok && !verifiedUrls.includes(url)) {
-                    verifiedUrls.push(url);
-                }
-            }
-
-            btn.disabled = false;
-            btnText.textContent = 'Auto-find Photo';
-
-            if (verifiedUrls.length > 0) {
-                const bestUrl = verifiedUrls[0];
-                currentPhotoData = bestUrl;
-                document.getElementById('input-photo-url').value = bestUrl;
-                updatePhotoPreview(bestUrl);
-
-                statusText.textContent = `Found ${verifiedUrls.length} white-background photo ${verifiedUrls.length === 1 ? 'link' : 'links'}:`;
-                linksList.innerHTML = verifiedUrls.map((u, i) => `
-                    <div class="flex items-center justify-between gap-2 bg-white border border-hairline rounded-lg px-2.5 py-1.5">
-                        <a href="${escapeHTML(u)}" target="_blank" rel="noopener noreferrer" class="text-[10px] text-champagne underline truncate flex-1">${escapeHTML(u)}</a>
-                        <button type="button" onclick="applySearchedPhoto('${encodeURIComponent(u)}')" class="px-2 py-0.5 rounded bg-charcoal text-white text-[9px] uppercase tracking-wider font-medium shrink-0 cursor-pointer">
-                            ${i === 0 ? 'Applied' : 'Use'}
-                        </button>
-                    </div>
-                `).join('');
-                showToast('Bottle photo found & applied');
-            } else {
-                statusText.textContent = 'Tap Google Images to copy a white-background bottle photo link:';
-                linksList.innerHTML = `
-                    <div class="text-[10px] text-graphite bg-white border border-hairline rounded-lg p-2 leading-relaxed">
-                        1. Tap <strong>Google Images ↗</strong> above to view white-background bottles for <strong>${escapeHTML(brand)} ${escapeHTML(name)}</strong>.<br>
-                        2. Copy the image link (or save the image) and paste/upload below.
-                    </div>
-                `;
-                showToast('Open Google Images to pick a white-background bottle');
-            }
-        }
 
         /* ================= NORMALIZATION & STORAGE ================= */
 
@@ -1301,9 +1036,9 @@
         function loadCollection() {
             try {
                 const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-                if (saved) {
+                if (saved !== null) {
                     const parsed = JSON.parse(saved);
-                    if (Array.isArray(parsed) && parsed.length > 0) {
+                    if (Array.isArray(parsed)) {
                         collection = parsed.map((item, idx) => normalizeEntry(item, idx));
                         return;
                     }
@@ -2320,8 +2055,6 @@
             if (urlInput) urlInput.value = '';
             const fileInput = document.getElementById('input-photo-file');
             if (fileInput) fileInput.value = '';
-            const resultBar = document.getElementById('photo-search-result-bar');
-            if (resultBar) resultBar.classList.add('hidden');
             updatePhotoPreview('');
         }
 
