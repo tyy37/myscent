@@ -185,18 +185,18 @@
                     </div>
 
                     <div class="grid grid-cols-3 gap-2 pt-2.5 border-t border-hairline/70 text-center">
-                        <div>
+                        <button type="button" id="stat-btn-Bottle" onclick="toggleCategoryFromStat('Bottle')" aria-label="Filter by Bottle" class="py-1 rounded-xl border border-transparent active:bg-ivory transition-colors cursor-pointer touch-manipulation">
                             <span class="uppercase tracking-wider text-graphite/65 block text-[9px] font-medium">Bottle</span>
                             <span id="stat-bottle-count" class="font-semibold text-charcoal text-sm mt-0.5 block">0</span>
-                        </div>
-                        <div class="border-x border-hairline/70">
+                        </button>
+                        <button type="button" id="stat-btn-Decant" onclick="toggleCategoryFromStat('Decant')" aria-label="Filter by Decant" class="py-1 border-x border-hairline/70 active:bg-ivory transition-colors cursor-pointer touch-manipulation">
                             <span class="uppercase tracking-wider text-graphite/65 block text-[9px] font-medium">Decant</span>
                             <span id="stat-decant-count" class="font-semibold text-charcoal text-sm mt-0.5 block">0</span>
-                        </div>
-                        <div>
+                        </button>
+                        <button type="button" id="stat-btn-Sample" onclick="toggleCategoryFromStat('Sample')" aria-label="Filter by Sample" class="py-1 rounded-xl border border-transparent active:bg-ivory transition-colors cursor-pointer touch-manipulation">
                             <span class="uppercase tracking-wider text-graphite/65 block text-[9px] font-medium">Sample</span>
                             <span id="stat-sample-count" class="font-semibold text-champagne text-sm mt-0.5 block">0</span>
-                        </div>
+                        </button>
                     </div>
                 </div>
 
@@ -205,41 +205,13 @@
                     <div class="relative">
                         <i data-lucide="search" class="w-3.5 h-3.5 text-graphite/60 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
                         <input type="text" id="search-input" placeholder="Search notes (中/EN), brand, or name..." class="w-full h-10 pl-9 pr-10 bg-white border border-hairline rounded-2xl text-[13px] text-charcoal placeholder:text-[12px] placeholder:text-graphite/50 focus:outline-none focus:border-champagne transition-colors shadow-[0_1px_4px_rgba(0,0,0,0.02)]">
-                        <button type="button" id="clear-search-btn" onclick="clearSearch()" aria-label="Clear search" class="hidden absolute right-0 top-0 w-10 h-10 flex items-center justify-center text-graphite/60 active:text-charcoal">
+                        <button type="button" id="clear-search-btn" onclick="clearSearch()" aria-label="Clear search" class="hidden absolute right-0 top-0 w-10 h-10 flex items-center justify-center text-graphite/60 active:text-charcoal cursor-pointer">
                             <i data-lucide="x" class="w-3.5 h-3.5"></i>
                         </button>
                     </div>
 
-                    <!-- Category Filter Pills -->
-                    <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5" role="group" aria-label="Filter by format">
-                        <button type="button" onclick="setFilter('All')" data-filter="All" class="filter-pill shrink-0 min-h-[38px] px-4 rounded-full text-xs font-medium tracking-wide transition-all bg-charcoal text-white cursor-pointer">
-                            All Items
-                        </button>
-                        <button type="button" onclick="setFilter('Bottle')" data-filter="Bottle" class="filter-pill shrink-0 min-h-[38px] px-4 rounded-full text-xs font-medium tracking-wide transition-all bg-white text-graphite border border-hairline cursor-pointer">
-                            Bottle
-                        </button>
-                        <button type="button" onclick="setFilter('Decant')" data-filter="Decant" class="filter-pill shrink-0 min-h-[38px] px-4 rounded-full text-xs font-medium tracking-wide transition-all bg-white text-graphite border border-hairline cursor-pointer">
-                            Decant
-                        </button>
-                        <button type="button" onclick="setFilter('Sample')" data-filter="Sample" class="filter-pill shrink-0 min-h-[38px] px-4 rounded-full text-xs font-medium tracking-wide transition-all bg-white text-graphite border border-hairline cursor-pointer">
-                            Sample
-                        </button>
-                    </div>
-
-                    <!-- General Notes Collapsible Filter -->
-                    <div class="bg-white border border-hairline rounded-2xl p-3 space-y-2.5">
-                        <button type="button" id="general-notes-toggle-btn" onclick="toggleGeneralNotesPanel()" aria-expanded="false" class="w-full flex items-center justify-between text-left cursor-pointer">
-                            <span class="text-[11px] uppercase tracking-wider text-charcoal font-semibold flex items-center gap-1.5">
-                                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-champagne"></i>
-                                <span>General Notes</span>
-                                <span id="active-general-note-badge" class="hidden px-2 py-0.5 rounded-full bg-champagneLight text-charcoal text-[10px] font-semibold normal-case tracking-normal"></span>
-                            </span>
-                            <i id="general-notes-chevron" data-lucide="chevron-down" class="w-4 h-4 text-graphite transition-transform duration-200"></i>
-                        </button>
-                        <div id="notes-filter-pills" class="hidden flex-wrap gap-1.5 pt-2 border-t border-hairline/70">
-                            <!-- Injected dynamically with category counts in brackets -->
-                        </div>
-                    </div>
+                    <!-- General Notes Filter Bar -->
+                    <div id="notes-filter-pills" class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5" role="group" aria-label="Filter by General Notes"></div>
 
                     <!-- Sort Bar -->
                     <div class="flex items-center justify-between bg-white border border-hairline rounded-xl px-3.5 h-10">
@@ -932,7 +904,6 @@
         let activeFilter = 'All';
         let activeGeneralNotesFilter = 'All';
         let activeIngredientFilter = '';
-        let isGeneralNotesPanelOpen = false;
         let searchQuery = '';
         let sortOption = 'date-desc';
         let collectionViewMode = 'cards';
@@ -1360,22 +1331,28 @@
             const clearBtn = document.getElementById('clear-search-btn');
             const sortSelect = document.getElementById('sort-select');
 
-            searchInput.addEventListener('input', (e) => {
-                searchQuery = e.target.value.trim().toLowerCase();
-                clearBtn.classList.toggle('hidden', searchQuery.length === 0);
-                renderCollection();
-            });
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    searchQuery = e.target.value.trim().toLowerCase();
+                    if (clearBtn) clearBtn.classList.toggle('hidden', searchQuery.length === 0);
+                    renderCollection();
+                });
+            }
 
-            sortSelect.addEventListener('change', (e) => {
-                sortOption = e.target.value;
-                renderCollection();
-            });
+            if (sortSelect) {
+                sortSelect.addEventListener('change', (e) => {
+                    sortOption = e.target.value;
+                    renderCollection();
+                });
+            }
         }
 
         function clearSearch() {
-            document.getElementById('search-input').value = '';
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) searchInput.value = '';
             searchQuery = '';
-            document.getElementById('clear-search-btn').classList.add('hidden');
+            const clearBtn = document.getElementById('clear-search-btn');
+            if (clearBtn) clearBtn.classList.add('hidden');
             renderCollection();
         }
 
@@ -1440,14 +1417,21 @@
 
         function setFilter(category) {
             activeFilter = category;
-            document.querySelectorAll('.filter-pill').forEach(btn => {
-                if (btn.dataset.filter === category) {
-                    btn.className = 'filter-pill shrink-0 min-h-[38px] px-4 rounded-full text-xs font-medium tracking-wide transition-all bg-charcoal text-white cursor-pointer';
+            ['Bottle', 'Decant', 'Sample'].forEach(cat => {
+                const statBtn = document.getElementById(`stat-btn-${cat}`);
+                if (!statBtn) return;
+                if (activeFilter === cat) {
+                    statBtn.classList.add('bg-champagneLight/60');
                 } else {
-                    btn.className = 'filter-pill shrink-0 min-h-[38px] px-4 rounded-full text-xs font-medium tracking-wide transition-all bg-white text-graphite border border-hairline cursor-pointer';
+                    statBtn.classList.remove('bg-champagneLight/60');
                 }
             });
             renderCollection();
+        }
+
+        function toggleCategoryFromStat(category) {
+            const nextCategory = activeFilter === category ? 'All' : category;
+            setFilter(nextCategory);
         }
 
         function setGeneralNotesFilter(noteCategory) {
@@ -1455,94 +1439,69 @@
             renderCollection();
         }
 
-        function toggleGeneralNotesPanel() {
-            isGeneralNotesPanelOpen = !isGeneralNotesPanelOpen;
-            const pillsContainer = document.getElementById('notes-filter-pills');
-            const toggleBtn = document.getElementById('general-notes-toggle-btn');
-            const chevron = document.getElementById('general-notes-chevron');
-
-            if (isGeneralNotesPanelOpen) {
-                pillsContainer.classList.remove('hidden');
-                pillsContainer.classList.add('flex');
-                toggleBtn.setAttribute('aria-expanded', 'true');
-                chevron.classList.add('rotate-180');
-            } else {
-                pillsContainer.classList.add('hidden');
-                pillsContainer.classList.remove('flex');
-                toggleBtn.setAttribute('aria-expanded', 'false');
-                chevron.classList.remove('rotate-180');
-            }
-        }
-
         function toggleCollectionViewMode() {
             collectionViewMode = collectionViewMode === 'cards' ? 'all-info' : 'cards';
-            const toggleBtn = document.getElementById('view-mode-toggle');
-            const labelEl = document.getElementById('view-mode-label');
             const iconEl = document.getElementById('view-mode-icon');
-
-            if (collectionViewMode === 'all-info') {
-                labelEl.textContent = 'Cards';
-                iconEl.setAttribute('data-lucide', 'layout-grid');
-                toggleBtn.className = 'min-h-[34px] px-3 rounded-full border border-charcoal bg-charcoal text-white text-[11px] font-medium tracking-wide flex items-center gap-1.5 transition-colors shrink-0 cursor-pointer touch-manipulation';
-            } else {
-                labelEl.textContent = 'All Info';
-                iconEl.setAttribute('data-lucide', 'list');
-                toggleBtn.className = 'min-h-[34px] px-3 rounded-full border border-hairline bg-alabaster active:bg-charcoal active:text-white text-charcoal text-[11px] font-medium tracking-wide flex items-center gap-1.5 transition-colors shrink-0 cursor-pointer touch-manipulation';
-            }
+            const labelEl = document.getElementById('view-mode-label');
+            if (iconEl) iconEl.setAttribute('data-lucide', collectionViewMode === 'cards' ? 'list' : 'layout-grid');
+            if (labelEl) labelEl.textContent = collectionViewMode === 'cards' ? 'All Info' : 'Cards';
             renderCollection();
         }
 
-        function onCategoryChange(preferredVolume = null) {
-            const category = document.querySelector('input[name="category"]:checked').value;
-            const priceInput = document.getElementById('input-price');
+        function onCategoryChange(presetVol) {
+            const categoryEl = document.querySelector('input[name="category"]:checked');
+            const category = categoryEl ? categoryEl.value : 'Bottle';
             const giftedRow = document.getElementById('gifted-row');
+            const priceInput = document.getElementById('input-price');
 
             if (category === 'Sample') {
-                priceInput.value = '0';
-                priceInput.disabled = true;
-                priceInput.classList.add('opacity-60', 'bg-hairline/40');
-                giftedRow.classList.remove('hidden');
+                if (giftedRow) giftedRow.classList.remove('hidden');
+                if (priceInput) {
+                    priceInput.value = '0';
+                    priceInput.disabled = true;
+                    priceInput.classList.add('opacity-60', 'bg-hairline/40');
+                }
             } else {
-                priceInput.disabled = false;
-                priceInput.classList.remove('opacity-60', 'bg-hairline/40');
-                giftedRow.classList.add('hidden');
-                document.getElementById('input-gifted').value = '';
+                if (giftedRow) giftedRow.classList.add('hidden');
+                if (priceInput) {
+                    priceInput.disabled = false;
+                    priceInput.classList.remove('opacity-60', 'bg-hairline/40');
+                }
             }
 
-            renderVolumeOptions(category, preferredVolume);
+            renderVolumeOptions(category, presetVol);
             updateLivePricePerMl();
         }
 
-        function renderVolumeOptions(category, selectedVal = null) {
+        function renderVolumeOptions(category, selectedVal) {
             const container = document.getElementById('volume-options-container');
             const customWrapper = document.getElementById('custom-volume-wrapper');
             const volumeInput = document.getElementById('input-volume');
-            const presets = VOLUME_PRESETS[category] || VOLUME_PRESETS.Bottle;
+            if (!container || !volumeInput) return;
 
-            let targetVal = selectedVal !== null ? Number(selectedVal) : presets[0];
-            const isCustom = selectedVal !== null && !presets.includes(targetVal);
+            const presets = VOLUME_PRESETS[category] || [50, 100];
+            const targetVol = selectedVal !== undefined ? Number(selectedVal) : presets[0];
+            const isPreset = presets.includes(targetVol);
 
-            let html = presets.map(vol => {
-                const isSelected = !isCustom && targetVal === vol;
-                const btnClass = isSelected
-                    ? 'bg-charcoal text-white border-charcoal'
-                    : 'bg-alabaster text-graphite border-hairline active:border-champagne';
-                return `<button type="button" onclick="selectVolumePreset(${vol})" data-vol="${vol}" class="vol-option-btn min-h-[36px] px-3 rounded-xl border text-[11px] font-medium transition-all cursor-pointer ${btnClass}">${vol}mL</button>`;
-            }).join('');
+            let html = presets.map(v => `
+                <button type="button" data-vol="${v}" onclick="selectVolumePreset(${v})" class="vol-option-btn min-h-[36px] px-3 rounded-xl border text-[11px] font-medium transition-all cursor-pointer ${isPreset && targetVol === v ? 'bg-charcoal text-white border-charcoal' : 'bg-alabaster text-graphite border-hairline active:border-champagne'}">
+                    ${v} mL
+                </button>
+            `).join('');
 
-            const othersClass = isCustom
-                ? 'bg-charcoal text-white border-charcoal'
-                : 'bg-alabaster text-graphite border-hairline active:border-champagne';
-            html += `<button type="button" onclick="selectVolumePreset('others')" data-vol="others" class="vol-option-btn min-h-[36px] px-3 rounded-xl border text-[11px] font-medium transition-all cursor-pointer ${othersClass}">Others</button>`;
-
+            html += `
+                <button type="button" data-vol="others" onclick="selectVolumePreset('others')" class="vol-option-btn min-h-[36px] px-3 rounded-xl border text-[11px] font-medium transition-all cursor-pointer ${!isPreset ? 'bg-charcoal text-white border-charcoal' : 'bg-alabaster text-graphite border-hairline active:border-champagne'}">
+                    Others
+                </button>
+            `;
             container.innerHTML = html;
 
-            if (isCustom) {
-                customWrapper.classList.remove('hidden');
-                volumeInput.value = targetVal;
+            if (isPreset) {
+                if (customWrapper) customWrapper.classList.add('hidden');
+                volumeInput.value = targetVol;
             } else {
-                customWrapper.classList.add('hidden');
-                volumeInput.value = targetVal;
+                if (customWrapper) customWrapper.classList.remove('hidden');
+                volumeInput.value = targetVol || '';
             }
         }
 
@@ -1776,13 +1735,15 @@
                     activeBadge.classList.add('hidden');
                 }
             }
-
-            let pillsHtml = `<button type="button" onclick="setGeneralNotesFilter('All')" class="px-3 py-1.5 rounded-full text-[11px] font-medium transition cursor-pointer ${activeGeneralNotesFilter === 'All' ? 'bg-charcoal text-white' : 'bg-alabaster text-graphite border border-hairline'}">All (${baseForCounts.length})</button>`;
+            // Render General Notes Filter Bar
+            let pillsHtml = `<button type="button" onclick="setGeneralNotesFilter('All')" class="shrink-0 min-h-[38px] px-4 rounded-full text-xs font-medium tracking-wide transition-all cursor-pointer ${activeGeneralNotesFilter === 'All' ? 'bg-charcoal text-white' : 'bg-white text-graphite border border-hairline'}">All (${baseForCounts.length})</button>`;
             Object.entries(notesCounts).forEach(([note, count]) => {
                 const active = activeGeneralNotesFilter === note;
-                pillsHtml += `<button type="button" onclick="setGeneralNotesFilter('${escapeHTML(note)}')" class="px-3 py-1.5 rounded-full text-[11px] font-medium transition cursor-pointer ${active ? 'bg-charcoal text-white' : 'bg-alabaster text-graphite border border-hairline'}">${escapeHTML(note)} (${count})</button>`;
+                pillsHtml += `<button type="button" onclick="setGeneralNotesFilter('${escapeHTML(note)}')" class="shrink-0 min-h-[38px] px-4 rounded-full text-xs font-medium tracking-wide transition-all cursor-pointer ${active ? 'bg-charcoal text-white' : 'bg-white text-graphite border border-hairline'}">${escapeHTML(note)} (${count})</button>`;
             });
-            notesFilterPills.innerHTML = pillsHtml;
+            if (notesFilterPills) {
+                notesFilterPills.innerHTML = pillsHtml;
+            }
 
             // Filter items
             let filtered = collection.filter(item => {
