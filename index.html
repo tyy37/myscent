@@ -347,24 +347,37 @@
                         </div>
 
                         <!-- Color Picker (Shown ONLY in Edit Entry mode) -->
-                        <div id="edit-color-picker-section" class="hidden pt-1 border-t border-hairline/60">
-                            <div class="flex items-center justify-between mb-1">
-                                <label class="block text-[10px] uppercase tracking-wider text-graphite font-medium">Perfume Color (1 or 2 Colors)</label>
-                                <button type="button" onclick="clearColors()" class="text-[10px] text-champagne font-medium hover:underline cursor-pointer">No Color</button>
-                            </div>
-                            <div class="grid grid-cols-2 gap-2.5">
-                                <div class="flex items-center gap-2 bg-alabaster border border-hairline rounded-xl px-2.5 h-10">
-                                    <input type="color" id="input-color-1" value="#D4AF37" oninput="handleColorChange(1)" class="w-6 h-6 rounded-lg border-0 bg-transparent cursor-pointer">
-                                    <span class="text-[11px] text-graphite truncate" id="color-1-label">Color 1 (None)</span>
+                        <div id="edit-color-picker-section" class="hidden pt-1 border-t border-hairline/60 space-y-3">
+                            <div>
+                                <div class="flex items-center justify-between mb-1">
+                                    <label class="block text-[10px] uppercase tracking-wider text-graphite font-medium">Perfume Color (1 or 2 Colors)</label>
+                                    <button type="button" onclick="clearColors()" class="text-[10px] text-champagne font-medium hover:underline cursor-pointer">No Color</button>
                                 </div>
-                                <div class="flex items-center gap-2 bg-alabaster border border-hairline rounded-xl px-2.5 h-10">
-                                    <input type="color" id="input-color-2" value="#8C6239" oninput="handleColorChange(2)" class="w-6 h-6 rounded-lg border-0 bg-transparent cursor-pointer">
-                                    <span class="text-[11px] text-graphite truncate" id="color-2-label">Color 2 (None)</span>
+                                <div class="grid grid-cols-2 gap-2.5">
+                                    <div class="flex items-center gap-2 bg-alabaster border border-hairline rounded-xl px-2.5 h-10">
+                                        <input type="color" id="input-color-1" value="#D4AF37" oninput="handleColorChange(1)" class="w-6 h-6 rounded-lg border-0 bg-transparent cursor-pointer">
+                                        <span class="text-[11px] text-graphite truncate" id="color-1-label">Color 1 (None)</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 bg-alabaster border border-hairline rounded-xl px-2.5 h-10">
+                                        <input type="color" id="input-color-2" value="#8C6239" oninput="handleColorChange(2)" class="w-6 h-6 rounded-lg border-0 bg-transparent cursor-pointer">
+                                        <span class="text-[11px] text-graphite truncate" id="color-2-label">Color 2 (None)</span>
+                                    </div>
+                                </div>
+                                <div class="mt-1.5 flex items-center gap-2 text-[10px] text-graphite px-1">
+                                    <span>Dot preview:</span>
+                                    <span id="color-preview-display" class="inline-flex items-center gap-1.5 font-medium text-charcoal">No color</span>
                                 </div>
                             </div>
-                            <div class="mt-1.5 flex items-center gap-2 text-[10px] text-graphite px-1">
-                                <span>Dot preview:</span>
-                                <span id="color-preview-display" class="inline-flex items-center gap-1.5 font-medium text-charcoal">No color</span>
+
+                            <!-- Empty Status Checkbox (Shown ONLY in Edit Entry mode) -->
+                            <div class="pt-2.5 border-t border-hairline/60">
+                                <label for="input-is-empty" class="flex items-center justify-between bg-alabaster border border-hairline rounded-xl px-3 py-2.5 cursor-pointer select-none">
+                                    <div>
+                                        <span class="block text-[10px] uppercase tracking-wider text-charcoal font-semibold">Status: Empty?</span>
+                                        <span class="block text-[10px] text-graphite/75 mt-0.5">Dim collection card when finished</span>
+                                    </div>
+                                    <input type="checkbox" id="input-is-empty" class="w-5 h-5 rounded-md border-hairline text-charcoal accent-[#1A2B3C] cursor-pointer">
+                                </label>
                             </div>
                         </div>
 
@@ -1026,7 +1039,8 @@
                 heartNotesZh, heartNotesEn,
                 baseNotesZh, baseNotesEn,
                 remarks: item.remarks ? String(item.remarks).trim() : '',
-                photo: item.photo ? String(item.photo) : ''
+                photo: item.photo ? String(item.photo) : '',
+                isEmpty: Boolean(item.isEmpty)
             };
         }
 
@@ -1833,15 +1847,17 @@
                     if (item.category === 'Sample') badgeStyle = 'bg-ivory text-graphite border-hairline';
 
                     const colorDot = item.color ? renderColorDotHTML(item.color, 15) : '';
+                    const emptyCardClass = item.isEmpty ? 'opacity-50 grayscale-[45%] bg-alabaster/70' : 'bg-white';
 
                     return `
-                    <article onclick="openDetailModal('${item.id}')" class="perfume-card bg-white rounded-2xl border border-hairline p-3.5 cursor-pointer shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+                    <article onclick="openDetailModal('${item.id}')" class="perfume-card ${emptyCardClass} rounded-2xl border border-hairline p-3.5 cursor-pointer shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-opacity">
                         <div class="grid grid-cols-12 gap-3 items-stretch">
                             <!-- Left Part: Photo & Basic Information -->
                             <div class="col-span-5 flex flex-col justify-between pr-2.5 border-r border-hairline/70 space-y-2.5">
                                 <div class="space-y-2">
                                     <div class="relative w-full h-24 rounded-xl bg-[#FFFFFF] border border-hairline p-2 flex items-center justify-center overflow-hidden">
                                         <span class="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded-full text-[8px] uppercase tracking-[0.1em] font-semibold border ${badgeStyle}">${escapeHTML(item.category)}</span>
+                                        ${item.isEmpty ? `<span class="absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded-full text-[8px] uppercase tracking-[0.08em] font-semibold bg-charcoal text-white">Empty</span>` : ''}
                                         ${colorDot ? `<span class="absolute bottom-1.5 left-1.5 flex items-center justify-center bg-white/90 p-0.5 rounded-full shadow-2xs">${colorDot}</span>` : ''}
                                         ${item.photo ? `<img src="${escapeHTML(item.photo)}" alt="" referrerpolicy="no-referrer" class="max-h-20 max-w-full object-contain object-center mx-auto">` : getFallbackBottleSVG(item.category, true)}
                                     </div>
@@ -1896,11 +1912,12 @@
                     if (item.category === 'Sample') badgeStyle = 'bg-ivory text-graphite border-hairline';
 
                     const colorDotBadge = item.color ? `<span class="absolute bottom-2 left-2 flex items-center justify-center bg-white/90 p-0.5 rounded-full shadow-2xs">${renderColorDotHTML(item.color, 14)}</span>` : '';
+                    const emptyCardClass = item.isEmpty ? 'opacity-50 grayscale-[45%] bg-alabaster/70' : 'bg-white';
 
                     return `
-                    <article onclick="openDetailModal('${item.id}')" class="perfume-card bg-white rounded-2xl border border-hairline overflow-hidden cursor-pointer flex flex-col justify-between shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
+                    <article onclick="openDetailModal('${item.id}')" class="perfume-card ${emptyCardClass} rounded-2xl border border-hairline overflow-hidden cursor-pointer flex flex-col justify-between shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-opacity">
                         <div class="relative bg-[#FFFFFF] h-40 p-4 flex items-center justify-center border-b border-hairline/70 overflow-hidden">
-                            <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full text-[9px] uppercase tracking-[0.12em] font-medium border ${badgeStyle}">${escapeHTML(item.category)}</span>
+                            <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full text-[9px] uppercase tracking-[0.12em] font-medium border ${badgeStyle}">${escapeHTML(item.category)}${item.isEmpty ? ' · Empty' : ''}</span>
                             <span class="absolute top-2.5 right-2.5 text-[10px] font-medium text-graphite/70">${item.volume}mL</span>
                             ${item.generalNotes ? `<span class="absolute bottom-2 right-2 px-2 py-0.5 rounded-full text-[9px] font-medium bg-champagneLight/85 text-charcoal border border-champagne/30">${escapeHTML(item.generalNotes)}</span>` : ''}
                             ${colorDotBadge}
@@ -1930,7 +1947,7 @@
             const modal = document.getElementById('detail-modal');
             const pricePerMl = item.volume > 0 ? item.price / item.volume : 0;
 
-            document.getElementById('modal-category-badge').textContent = item.category;
+            document.getElementById('modal-category-badge').textContent = item.isEmpty ? `${item.category} · Empty` : item.category;
             document.getElementById('modal-brand').textContent = item.brand;
             document.getElementById('modal-name').textContent = item.name;
             document.getElementById('modal-volume').textContent = `${item.volume} mL`;
@@ -2082,6 +2099,8 @@
             document.getElementById('form-page-title').textContent = 'New Purchase';
             document.getElementById('submit-btn-text').textContent = 'Save Entry';
             document.getElementById('edit-color-picker-section').classList.add('hidden');
+            const emptyCheckbox = document.getElementById('input-is-empty');
+            if (emptyCheckbox) emptyCheckbox.checked = false;
             document.getElementById('gifted-row').classList.add('hidden');
             document.getElementById('input-price').disabled = false;
             document.getElementById('input-price').classList.remove('opacity-60', 'bg-hairline/40');
@@ -2233,6 +2252,8 @@
             document.getElementById('form-page-title').textContent = 'Edit Fragrance Entry';
             document.getElementById('submit-btn-text').textContent = 'Save Changes';
             document.getElementById('edit-color-picker-section').classList.remove('hidden');
+            const emptyCheckbox = document.getElementById('input-is-empty');
+            if (emptyCheckbox) emptyCheckbox.checked = Boolean(item.isEmpty);
 
             document.querySelectorAll('input[name="category"]').forEach(r => r.checked = (r.value === item.category));
             onCategoryChange(item.volume);
@@ -2296,10 +2317,13 @@
             const c1 = document.getElementById('input-color-1').value;
             const c2 = document.getElementById('input-color-2').value;
             let colorStr = '';
+            let isEmpty = false;
             if (id) {
                 if (color1Selected && color2Selected) colorStr = `${c1.toUpperCase()} / ${c2.toUpperCase()}`;
                 else if (color1Selected) colorStr = c1.toUpperCase();
                 else if (color2Selected) colorStr = c2.toUpperCase();
+                const emptyCheckbox = document.getElementById('input-is-empty');
+                isEmpty = emptyCheckbox ? emptyCheckbox.checked : false;
             }
 
             const entryData = {
@@ -2308,6 +2332,7 @@
                 brand,
                 name,
                 color: colorStr,
+                isEmpty,
                 volume,
                 price,
                 giftedBy,
