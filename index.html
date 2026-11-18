@@ -1012,7 +1012,7 @@
             if (!str) return '';
             const trimmed = String(str).trim();
             if (!trimmed) return '';
-            return trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+            return trimmed.replace(/(^|[\s\-\/(\[])([a-zA-Z])/g, (match, sep, char) => sep + char.toUpperCase());
         }
 
         function formatIngredientsField(rawStr, lang = 'en') {
