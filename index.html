@@ -1452,7 +1452,27 @@
             }
 
             window.scrollTo({ top: 0, behavior: 'smooth' });
-            showToast(`Showing perfumes with "${activeIngredientFilter}"`);
+            showToast(`Showing perfumes matching "${activeIngredientFilter}"`);
+        }
+
+        function getIngredientMatchTerms(str) {
+            if (!str) return [];
+            const cleaned = String(str).toLowerCase().trim();
+            if (!cleaned) return [];
+            const stopWords = new Set(['and', 'or', 'of', 'the', 'a', 'an', 'in', 'with', 'absolute', 'oil', 'extract', 'essence', 'accord', 'leaf', 'leaves', 'flower', 'blossom', 'wood', 'root', 'seed', 'peel', 'zest', 'water', 'milk', 'bean', 'beans', 'note', 'notes']);
+            const words = cleaned.split(/[\s\-\/(),，、]+/).filter(w => w.length >= 3 && !stopWords.has(w));
+            return Array.from(new Set([cleaned, ...words]));
+        }
+
+        function ingredientsShareCoreWord(ingA, ingB) {
+            const a = String(ingA || '').toLowerCase().trim();
+            const b = String(ingB || '').toLowerCase().trim();
+            if (!a || !b) return false;
+            if (a === b || a.includes(b) || b.includes(a)) return true;
+
+            const termsA = getIngredientMatchTerms(a).filter(t => t !== a);
+            const termsB = getIngredientMatchTerms(b).filter(t => t !== b);
+            return termsA.some(word => termsB.includes(word));
         }
 
         function clearIngredientFilter() {
@@ -1629,48 +1649,52 @@
             const positiveUnitPrices = unitPrices.filter(p => p > 0);
             const lowestUnitPrice = positiveUnitPrices.length > 0 ? Math.min(...positiveUnitPrices) : null;
 
-            // Gather all ingredients per perfume to identify overlapping notes
-            const itemNoteSets = items.map(item => {
-                const allTokens = [
-                    ...tokenizeIngredientList(item.topNotesZh),
-                    ...tokenizeIngredientList(item.topNotesEn),
-                    ...tokenizeIngredientList(item.heartNotesZh),
-                    ...tokenizeIngredientList(item.heartNotesEn),
-                    ...tokenizeIngredientList(item.baseNotesZh),
-                    ...tokenizeIngredientList(item.baseNotesEn)
-                ];
-                return new Set(allTokens.map(t => t.toLowerCase()));
-            });
+            // Gather all ingredients per perfume and match by full phrase OR shared core word (e.g. "Indian Jasmine" & "Brazil Jasmine" -> "Jasmine")
+            const itemTokenLists = items.map(item => [
+                ...tokenizeIngredientList(item.topNotesZh),
+                ...tokenizeIngredientList(item.topNotesEn),
+                ...tokenizeIngredientList(item.heartNotesZh),
+                ...tokenizeIngredientList(item.heartNotesEn),
+                ...tokenizeIngredientList(item.baseNotesZh),
+                ...tokenizeIngredientList(item.baseNotesEn)
+            ]);
 
-            const freqMap = new Map();
-            const displayLabelMap = new Map();
-            items.forEach(item => {
-                const seenInItem = new Set();
-                const allTokens = [
-                    ...tokenizeIngredientList(item.topNotesZh),
-                    ...tokenizeIngredientList(item.topNotesEn),
-                    ...tokenizeIngredientList(item.heartNotesZh),
-                    ...tokenizeIngredientList(item.heartNotesEn),
-                    ...tokenizeIngredientList(item.baseNotesZh),
-                    ...tokenizeIngredientList(item.baseNotesEn)
-                ];
-                allTokens.forEach(tok => {
-                    const key = tok.toLowerCase();
-                    if (!seenInItem.has(key)) {
-                        seenInItem.add(key);
-                        freqMap.set(key, (freqMap.get(key) || 0) + 1);
-                        if (!displayLabelMap.has(key)) displayLabelMap.set(key, tok);
-                    }
+            const stopWords = new Set(['and', 'or', 'of', 'the', 'a', 'an', 'in', 'with', 'absolute', 'oil', 'extract', 'essence', 'accord', 'leaf', 'leaves', 'flower', 'blossom', 'wood', 'root', 'seed', 'peel', 'zest', 'water', 'milk', 'bean', 'beans', 'note', 'notes']);
+            const conceptPerfumeCount = new Map();
+            const conceptDisplayLabel = new Map();
+
+            itemTokenLists.forEach(tokens => {
+                const conceptsInPerfume = new Set();
+                tokens.forEach(tok => {
+                    const lowerTok = tok.toLowerCase().trim();
+                    const words = lowerTok.split(/[\s\-\/(),，、]+/).filter(w => w.length >= 3 && !stopWords.has(w));
+                    const keys = words.length > 0 ? words : [lowerTok];
+                    keys.forEach(k => {
+                        conceptsInPerfume.add(k);
+                        if (!conceptDisplayLabel.has(k)) {
+                            conceptDisplayLabel.set(k, capitalizeIngredient(k));
+                        }
+                    });
+                });
+                conceptsInPerfume.forEach(k => {
+                    conceptPerfumeCount.set(k, (conceptPerfumeCount.get(k) || 0) + 1);
                 });
             });
 
-            const sharedKeys = Array.from(freqMap.entries())
+            const sharedConcepts = Array.from(conceptPerfumeCount.entries())
                 .filter(([, count]) => count >= 2)
                 .map(([key]) => key);
 
-            if (sharedKeys.length > 0) {
-                sharedList.innerHTML = sharedKeys
-                    .map(k => `<span class="px-2.5 py-0.5 rounded-full bg-white border border-champagne/50 text-[11px] font-medium text-charcoal">${escapeHTML(displayLabelMap.get(k))}</span>`)
+            const isTokenShared = (token) => {
+                const lowerTok = token.toLowerCase().trim();
+                const words = lowerTok.split(/[\s\-\/(),，、]+/).filter(w => w.length >= 3 && !stopWords.has(w));
+                const keys = words.length > 0 ? words : [lowerTok];
+                return keys.some(k => sharedConcepts.includes(k));
+            };
+
+            if (sharedConcepts.length > 0) {
+                sharedList.innerHTML = sharedConcepts
+                    .map(k => `<span class="px-2.5 py-0.5 rounded-full bg-white border border-champagne/50 text-[11px] font-medium text-charcoal">${escapeHTML(conceptDisplayLabel.get(k))}</span>`)
                     .join('');
                 sharedBox.classList.remove('hidden');
             } else {
@@ -1681,7 +1705,7 @@
                 const tokens = [...tokenizeIngredientList(zhStr), ...tokenizeIngredientList(enStr)];
                 if (tokens.length === 0) return `<span class="text-[11px] text-graphite/45 italic">—</span>`;
                 return `<div class="flex flex-wrap gap-1">${tokens.map(t => {
-                    const isShared = sharedKeys.includes(t.toLowerCase());
+                    const isShared = isTokenShared(t);
                     return `<span class="px-2 py-0.5 rounded-full text-[10px] border ${isShared ? 'bg-champagneLight text-charcoal border-champagne font-semibold' : 'bg-alabaster text-charcoal border-hairline'}">${escapeHTML(t)}</span>`;
                 }).join('')}</div>`;
             };
@@ -1971,7 +1995,7 @@
                 const ingredients = tokenizeIngredientList(rawStr);
                 if (ingredients.length === 0) return '';
                 return ingredients.map(ing => {
-                    const isSelected = activeIngredientFilter && activeIngredientFilter.toLowerCase() === ing.toLowerCase();
+                    const isSelected = activeIngredientFilter && ingredientsShareCoreWord(activeIngredientFilter, ing);
                     const escapedIng = escapeHTML(ing);
                     const jsSafeIng = ing.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
                     const pillClass = isSelected
@@ -2071,7 +2095,6 @@
                 if (!matchesCategory || !matchesGeneralNote) return false;
 
                 if (activeIngredientFilter) {
-                    const targetIng = activeIngredientFilter.toLowerCase();
                     const itemIngredients = [
                         ...tokenizeIngredientList(item.topNotesZh),
                         ...tokenizeIngredientList(item.topNotesEn),
@@ -2079,9 +2102,9 @@
                         ...tokenizeIngredientList(item.heartNotesEn),
                         ...tokenizeIngredientList(item.baseNotesZh),
                         ...tokenizeIngredientList(item.baseNotesEn)
-                    ].map(i => i.toLowerCase());
+                    ];
 
-                    const hasIngredient = itemIngredients.some(ing => ing === targetIng || ing.includes(targetIng));
+                    const hasIngredient = itemIngredients.some(ing => ingredientsShareCoreWord(activeIngredientFilter, ing));
                     if (!hasIngredient) return false;
                 }
 
