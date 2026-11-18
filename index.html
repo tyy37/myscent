@@ -1736,7 +1736,7 @@
                 }
             }
             // Render General Notes Filter Bar
-            let pillsHtml = `<button type="button" onclick="setGeneralNotesFilter('All')" class="shrink-0 min-h-[38px] px-4 rounded-full text-xs font-medium tracking-wide transition-all cursor-pointer ${activeGeneralNotesFilter === 'All' ? 'bg-charcoal text-white' : 'bg-white text-graphite border border-hairline'}">All (${baseForCounts.length})</button>`;
+            let pillsHtml = `<button type="button" onclick="setGeneralNotesFilter('All')" class="shrink-0 min-h-[38px] px-4 rounded-full text-xs font-medium tracking-wide transition-all cursor-pointer ${activeGeneralNotesFilter === 'All' ? 'bg-charcoal text-white' : 'bg-white text-graphite border border-hairline'}">All</button>`;
             Object.entries(notesCounts).forEach(([note, count]) => {
                 const active = activeGeneralNotesFilter === note;
                 pillsHtml += `<button type="button" onclick="setGeneralNotesFilter('${escapeHTML(note)}')" class="shrink-0 min-h-[38px] px-4 rounded-full text-xs font-medium tracking-wide transition-all cursor-pointer ${active ? 'bg-charcoal text-white' : 'bg-white text-graphite border border-hairline'}">${escapeHTML(note)} (${count})</button>`;
