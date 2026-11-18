@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Yuenying Scent">
     <meta name="application-name" content="Yuenying's Scented World">
-    <meta name="theme-color" content="#F7FAFD">
+    <meta name="theme-color" content="#FAF7F2">
     <title>Yuenying's Scented World — Fragrance Archive &amp; Collection</title>
 
     <!-- Dynamic App Icons (Apple Touch Icon, Favicon & PWA Manifest) -->
@@ -27,13 +27,13 @@
             theme: {
                 extend: {
                     colors: {
-                        alabaster: '#F7FAFD',
-                        ivory: '#EBF3FA',
-                        charcoal: '#1A2B3C',
-                        graphite: '#52677A',
-                        champagne: '#6FA3D2',
-                        champagneLight: '#DCEAF7',
-                        hairline: '#D4E3F0'
+                        alabaster: '#FAF7F2',
+                        ivory: '#F2ECE4',
+                        charcoal: '#2C221E',
+                        graphite: '#6E5D54',
+                        champagne: '#A67C52',
+                        champagneLight: '#EBE0D2',
+                        hairline: '#E2D7C9'
                     },
                     fontFamily: {
                         serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
@@ -49,8 +49,8 @@
 
     <style>
         html, body {
-            background-color: #E3EEF8;
-            color: #1A2B3C;
+            background-color: #EAE1D5;
+            color: #2C221E;
             font-family: 'Plus Jakarta Sans', sans-serif;
             -webkit-font-smoothing: antialiased;
             -webkit-tap-highlight-color: transparent;
@@ -72,7 +72,7 @@
         .app-shell {
             max-width: 480px;
             min-height: 100dvh;
-            background-color: #F7FAFD;
+            background-color: #FAF7F2;
         }
 
         .safe-top {
@@ -116,7 +116,7 @@
 <body class="min-h-[100dvh] flex justify-center selection:bg-champagne/20 selection:text-charcoal">
 
     <!-- APP SHELL -->
-    <div class="app-shell w-full flex flex-col relative sm:border-x sm:border-hairline sm:shadow-[0_0_50px_rgba(26,43,60,0.08)]">
+    <div class="app-shell w-full flex flex-col relative sm:border-x sm:border-hairline sm:shadow-[0_0_50px_rgba(44,34,30,0.08)]">
 
         <!-- HEADER -->
         <header class="sticky top-0 z-40 bg-alabaster/95 backdrop-blur-md border-b border-hairline safe-top">
@@ -348,7 +348,7 @@
                                         <span class="block text-[10px] uppercase tracking-wider text-charcoal font-semibold">Status: Empty?</span>
                                         <span class="block text-[10px] text-graphite/75 mt-0.5">Dim collection card when finished</span>
                                     </div>
-                                    <input type="checkbox" id="input-is-empty" class="w-5 h-5 rounded-md border-hairline text-charcoal accent-[#1A2B3C] cursor-pointer">
+                                    <input type="checkbox" id="input-is-empty" class="w-5 h-5 rounded-md border-hairline text-charcoal accent-[#2C221E] cursor-pointer">
                                 </label>
                             </div>
                         </div>
@@ -590,7 +590,7 @@
         </main>
 
         <!-- BOTTOM NAV BAR -->
-        <nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] z-50 bg-alabaster/95 backdrop-blur-md border-t border-hairline pt-2.5 px-4 safe-bottom shadow-[0_-6px_20px_rgba(26,43,60,0.05)]" aria-label="Primary Bottom Navigation">
+        <nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] z-50 bg-alabaster/95 backdrop-blur-md border-t border-hairline pt-2.5 px-4 safe-bottom shadow-[0_-6px_20px_rgba(44,34,30,0.05)]" aria-label="Primary Bottom Navigation">
             <div class="flex items-center bg-ivory p-1 rounded-full border border-hairline">
                 <button type="button" id="nav-collection" onclick="switchView('collection')" class="flex-1 min-h-[44px] flex items-center justify-center gap-2 px-4 rounded-full text-xs uppercase tracking-[0.12em] font-medium transition-all duration-200 bg-charcoal text-white shadow-xs cursor-pointer">
                     <i data-lucide="layout-grid" class="w-4 h-4"></i>
@@ -869,8 +869,8 @@
                         short_name: "Yuenying Scent",
                         start_url: ".",
                         display: "standalone",
-                        background_color: "#F7FAFD",
-                        theme_color: "#F7FAFD",
+                        background_color: "#FAF7F2",
+                        theme_color: "#FAF7F2",
                         icons: [
                             {
                                 src: pngDataUrl,
