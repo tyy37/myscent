@@ -1366,6 +1366,7 @@
         function tokenizeIngredientList(str) {
             if (!str) return [];
             return String(str)
+                .replace(/\s+(?:and|&)\s+/gi, ', ')
                 .split(/[,，、;；/|｜]+/)
                 .map(s => capitalizeIngredient(s.trim()))
                 .filter(Boolean);
@@ -2113,8 +2114,8 @@
             const rawLines = normalized.split('\n').map(line => line.trim()).filter(Boolean);
             const segments = [];
             rawLines.forEach(line => {
-                // Split when another tier label appears mid-line (e.g., "前調: 佛手柑 / 中調: 玫瑰 / 後調: 檀香")
-                const splitInline = line.split(/(?=(?:前調|前味|初調|頭調|中調|中味|核心調|心調|後調|後味|基調|尾調|top\s*(?:notes?)?|head\s*(?:notes?)?|heart\s*(?:notes?)?|middle\s*(?:notes?)?|mid\s*(?:notes?)?|base\s*(?:notes?)?|dry\s*-?\s*down\s*(?:notes?)?)\s*[:\-–—\s])/i);
+                // Split when another tier label appears mid-line (e.g., "Top notes are A, B and C; Heart notes are D, E and F")
+                const splitInline = line.split(/(?=(?:前調|前味|初調|頭調|中調|中味|核心調|心調|後調|後味|基調|尾調|top\s*(?:notes?)?|head\s*(?:notes?)?|heart\s*(?:notes?)?|middle\s*(?:notes?)?|mid\s*(?:notes?)?|base\s*(?:notes?)?|dry\s*-?\s*down\s*(?:notes?)?)\s*(?:[:\-–—]|\b(?:are|is|include|includes|consist\s+of|feature|features)\b))/i);
                 splitInline.forEach(part => {
                     part.split(/[;；|｜]/).forEach(s => {
                         const trimmed = s.trim().replace(/^[/／]+|[/／]+$/g, '').trim();
@@ -2123,7 +2124,7 @@
                 });
             });
 
-            const labelRegex = /^(前調|前味|初調|頭調|中調|中味|核心調|心調|後調|後味|基調|尾調|top\s*(?:notes?)?|head\s*(?:notes?)?|heart\s*(?:notes?)?|middle\s*(?:notes?)?|mid\s*(?:notes?)?|base\s*(?:notes?)?|dry\s*-?\s*down\s*(?:notes?)?)\s*(?:[:\-–—]\s*|\s+)(.*)$/i;
+            const labelRegex = /^(前調|前味|初調|頭調|中調|中味|核心調|心調|後調|後味|基調|尾調|top\s*(?:notes?)?|head\s*(?:notes?)?|heart\s*(?:notes?)?|middle\s*(?:notes?)?|mid\s*(?:notes?)?|base\s*(?:notes?)?|dry\s*-?\s*down\s*(?:notes?)?)\s*(?:[:\-–—]\s*|\b(?:are|is|include|includes|consist\s+of|feature|features)\b\s*|\s+)(.*)$/i;
 
             const buckets = {
                 topZh: [], topEn: [],
@@ -2158,7 +2159,11 @@
                 const match = seg.match(labelRegex);
                 if (!match) return;
                 const tier = classifyTier(match[1]);
-                const content = match[2].replace(/[。\.]+$/g, '').trim();
+                const content = match[2]
+                    .replace(/^(?:are|is|include|includes|consist\s+of|feature|features)\b\s*/i, '')
+                    .replace(/\s+(?:and|&)\s+/gi, ', ')
+                    .replace(/[。\.]+$/g, '')
+                    .trim();
                 if (!tier || !content) return;
 
                 if (hasCJK(content)) {
