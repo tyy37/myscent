@@ -1785,7 +1785,7 @@
                 return 0;
             });
 
-            resultsCounter.textContent = `Total: ${filtered.length} ${filtered.length === 1 ? 'Item' : 'Items'}`;
+            resultsCounter.textContent = `Total: ${collection.length} ${collection.length === 1 ? 'Item' : 'Items'}`;
 
             if (filtered.length === 0) {
                 grid.innerHTML = '';
